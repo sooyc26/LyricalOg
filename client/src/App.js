@@ -30,7 +30,7 @@ class App extends Component {
       <div >
         <Header />
         <SideBar />
-        <LyricsForm />
+        {/* <LyricsForm /> */}
       </div>
     );
   }
