@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 // import logo from './logo.svg';
 import './App.css';
 import LyricsForm from './forms/lyricsForm';
+import Header from './layout/Header';
+import SideBar from './layout/SideBar';
 
 class App extends Component {
   
@@ -25,10 +27,10 @@ class App extends Component {
   render() {
 
     return (
-      <div className="App">
-        <header className="App-header">
-          <LyricsForm></LyricsForm>
-        </header>
+      <div >
+        <Header />
+        <SideBar />
+        <LyricsForm />
       </div>
     );
   }
