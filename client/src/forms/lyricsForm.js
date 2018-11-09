@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-
+import * as lyricService from '../services/lyricService'
 class LyricsForm extends Component {
   
   constructor(props){
@@ -15,6 +15,10 @@ class LyricsForm extends Component {
   }
 
   submit(){
+    const data = {
+      lyrics:this.state.lyrics
+    }
+    lyricService.create(data)
 
   }
 
