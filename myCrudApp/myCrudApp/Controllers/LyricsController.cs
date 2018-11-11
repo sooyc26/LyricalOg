@@ -14,19 +14,51 @@ namespace myCrudApp.Controllers
     {
         LyricService _lyricService;
 
+            HttpRequestMessage req = new HttpRequestMessage();
         public LyricsController()
         {
             _lyricService = new LyricService();
         }
 
         [HttpPost,Route("lyrics")]
-        public int Create(LyricsCreateRequest request)
+        public HttpResponseMessage Create(LyricsCreateRequest request)
         {
-             var id = _lyricService.Create(request);
-            return id;
-            //return Request.CreateResponse(HttpStatusCode.OK, id);
-  
+            if (request == null)
+            {
+                return this.Request.CreateResponse(HttpStatusCode.BadRequest, "please enter valid input");
+            }
+            int id = _lyricService.Create(request);
 
+            return req.CreateResponse(HttpStatusCode.OK, id);
+        }
+
+        [HttpGet, Route("lyrics")]
+        public HttpResponseMessage ReadAll()
+        {
+            var lyrics = _lyricService.ReadAll();
+
+            return req.CreateResponse(HttpStatusCode.OK, lyrics);
+        }
+
+        [HttpGet, Route("lyrics/{id:int}")]
+        public HttpResponseMessage ReadById(int id)
+        {
+            var lyric = _lyricService.ReadById(id);
+            return req.CreateResponse(HttpStatusCode.OK, lyric);
+        }
+
+        [HttpPut, Route("lyrics/{id:int}")]
+        public HttpResponseMessage UpdateById(LyricsUpdateRequest request, int id)
+        {
+            var retId = _lyricService.Update(request, id);
+            return Request.CreateResponse(HttpStatusCode.OK, retId);
+        }
+
+        [HttpDelete, Route("lyrics/{id:int}")]
+        public HttpResponseMessage Delete(int id)
+        {
+            //var retId = _lyricService.Delete(id);
+            return Request.CreateResponse(HttpStatusCode.OK);
         }
     }
 }

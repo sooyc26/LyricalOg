@@ -94,9 +94,9 @@ namespace myCrudApp.Services
             return lyrics;
         }
 
-        public int Update(LyricsCreateRequest request)
+        public int Update(LyricsUpdateRequest request, int id)
         {
-            int id = 0;
+            int retId = 0;
             using (SqlConnection conn = new SqlConnection(connString))
             {
                 conn.Open();
@@ -116,7 +116,21 @@ namespace myCrudApp.Services
                     }
                 }
             }
-            return id;
+            return retId;
+        }
+
+        public void Delete(int id)
+        {
+            using (SqlConnection conn = new SqlConnection(connString))
+            {
+                conn.Open();
+
+                SqlCommand cmd = conn.CreateCommand();
+                cmd.CommandText = "Lyrics_Delete";
+                cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@Id", id);
+
+            }
         }
     }
 }
