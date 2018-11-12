@@ -13,7 +13,7 @@ class App extends Component {
         <header className="App-header">
           <h1>Lyrical OG</h1>
           <LyricsForm />
-          <LyricsList/>
+          {/* <LyricsList/> */}
         </header>
       </div>
       </div>

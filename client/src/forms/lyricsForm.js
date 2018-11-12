@@ -13,6 +13,8 @@ class LyricsForm extends Component {
     }
     this.handleChange = this.handleChange.bind(this)
     this.submit = this.submit.bind(this)
+    this.getLyrics = this.getLyrics.bind(this)
+
   }
 
   submit(){
@@ -25,7 +27,21 @@ class LyricsForm extends Component {
   handleChange(e) {
     this.setState({ [e.target.name]: e.target.value })
   }
-  
+
+  componentDidMount() {
+    this.getLyrics();
+}
+
+getLyrics() {
+    lyricService.getAll()
+        .then(response => {
+            this.setState({
+                items: response.items
+            })
+        })
+        .catch(console.log.error);
+}
+
   render() {
     return (
       <div>
