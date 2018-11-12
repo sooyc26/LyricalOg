@@ -10,17 +10,18 @@ using System.Web.Http;
 
 namespace myCrudApp.Controllers
 {
-    public class LyricsController: ApiController
+    [AllowAnonymous]
+    public class LyricsController : ApiController
     {
         LyricService _lyricService;
+        HttpRequestMessage req = new HttpRequestMessage();
 
-            HttpRequestMessage req = new HttpRequestMessage();
         public LyricsController()
         {
             _lyricService = new LyricService();
         }
 
-        [HttpPost,Route("lyrics")]
+        [HttpPost, Route("lyrics")]
         public HttpResponseMessage Create(LyricsCreateRequest request)
         {
             if (request == null)

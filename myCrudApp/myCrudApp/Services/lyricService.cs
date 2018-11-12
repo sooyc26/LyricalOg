@@ -33,7 +33,10 @@ namespace myCrudApp.Services
                     {
                         id = (int)reader["Id"];
                     }
+                    reader.Close();
                 }
+
+                conn.Close();
             }
             return id;
         }
@@ -60,7 +63,11 @@ namespace myCrudApp.Services
                             Lyric = (string)reader["Lyrics"]
                         };
                         lyrics.Add(lyric);
+
+                        reader.Close();
                     }
+                    conn.Close();
+
                 }
             }
             return lyrics;
@@ -87,9 +94,11 @@ namespace myCrudApp.Services
                             Id = (int)reader["Id"],
                             Lyric = (string)reader["Lyrics"]
                         };
-                        lyrics=lyric;
+                        lyrics = lyric;
                     }
+                    reader.Close();
                 }
+                conn.Close();
             }
             return lyrics;
         }
@@ -114,7 +123,9 @@ namespace myCrudApp.Services
                     {
                         id = (int)reader["Id"];
                     }
+                    reader.Close();
                 }
+                conn.Close();
             }
             return retId;
         }
@@ -128,8 +139,10 @@ namespace myCrudApp.Services
                 SqlCommand cmd = conn.CreateCommand();
                 cmd.CommandText = "Lyrics_Delete";
                 cmd.CommandType = System.Data.CommandType.StoredProcedure;
+
                 cmd.Parameters.AddWithValue("@Id", id);
 
+                conn.Close();
             }
         }
     }
