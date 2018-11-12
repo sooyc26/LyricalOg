@@ -67,7 +67,6 @@ namespace myCrudApp.Services
                         reader.Close();
                     }
                     conn.Close();
-
                 }
             }
             return lyrics;

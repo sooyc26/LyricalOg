@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import * as lyricService from '../services/lyricService'
+
 class LyricsForm extends Component {
   
   constructor(props){
@@ -19,12 +20,12 @@ class LyricsForm extends Component {
       lyrics:this.state.lyrics
     }
     lyricService.create(data)
-
   }
 
   handleChange(e) {
     this.setState({ [e.target.name]: e.target.value })
   }
+  
   render() {
     return (
       <div>
