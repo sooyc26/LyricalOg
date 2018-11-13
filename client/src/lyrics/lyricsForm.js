@@ -7,9 +7,10 @@ class LyricsForm extends Component {
 
     this.state={
       lyrics:'',
-      url:'',
+      url:'https://www.youtube.com/watch?v=Kunu3jBRpao',
       inputUrl:'',
-      displayLyrics:[]
+      displayLyrics:[],
+      soundCloud:false
     }
     this.handleChange = this.handleChange.bind(this)
     this.submit = this.submit.bind(this)
@@ -28,29 +29,38 @@ class LyricsForm extends Component {
     this.setState({ [e.target.name]: e.target.value })
   }
   render() {
-   const url = 'https://soundcloud.com/metroboomin/no-complaints-feat-offset'
+    let soundCloud = false;
+    let youtube = ''
+    if(this.state.url.includes('sound')){
+      soundCloud = true;
+    }else{
+      youtube = this.state.url.split("=").pop();
+    }
 
     const displayLyrics = this.state.displayLyrics.map(lyric => {
       return (
         <div style={{ border: '1px solid black', borderRadius: '5px!important' }}>
-          <div style={{ whiteSpace: 'pre-wrap' }}>
+          <div style={{ whiteSpace: 'pre-wrap', textAlign: "center", fontSize: '15px' }}>
             <ul >{lyric}</ul>
+            <button className="btn btn-default">edit</button>
+            <button className="btn btn-danger">fire</button>
           </div>
         </div>
       )
     })
-    return (
 
+    return (
       <div>
-        {url?
-          <iframe width="100%" height="166" scrolling="no" frameborder="no"
-            src={"https://w.soundcloud.com/player/?url=" + url + "&amp;{ ADD YOUR PARAMETERS HERE }"}>
-          </iframe> 
-           : null} 
         <div>
           <input value={this.state.inputUrl} onChange={this.handleChange} name="inputUrl" />
         <button onClick={() => this.setState({ url: this.state.inputUrl })}>Load</button>
         </div>
+        {soundCloud?
+          <iframe width="100%" height="166" scrolling="no" frameborder="no"
+            src={"https://w.soundcloud.com/player/?url=" + this.state.url + "&amp;{ ADD YOUR PARAMETERS HERE }"}>
+          </iframe> 
+           : <iframe width="560" height="166" src={"https://www.youtube.com/embed/"+youtube} 
+           frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>} 
         <div>
           {displayLyrics}
         </div>
