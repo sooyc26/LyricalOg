@@ -13,7 +13,7 @@ import * as lyricService from '../services/lyricService'
     }
 
     componentDidMount() {
-        this.getLyrics();
+        // this.getLyrics();
     }
 
     getLyrics() {
