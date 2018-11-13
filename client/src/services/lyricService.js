@@ -1,7 +1,8 @@
 import axios from 'axios';
 
 function create(data) {
-    const url= '/lyrics/'
+    const url= 'api/lyrics'
+    debugger;
     
     const config={
         method:'POST',
@@ -13,7 +14,7 @@ function create(data) {
 }
 
 function getAll() {
-    const url= '/lyrics/'
+    const url= 'api/lyrics'
     
     const config={
         method:'GET',

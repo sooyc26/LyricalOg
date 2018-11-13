@@ -11,14 +11,17 @@ using System.Web.Http;
 namespace myCrudApp.Controllers
 {
     [AllowAnonymous]
+    [RoutePrefix("api")]
     public class LyricsController : ApiController
     {
         LyricService _lyricService;
-        HttpRequestMessage req = new HttpRequestMessage();
 
+        HttpRequestMessage req = new HttpRequestMessage();
+        HttpConfiguration configuration = new HttpConfiguration();
         public LyricsController()
         {
             _lyricService = new LyricService();
+        req.Properties[System.Web.Http.Hosting.HttpPropertyKeys.HttpConfigurationKey] = configuration;
         }
 
         [HttpPost, Route("lyrics")]
@@ -37,7 +40,6 @@ namespace myCrudApp.Controllers
         public HttpResponseMessage ReadAll()
         {
             var lyrics = _lyricService.ReadAll();
-
             return req.CreateResponse(HttpStatusCode.OK, lyrics);
         }
 
@@ -58,8 +60,9 @@ namespace myCrudApp.Controllers
         [HttpDelete, Route("lyrics/{id:int}")]
         public HttpResponseMessage Delete(int id)
         {
-            //var retId = _lyricService.Delete(id);
-            return Request.CreateResponse(HttpStatusCode.OK);
+            var retId=_lyricService.Delete(id);
+            var message = "deleted Id: " + retId;
+            return Request.CreateResponse(HttpStatusCode.OK, message);
         }
     }
 }

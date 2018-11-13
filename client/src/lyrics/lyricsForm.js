@@ -14,14 +14,29 @@ class LyricsForm extends Component {
     }
     this.handleChange = this.handleChange.bind(this)
     this.submit = this.submit.bind(this)
+    this.getAll = this.getAll.bind(this)
   }
 
-  submit(){
+  componentDidMount() {
+    this.getAll()
+  }
+
+  getAll() {
+    lyricService.getAll()
+      .then(response => {
+        this.setState({
+          displayLyrics: response
+        })
+      })
+  }
+
+  submit() {
     const data = {
-      lyrics:this.state.lyrics
+      lyrics: this.state.lyrics
     }
-   // lyricService.create(data)
-   this.setState({displayLyrics:[...this.state.displayLyrics,this.state.lyrics]})
+    lyricService.create(data)
+    .then(()=>this.getAll())
+    //this.setState({displayLyrics:[...this.state.displayLyrics,this.state.lyrics]})
 
   }
 
@@ -39,11 +54,11 @@ class LyricsForm extends Component {
 
     const displayLyrics = this.state.displayLyrics.map(lyric => {
       return (
-        <div style={{ border: '1px solid black', borderRadius: '5px!important' }}>
+        <div key={lyric.Id} style={{ border: '1px solid black', borderRadius: '5px!important' }}>
           <div style={{ whiteSpace: 'pre-wrap', textAlign: "center", fontSize: '15px' }}>
-            <ul >{lyric}</ul>
-            <button className="btn btn-default">edit</button>
-            <button className="btn btn-danger">fire</button>
+            <ul >{lyric.Lyric}</ul>
+            <button type="button" className="btn btn-default">edit</button>
+            <button className="btn btn-danger">vote</button>
           </div>
         </div>
       )
@@ -53,7 +68,7 @@ class LyricsForm extends Component {
       <div>
         <div>
           <input value={this.state.inputUrl} onChange={this.handleChange} name="inputUrl" />
-        <button onClick={() => this.setState({ url: this.state.inputUrl })}>Load</button>
+        <button type="submit" onSubmit={() => this.setState({ url: this.state.inputUrl })}>Load</button>
         </div>
         {soundCloud?
           <iframe width="100%" height="166" scrolling="no" frameborder="no"

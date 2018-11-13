@@ -63,8 +63,6 @@ namespace myCrudApp.Services
                             Lyric = (string)reader["Lyrics"]
                         };
                         lyrics.Add(lyric);
-
-                        reader.Close();
                     }
                     conn.Close();
                 }
@@ -81,8 +79,9 @@ namespace myCrudApp.Services
                 conn.Open();
 
                 SqlCommand cmd = conn.CreateCommand();
-                cmd.CommandText = "Lyrics_SelectAll";
+                cmd.CommandText = "Lyrics_Select_ById";
                 cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@Id", id);
 
                 using (SqlDataReader reader = cmd.ExecuteReader())
                 {
@@ -95,7 +94,6 @@ namespace myCrudApp.Services
                         };
                         lyrics = lyric;
                     }
-                    reader.Close();
                 }
                 conn.Close();
             }
@@ -113,8 +111,8 @@ namespace myCrudApp.Services
                 cmd.CommandText = "Lyrics_Update";
                 cmd.CommandType = System.Data.CommandType.StoredProcedure;
 
+                cmd.Parameters.AddWithValue("@Id", id);
                 cmd.Parameters.AddWithValue("@Lyrics", request.Lyrics);
-                cmd.Parameters.AddWithValue("@Id", SqlDbType.Int).Direction = ParameterDirection.Output;
 
                 using (SqlDataReader reader = cmd.ExecuteReader())
                 {
@@ -122,14 +120,13 @@ namespace myCrudApp.Services
                     {
                         id = (int)reader["Id"];
                     }
-                    reader.Close();
                 }
                 conn.Close();
             }
             return retId;
         }
 
-        public void Delete(int id)
+        public int Delete(int id)
         {
             using (SqlConnection conn = new SqlConnection(connString))
             {
@@ -143,6 +140,7 @@ namespace myCrudApp.Services
 
                 conn.Close();
             }
+            return id;
         }
     }
 }
