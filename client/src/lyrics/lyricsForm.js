@@ -14,6 +14,7 @@ class LyricsForm extends Component {
 
       , submitButton: 'submit'
       , editMode: false
+      ,editId:''
 
     }
     this.handleChange = this.handleChange.bind(this)
@@ -42,8 +43,9 @@ class LyricsForm extends Component {
     const data = {
       lyrics: this.state.lyrics
     }
+
     if (this.state.editMode) {
-      lyricService.update(id)
+      lyricService.update(this.state.editId, data)
         .then(() => this.getAll())
     } else {
       lyricService.create(data)
@@ -56,7 +58,6 @@ class LyricsForm extends Component {
   }
 
   delete(e, id) {
-
     if (window.confirm('Delete the item?')) {
       lyricService.deleteById(id)
         .then(() => this.getAll())
@@ -68,13 +69,16 @@ class LyricsForm extends Component {
       .then(response => {
         this.setState({
           lyrics: response.Lyric,
-          editMode: true
+          editMode: true,
+          editId:id,
+          submitButton:'edit'
         })
       })
   }
 
-  vote() {
-
+  vote(id) {
+    lyricService.vote(id)
+    .then(()=>this.getAll())
   }
 
   render() {
@@ -91,11 +95,10 @@ class LyricsForm extends Component {
         <div key={lyric.Id} style={{ border: '1px solid black', borderRadius: '5px!important' }}>
           <div style={{ whiteSpace: 'pre-wrap', textAlign: "center", fontSize: '15px' }}>
             <ul >{lyric.Lyric}</ul>
+            <div></div>
+           <button id={lyric.Id} onClick={() => this.vote(lyric.Id)} className="btn btn-danger">vote Up: {lyric.Votes}</button>
             <button id={lyric.Id} onClick={() => this.edit(lyric.Id)} type="button" className="btn btn-default">edit</button>
-            <button id={lyric.Id} onClick={() => this.vote(lyric.Id)} className="btn btn-danger">vote</button>
             <button id={lyric.Id} onClick={(e) => this.delete(e, lyric.Id)} className="btn btn-danger">delete</button>
-
-            {/* <button className="btn btn-danger" onClick={() => {if(window.confirm('Delete the item?')){this.removeToCollection(key, e)};}}>Supprimer</button> */}
 
           </div>
         </div>
@@ -120,7 +123,7 @@ class LyricsForm extends Component {
         <p>write your lyrics  </p>
         <textarea className="App" onChange={this.handleChange} value={this.state.lyrics} name='lyrics' style={{ whiteSpace: 'pre-wrap', width: '500px', height: '100px' }}></textarea>
         <div>
-          <button onClick={this.submit}>submit</button>
+          <button onClick={this.submit}>{this.state.submitButton}</button>
         </div>
       </div>
     );

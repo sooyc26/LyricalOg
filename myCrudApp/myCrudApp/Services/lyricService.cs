@@ -119,8 +119,6 @@ namespace myCrudApp.Services
                 cmd.Parameters.AddWithValue("@Id", id);
                 cmd.Parameters.AddWithValue("@Lyrics", request.Lyrics);
 
-                cmd.ExecuteNonQuery();
-
                 using (SqlDataReader reader = cmd.ExecuteReader())
                 {
                     while (reader.Read())
@@ -133,7 +131,7 @@ namespace myCrudApp.Services
             return retId;
         }
 
-        public int UpdateVotes(LyricsUpdateRequest request, int id)
+        public int UpdateVotes(int id)
         {
             int retId = 0;
             using (SqlConnection conn = new SqlConnection(connString))
@@ -145,9 +143,6 @@ namespace myCrudApp.Services
                 cmd.CommandType = System.Data.CommandType.StoredProcedure;
 
                 cmd.Parameters.AddWithValue("@Id", id);
-                cmd.Parameters.AddWithValue("@Votes", request.Votes);
-
-                cmd.ExecuteNonQuery();
 
                 using (SqlDataReader reader = cmd.ExecuteReader())
                 {

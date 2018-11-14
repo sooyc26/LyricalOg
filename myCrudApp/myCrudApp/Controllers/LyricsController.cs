@@ -52,17 +52,17 @@ namespace myCrudApp.Controllers
             return req.CreateResponse(HttpStatusCode.OK, lyric);
         }
 
-        [HttpPatch, Route("lyrics/{id:int}")]
+        [HttpPut, Route("lyrics/{id:int}")]
         public HttpResponseMessage UpdateById(LyricsUpdateRequest request, int id)
         {
             var retId = _lyricService.UpdateLyrics(request, id);
             return Request.CreateResponse(HttpStatusCode.OK, retId);
         }
 
-        [HttpPatch, Route("lyrics/{id:int}")]
-        public HttpResponseMessage UpdateVotes(LyricsUpdateRequest request, int id)
+        [HttpGet, Route("lyrics/vote/{id:int}")]
+        public HttpResponseMessage UpdateVotes( int id)
         {
-            var retId = _lyricService.UpdateVotes(request, id);
+            var retId = _lyricService.UpdateVotes(id);
             return Request.CreateResponse(HttpStatusCode.OK, retId);
         }
 
