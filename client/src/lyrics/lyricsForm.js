@@ -75,7 +75,7 @@ class LyricsForm extends Component {
             src={"https://w.soundcloud.com/player/?url=" + this.state.url + "&amp;{ ADD YOUR PARAMETERS HERE }"}>
           </iframe> 
            : <iframe width="560" height="166" src={"https://www.youtube.com/embed/"+youtube} 
-           frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>} 
+           frameBorder="0" allow="autoplay; encrypted-media" allowFullScreen></iframe>} 
         <div>
           {displayLyrics}
         </div>

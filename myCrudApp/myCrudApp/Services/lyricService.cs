@@ -118,7 +118,7 @@ namespace myCrudApp.Services
                 {
                     while (reader.Read())
                     {
-                        id = (int)reader["Id"];
+                        retId = (int)reader["Id"];
                     }
                 }
                 conn.Close();
@@ -141,6 +141,32 @@ namespace myCrudApp.Services
                 conn.Close();
             }
             return id;
+        }
+
+        public int Votes(LyricsUpdateRequest request, int id)
+        {
+            int retId = 0;
+            using (SqlConnection conn = new SqlConnection(connString))
+            {
+                conn.Open();
+
+                SqlCommand cmd = conn.CreateCommand();
+                cmd.CommandText = "Lyrics_Update_Votes";
+                cmd.CommandType = System.Data.CommandType.StoredProcedure;
+
+                cmd.Parameters.AddWithValue("@Id", id);
+                cmd.Parameters.AddWithValue("@Votes", request.Votes);
+
+                using (SqlDataReader reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        retId = (int)reader["Id"];
+                    }
+                }
+                conn.Close();
+            }
+            return retId;
         }
     }
 }

@@ -8,5 +8,7 @@ namespace myCrudApp.Models
     public class LyricsUpdateRequest
     {
         public string Lyrics { get; set; }
+        public string Votes { get; set; }
+
     }
 }
