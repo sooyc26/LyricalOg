@@ -7,11 +7,13 @@ using System.Net;
 using System.Net.Http;
 using System.Web;
 using System.Web.Http;
+using System.Web.Http.Cors;
 
 namespace myCrudApp.Controllers
 {
     [AllowAnonymous]
     [RoutePrefix("api")]
+    [EnableCors(origins: "*", headers: "*", methods: "*")]
     public class LyricsController : ApiController
     {
         LyricService _lyricService;
@@ -53,7 +55,7 @@ namespace myCrudApp.Controllers
         [HttpPatch, Route("lyrics/{id:int}")]
         public HttpResponseMessage UpdateById(LyricsUpdateRequest request, int id)
         {
-            var retId = _lyricService.Update(request, id);
+            var retId = _lyricService.UpdateLyrics(request, id);
             return Request.CreateResponse(HttpStatusCode.OK, retId);
         }
 

@@ -25,7 +25,10 @@ namespace myCrudApp.Services
                 cmd.CommandType = System.Data.CommandType.StoredProcedure;
 
                 cmd.Parameters.AddWithValue("@Lyrics", request.Lyrics);
+                cmd.Parameters.AddWithValue("@Votes", 0);
                 cmd.Parameters.AddWithValue("@Id", SqlDbType.Int).Direction = ParameterDirection.Output;
+
+                //cmd.ExecuteNonQuery();
 
                 using (SqlDataReader reader = cmd.ExecuteReader())
                 {
@@ -60,7 +63,8 @@ namespace myCrudApp.Services
                         var lyric = new Lyrics()
                         {
                             Id = (int)reader["Id"],
-                            Lyric = (string)reader["Lyrics"]
+                            Lyric = (string)reader["Lyrics"],
+                            Votes=(int)reader["Votes"]
                         };
                         lyrics.Add(lyric);
                     }
@@ -90,7 +94,8 @@ namespace myCrudApp.Services
                         var lyric = new Lyrics()
                         {
                             Id = (int)reader["Id"],
-                            Lyric = (string)reader["Lyrics"]
+                            Lyric = (string)reader["Lyrics"],
+                            Votes = (int)reader["Votes"]
                         };
                         lyrics = lyric;
                     }
@@ -100,7 +105,7 @@ namespace myCrudApp.Services
             return lyrics;
         }
 
-        public int Update(LyricsUpdateRequest request, int id)
+        public int UpdateLyrics(LyricsUpdateRequest request, int id)
         {
             int retId = 0;
             using (SqlConnection conn = new SqlConnection(connString))
@@ -113,6 +118,36 @@ namespace myCrudApp.Services
 
                 cmd.Parameters.AddWithValue("@Id", id);
                 cmd.Parameters.AddWithValue("@Lyrics", request.Lyrics);
+
+                cmd.ExecuteNonQuery();
+
+                using (SqlDataReader reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        retId = (int)reader["Id"];
+                    }
+                }
+                conn.Close();
+            }
+            return retId;
+        }
+
+        public int UpdateVotes(LyricsUpdateRequest request, int id)
+        {
+            int retId = 0;
+            using (SqlConnection conn = new SqlConnection(connString))
+            {
+                conn.Open();
+
+                SqlCommand cmd = conn.CreateCommand();
+                cmd.CommandText = "Lyrics_Update_Votes";
+                cmd.CommandType = System.Data.CommandType.StoredProcedure;
+
+                cmd.Parameters.AddWithValue("@Id", id);
+                cmd.Parameters.AddWithValue("@Votes", request.Votes);
+
+                cmd.ExecuteNonQuery();
 
                 using (SqlDataReader reader = cmd.ExecuteReader())
                 {
@@ -137,36 +172,12 @@ namespace myCrudApp.Services
                 cmd.CommandType = System.Data.CommandType.StoredProcedure;
 
                 cmd.Parameters.AddWithValue("@Id", id);
+                cmd.ExecuteNonQuery();
 
                 conn.Close();
             }
             return id;
         }
 
-        public int Votes(LyricsUpdateRequest request, int id)
-        {
-            int retId = 0;
-            using (SqlConnection conn = new SqlConnection(connString))
-            {
-                conn.Open();
-
-                SqlCommand cmd = conn.CreateCommand();
-                cmd.CommandText = "Lyrics_Update_Votes";
-                cmd.CommandType = System.Data.CommandType.StoredProcedure;
-
-                cmd.Parameters.AddWithValue("@Id", id);
-                cmd.Parameters.AddWithValue("@Votes", request.Votes);
-
-                using (SqlDataReader reader = cmd.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        retId = (int)reader["Id"];
-                    }
-                }
-                conn.Close();
-            }
-            return retId;
-        }
     }
 }

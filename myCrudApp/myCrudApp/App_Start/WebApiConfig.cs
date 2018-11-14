@@ -12,7 +12,9 @@ namespace myCrudApp
             // Web API configuration and services
 
             // Web API routes
+
             config.MapHttpAttributeRoutes();
+            config.EnableCors();
 
             config.Routes.MapHttpRoute(
                 name: "DefaultApi",

@@ -1,12 +1,13 @@
 import axios from 'axios';
 
 function create(data) {
-    const url= 'api/lyrics'
-    debugger;
+    const url= 'http://localhost:49694/api/lyrics'
     
     const config={
         method:'POST',
-        data:data
+        data:data,
+        //withCredentials: true
+
     }
     return axios(url, config)
         .then(responseSuccess)
@@ -18,6 +19,8 @@ function getAll() {
     
     const config={
         method:'GET',
+        //withCredentials: true
+
     }
     return axios(url, config)
         .then(responseSuccess)
@@ -25,7 +28,7 @@ function getAll() {
 }
 
 function getById(id) {
-    const url = '/lyrics/' + id
+    const url = 'http://localhost:49694/api/lyrics/' + id
 
     return axios.get(url)
         .then(responseSuccess)
@@ -33,7 +36,7 @@ function getById(id) {
 }
 
 function update(id, data) {
-    const url= '/lyrics/'+id
+    const url= 'http://localhost:49694/api/lyrics/'+id
     
     const config={
         method:'PUT',
@@ -45,7 +48,7 @@ function update(id, data) {
 }
 
 function deleteById(id) {
-    const url= '/lyrics/'+id
+    const url= 'http://localhost:49694/api/lyrics/'+id
     
     const config={
         method:'DELETE',
