@@ -7,7 +7,7 @@ class LyricsForm extends Component {
 
     this.state = {
       lyrics: '',
-      url: 'https://soundcloud.com/thebandits26/perrier-1',
+      url: 'https://www.youtube.com/watch?v=VzGpRycgrmM',
       inputUrl: '',
       displayLyrics: [],
       soundCloud: true
@@ -20,6 +20,7 @@ class LyricsForm extends Component {
     this.handleChange = this.handleChange.bind(this)
     this.submit = this.submit.bind(this)
     this.getAll = this.getAll.bind(this)
+    this.setUrl=this.setUrl.bind(this)
 
     this.edit = this.edit.bind(this)
     this.vote = this.vote.bind(this)
@@ -43,13 +44,24 @@ class LyricsForm extends Component {
     const data = {
       lyrics: this.state.lyrics
     }
-
     if (this.state.editMode) {
       lyricService.update(this.state.editId, data)
         .then(() => this.getAll())
+        .then(() => {
+          this.setState({
+            lyrics: '',
+            editMode: false
+          })
+        })
     } else {
       lyricService.create(data)
         .then(() => this.getAll())
+        .then(() => {
+          this.setState({
+            lyrics: '',
+            editMode: false
+          })
+        })
     }
   }
 
@@ -95,16 +107,15 @@ class LyricsForm extends Component {
       soundCloud = false;
     }
 
-    const displayLyrics = this.state.displayLyrics.map(lyric => {
+    const displayLyrics = this.state.displayLyrics.map((lyric,index) => {
       return (
-        <div key={lyric.Id} style={{ border: '1px solid black', borderRadius: '5px!important' }}>
+        <div key={lyric.Id} style={index===0?{width: '500px', textAlign: "center" ,border: '5px solid gold', borderRadius: '5px!important' }:{width: '500px', textAlign: "center" ,border: '1px solid black', borderRadius: '5px!important' }}>
           <div style={{ whiteSpace: 'pre-wrap', textAlign: "center", fontSize: '15px' }}>
             <ul >{lyric.Lyric}</ul>
             <div></div>
            <button id={lyric.Id} onClick={() => this.vote(lyric.Id)} className="btn btn-danger">vote Up: {lyric.Votes}</button>
             <button id={lyric.Id} onClick={() => this.edit(lyric.Id)} type="button" className="btn btn-default">edit</button>
             <button id={lyric.Id} onClick={(e) => this.delete(e, lyric.Id)} className="btn btn-danger">delete</button>
-
           </div>
         </div>
       )
@@ -113,14 +124,15 @@ class LyricsForm extends Component {
     return (
       <div>
         <div>
-          <input value={this.state.inputUrl} onChange={this.handleChange} style={{width: '500px'}} name="inputUrl" />
-          <button type="submit" onSubmit={() => this.setUrl()}>Load SoundCloud or Youtube</button>
+          <div style={{fontSize: '20px' }}>Load Soundcloud or Youtube</div>
+          <input value={this.state.inputUrl} onChange={this.handleChange} style={{width: '450px'}} name="inputUrl" />
+          <button onClick={() => this.setUrl()}>Load</button>
         </div>
         {soundCloud ?
-          <iframe width="100%" height="166" scrolling="no" frameborder="no"
+          <iframe width="500px" height="166" scrolling="no" frameborder="no"
             src={"https://w.soundcloud.com/player/?url=" + this.state.url + "&amp;{ ADD YOUR PARAMETERS HERE }"}>
           </iframe>
-          : <iframe width="560" height="166" src={"https://www.youtube.com/embed/" + youtube}
+          : <iframe width="500px" height="166" src={"https://www.youtube.com/embed/" + youtube}
             frameBorder="0" allow="autoplay; encrypted-media" allowFullScreen></iframe>}
         <div>
           {displayLyrics}
