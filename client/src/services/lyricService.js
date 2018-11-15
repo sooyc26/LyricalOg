@@ -83,7 +83,7 @@ const responseError = error => {
     return Promise.reject(error);
 }
 export {create, getAll,vote, getById,update,deleteById}
-
+  
 /*
 split an array and add the splitted items at end of the array
 example {2,3,4,5,6}
