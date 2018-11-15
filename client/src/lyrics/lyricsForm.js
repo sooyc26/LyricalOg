@@ -10,7 +10,7 @@ class LyricsForm extends Component {
       url: 'https://soundcloud.com/thebandits26/perrier-1',
       inputUrl: '',
       displayLyrics: [],
-      soundCloud: false
+      soundCloud: true
 
       , submitButton: 'submit'
       , editMode: false
@@ -81,6 +81,10 @@ class LyricsForm extends Component {
     .then(()=>this.getAll())
   }
 
+  setUrl(){
+    this.setState({ url: this.state.inputUrl })
+  }
+
   render() {
     let soundCloud = false;
     let youtube = ''
@@ -88,6 +92,7 @@ class LyricsForm extends Component {
       soundCloud = true;
     } else {
       youtube = this.state.url.split("=").pop();
+      soundCloud = false;
     }
 
     const displayLyrics = this.state.displayLyrics.map(lyric => {
@@ -108,8 +113,8 @@ class LyricsForm extends Component {
     return (
       <div>
         <div>
-          <input value={this.state.inputUrl} onChange={this.handleChange} name="inputUrl" />
-          <button type="submit" onSubmit={() => this.setState({ url: this.state.inputUrl })}>Load</button>
+          <input value={this.state.inputUrl} onChange={this.handleChange} style={{width: '500px'}} name="inputUrl" />
+          <button type="submit" onSubmit={() => this.setUrl()}>Load SoundCloud or Youtube</button>
         </div>
         {soundCloud ?
           <iframe width="100%" height="166" scrolling="no" frameborder="no"
