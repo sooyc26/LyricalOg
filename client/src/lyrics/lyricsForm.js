@@ -108,25 +108,42 @@ class LyricsForm extends Component {
     }
 
     const displayLyrics = this.state.displayLyrics.map((lyric,index) => {
+      if(index===0){
+        return (
+          <div className="card text-white bg-danger mb-3" key={lyric.Id} style={{width: '500px', textAlign: "center" ,border: '5px solid gold', borderRadius: '5px!important' }}>
+          <div class="card-header" style={{ whiteSpace: 'pre-wrap', textAlign: "center", fontSize: '15px' }}>written by:</div>
+
+          <div class="card-body">
+              <ul >{lyric.Lyric}</ul>
+              <div></div>
+              <button id={lyric.Id} onClick={() => this.vote(lyric.Id)} className="btn btn-warning btn-sm">vote Up: {lyric.Votes}</button>
+              <button id={lyric.Id} onClick={() => this.edit(lyric.Id)} type="button" className="btn btn-secondary btn-sm">edit</button>
+              <button id={lyric.Id} onClick={(e) => this.delete(e, lyric.Id)} className="btn btn-secondary btn-sm">delete</button>
+            </div>
+
+        </div>
+        )
+      }
       return (
-        <div key={lyric.Id} style={index===0?{width: '500px', textAlign: "center" ,border: '5px solid gold', borderRadius: '5px!important' }:{width: '500px', textAlign: "center" ,border: '1px solid black', borderRadius: '5px!important' }}>
-          <div style={{ whiteSpace: 'pre-wrap', textAlign: "center", fontSize: '15px' }}>
-            <ul >{lyric.Lyric}</ul>
-            <div></div>
-           <button id={lyric.Id} onClick={() => this.vote(lyric.Id)} className="btn btn-danger">vote Up: {lyric.Votes}</button>
-            <button id={lyric.Id} onClick={() => this.edit(lyric.Id)} type="button" className="btn btn-default">edit</button>
-            <button id={lyric.Id} onClick={(e) => this.delete(e, lyric.Id)} className="btn btn-danger">delete</button>
-          </div>
+        <div className="card text-white bg-primary mb-3" key={lyric.Id} style={{width: '500px', textAlign: "center" ,border: '1px solid black', borderRadius: '5px!important' }}>
+          <div class="card-header" style={{ whiteSpace: 'pre-wrap', textAlign: "center", fontSize: '15px' }}>written by: </div>
+          <div class="card-body">
+              <ul >{lyric.Lyric}</ul>
+              <div></div>
+              <button id={lyric.Id} onClick={() => this.vote(lyric.Id)} className="btn btn-warning btn-sm">vote Up: {lyric.Votes}</button>
+              <button id={lyric.Id} onClick={() => this.edit(lyric.Id)} type="button" className="btn btn-secondary btn-sm">edit</button>
+              <button id={lyric.Id} onClick={(e) => this.delete(e, lyric.Id)} className="btn btn-secondary btn-sm">delete</button>
+            </div>
         </div>
       )
     })
 
     return (
       <div>
-        <div>
           <div style={{fontSize: '20px' }}>Load Soundcloud or Youtube</div>
-          <input value={this.state.inputUrl} onChange={this.handleChange} style={{width: '450px'}} name="inputUrl" />
-          <button onClick={() => this.setUrl()}>Load</button>
+        <div>
+          <input  className="form-control"  value={this.state.inputUrl} onChange={this.handleChange} style={{width: '400px'}} name="inputUrl" />
+          <button className="btn btn-primary btn-sm" onClick={() => this.setUrl()}>Load</button>
         </div>
         {soundCloud ?
           <iframe width="500px" height="166" scrolling="no" frameborder="no"
@@ -138,9 +155,9 @@ class LyricsForm extends Component {
           {displayLyrics}
         </div>
         <p>write your lyrics  </p>
-        <textarea className="App" onChange={this.handleChange} value={this.state.lyrics} name='lyrics' style={{ whiteSpace: 'pre-wrap', width: '500px', height: '100px' }}></textarea>
+        <textarea className="form-control" onChange={this.handleChange} value={this.state.lyrics} name='lyrics' style={{ whiteSpace: 'pre-wrap', width: '500px', height: '100px' }}></textarea>
         <div>
-          <button onClick={this.submit}>{this.state.submitButton}</button>
+          <button className="btn btn-primary btn-sm" onClick={this.submit}>{this.state.submitButton}</button>
         </div>
       </div>
     );
