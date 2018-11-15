@@ -8,6 +8,7 @@ class LyricsForm extends Component {
     this.state = {
       lyrics: '',
       url: 'https://www.youtube.com/watch?v=VzGpRycgrmM',
+      // url: 'https://soundcloud.com/thebandits26/perrier-1',
       inputUrl: '',
       displayLyrics: [],
       soundCloud: true
@@ -108,27 +109,27 @@ class LyricsForm extends Component {
     }
 
     const displayLyrics = this.state.displayLyrics.map((lyric,index) => {
+      //if ranked 1st
       if(index===0){
         return (
           <div className="card text-white bg-danger mb-3" key={lyric.Id} style={{width: '500px', textAlign: "center" ,border: '5px solid gold', borderRadius: '5px!important' }}>
           <div class="card-header" style={{ whiteSpace: 'pre-wrap', textAlign: "center", fontSize: '15px' }}>written by:</div>
 
           <div class="card-body">
-              <ul >{lyric.Lyric}</ul>
+              <ul className='card-text' >{lyric.Lyric}</ul>
               <div></div>
               <button id={lyric.Id} onClick={() => this.vote(lyric.Id)} className="btn btn-warning btn-sm">vote Up: {lyric.Votes}</button>
               <button id={lyric.Id} onClick={() => this.edit(lyric.Id)} type="button" className="btn btn-secondary btn-sm">edit</button>
               <button id={lyric.Id} onClick={(e) => this.delete(e, lyric.Id)} className="btn btn-secondary btn-sm">delete</button>
             </div>
-
         </div>
         )
       }
       return (
-        <div className="card text-white bg-primary mb-3" key={lyric.Id} style={{width: '500px', textAlign: "center" ,border: '1px solid black', borderRadius: '5px!important' }}>
-          <div class="card-header" style={{ whiteSpace: 'pre-wrap', textAlign: "center", fontSize: '15px' }}>written by: </div>
+        <div className="card text-grey border-primary mb-3" key={lyric.Id} style={{width: '500px', textAlign: "center" ,border: '1px solid black', borderRadius: '5px!important' }}>
+          <div class="card-header text-muted" style={{ whiteSpace: 'pre-wrap', textAlign: "center", fontSize: '15px' }}>written by: </div>
           <div class="card-body">
-              <ul >{lyric.Lyric}</ul>
+              <ul className='text-muted' >{lyric.Lyric}</ul>
               <div></div>
               <button id={lyric.Id} onClick={() => this.vote(lyric.Id)} className="btn btn-warning btn-sm">vote Up: {lyric.Votes}</button>
               <button id={lyric.Id} onClick={() => this.edit(lyric.Id)} type="button" className="btn btn-secondary btn-sm">edit</button>
@@ -139,27 +140,33 @@ class LyricsForm extends Component {
     })
 
     return (
-      <div>
-          <div style={{fontSize: '20px' }}>Load Soundcloud or Youtube</div>
-        <div>
-          <input  className="form-control"  value={this.state.inputUrl} onChange={this.handleChange} style={{width: '400px'}} name="inputUrl" />
-          <button className="btn btn-primary btn-sm" onClick={() => this.setUrl()}>Load</button>
+      <React.Fragment>
+        <div className="row">
+          <div className="col-3 offset-1">
+            <div style={{ fontSize: '20px' }}>write your lyrics  </div>
+            <textarea className="form-control" onChange={this.handleChange} value={this.state.lyrics} name='lyrics' style={{ whiteSpace: 'pre-wrap', textAlign:'center', width: '500px', height: '450px' }}></textarea>
+            <div>
+              <button className="btn btn-primary btn-sm" onClick={this.submit}>{this.state.submitButton}</button>
+            </div>
+          </div>
+          <div className="col-3 offset-2">
+            <div style={{ fontSize: '20px' }}>Load Soundcloud or Youtube</div>
+            <div>
+              <input className="form-control" value={this.state.inputUrl} onChange={this.handleChange} style={{ width: '400px' }} name="inputUrl" />
+              <button className="btn btn-primary btn-sm" onClick={() => this.setUrl()}>Load</button>
+            </div>
+            {soundCloud ?
+              <iframe width="500px" height="166" scrolling="no" frameborder="no"
+                src={"https://w.soundcloud.com/player/?url=" + this.state.url + "&amp;{ ADD YOUR PARAMETERS HERE }"}>
+              </iframe>
+              : <iframe width="500px" height="166" src={"https://www.youtube.com/embed/" + youtube}
+                frameBorder="0" allow="autoplay; encrypted-media" allowFullScreen></iframe>}
+            <div>
+              {displayLyrics}
+            </div>
+          </div>
         </div>
-        {soundCloud ?
-          <iframe width="500px" height="166" scrolling="no" frameborder="no"
-            src={"https://w.soundcloud.com/player/?url=" + this.state.url + "&amp;{ ADD YOUR PARAMETERS HERE }"}>
-          </iframe>
-          : <iframe width="500px" height="166" src={"https://www.youtube.com/embed/" + youtube}
-            frameBorder="0" allow="autoplay; encrypted-media" allowFullScreen></iframe>}
-        <div>
-          {displayLyrics}
-        </div>
-        <p>write your lyrics  </p>
-        <textarea className="form-control" onChange={this.handleChange} value={this.state.lyrics} name='lyrics' style={{ whiteSpace: 'pre-wrap', width: '500px', height: '100px' }}></textarea>
-        <div>
-          <button className="btn btn-primary btn-sm" onClick={this.submit}>{this.state.submitButton}</button>
-        </div>
-      </div>
+      </React.Fragment>
     );
   }
 }

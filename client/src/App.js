@@ -8,14 +8,14 @@ class App extends Component {
   render() {
     return (
       <div>
-      {/* <Header></Header> */}
-      <div className="Mint">
-        <header className="App-header">
-          <h1>Lyrical OG</h1>
+        {/* <Header></Header> */}
+        <div className="Mint">
+          <header className="App-header">
+            <h1>Lyrical OG</h1>
+            {/* <LyricsList/> */}
+          </header>
           <LyricsForm />
-          {/* <LyricsList/> */}
-        </header>
-      </div>
+        </div>
       </div>
     );
   }
