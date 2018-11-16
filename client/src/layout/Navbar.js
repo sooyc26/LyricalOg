@@ -5,9 +5,9 @@ export default class Navbar extends React.Component{
     render(){
         return(
             <React.Fragment>
-                <div class="navbar navbar-expand-lg fixed-top navbar-dark bg-primary">
+                <div class="navbar navbar-expand-lg fixed-top navbar-light bg-light">
       <div class="container">
-        <a href="../" class="navbar-brand">Bootswatch</a>
+        <a href="../" class="navbar-brand">LYRICAL OG</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
@@ -15,7 +15,7 @@ export default class Navbar extends React.Component{
           <ul class="navbar-nav">
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" id="themes">Themes <span class="caret"></span></a>
-              <div class="dropdown-menu" aria-labelledby="themes">
+              {/* <div class="dropdown-menu" aria-labelledby="themes">
                 <a class="dropdown-item" href="../default/">Default</a>
                 <div class="dropdown-divider"></div>
                 <a class="dropdown-item" href="../cerulean/">Cerulean</a>
@@ -39,34 +39,16 @@ export default class Navbar extends React.Component{
                 <a class="dropdown-item" href="../superhero/">Superhero</a>
                 <a class="dropdown-item" href="../united/">United</a>
                 <a class="dropdown-item" href="../yeti/">Yeti</a>
-              </div>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="../help/">Help</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="http://blog.bootswatch.com">Blog</a>
-            </li>
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" id="download">Minty <span class="caret"></span></a>
-              <div class="dropdown-menu" aria-labelledby="download">
-                <a class="dropdown-item" href="https://jsfiddle.net/bootswatch/3bojykn2/">Open in JSFiddle</a>
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="../4/minty/bootstrap.min.css">bootstrap.min.css</a>
-                <a class="dropdown-item" href="../4/minty/bootstrap.css">bootstrap.css</a>
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="../4/minty/_variables.scss">_variables.scss</a>
-                <a class="dropdown-item" href="../4/minty/_bootswatch.scss">_bootswatch.scss</a>
-              </div>
+              </div> */}
             </li>
           </ul>
 
           <ul class="nav navbar-nav ml-auto">
             <li class="nav-item">
-              <a class="nav-link" href="http://builtwithbootstrap.com/" target="_blank">Built With Bootstrap</a>
+              <a class="nav-link" href="https://bootswatch.com/minty/" target="_blank">Built With Bootstrap</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="https://wrapbootstrap.com/?ref=bsw" target="_blank">WrapBootstrap</a>
+              <a class="nav-link" href="https://bootswatch.com/minty/" target="_blank">WrapBootstrap</a>
             </li>
           </ul>
 
