@@ -115,20 +115,21 @@ class LyricsForm extends Component {
       if(index===0){
         return (
           <div>
+            <p></p>
             <div style={{ textAlign: 'center' }}>
-            <div className="badge badge-danger" style={{ textAlign: 'center',fontSize:'20px' }}>
-            <span class="glyphicon glyphicon-flash" style={{ color: "wite" }}></span>
-            Highest Vote<span class="glyphicon glyphicon-flash" style={{ color: "wite" }}></span></div>
+            <div className="text-white" style={{ textAlign: 'center',fontSize:'20px' }}>
+            <span class="glyphicon glyphicon-flash" style={{ color: "yellow" }}></span>
+            Highest Vote<span class="glyphicon glyphicon-flash" style={{ color: "yellow" }}></span></div>
             </div>
-            <div className="card text-white bg-danger mb-3" key={lyric.Id} style={{width: '500px', textAlign: "center" }}>
-          <div class="card-header" style={{ whiteSpace: 'pre-wrap', textAlign: "center", fontSize: '15px' }}>written by:</div>
+            <div className="card text-white bg-primary mb-3" key={lyric.Id} style={{width: '500px', textAlign: "center" }}>
+          <div class="card-header" style={{ whiteSpace: 'pre-wrap', textAlign: "center", fontSize: '18px' }}>written by:</div>
 
           <div class="card-body">
-              <ul className='text-white' style={{ whiteSpace: 'pre-wrap', textAlign: "center", fontSize: '15px' }}>{lyric.Lyric}</ul>
+              <ul className='text-white' style={{ whiteSpace: 'pre-wrap', textAlign: "center", fontSize: '18px' }}>{lyric.Lyric}</ul>
               <div></div>
-              <button id={lyric.Id} onClick={() => this.vote(lyric.Id)} className="btn btn-warning btn-sm">vote Up: {lyric.Votes}</button>
-              <button id={lyric.Id} onClick={() => this.edit(lyric.Id)} type="button" className="btn btn-secondary btn-sm">edit</button>
-              <button id={lyric.Id} onClick={(e) => this.delete(e, lyric.Id)} className="btn btn-secondary btn-sm">delete</button>
+              <button id={lyric.Id} onClick={() => this.vote(lyric.Id)} className="btn btn-warning">vote Up: {lyric.Votes}</button>
+              <button id={lyric.Id} onClick={() => this.edit(lyric.Id)} type="button" className="btn btn-secondary ">edit</button>
+              <button id={lyric.Id} onClick={(e) => this.delete(e, lyric.Id)} className="btn btn-secondary">delete</button>
             </div>
         </div>
         </div>
@@ -140,9 +141,9 @@ class LyricsForm extends Component {
           <div class="card-body">
               <ul className='text-muted' style={{ whiteSpace: 'pre-wrap', textAlign: "center", fontSize: '15px' }} >{lyric.Lyric}</ul>
               <div></div>
-              <button id={lyric.Id} onClick={() => this.vote(lyric.Id)} className="btn btn-outline-warning btn-sm">vote Up: {lyric.Votes}</button>
-              <button id={lyric.Id} onClick={() => this.edit(lyric.Id)} type="button" className="btn btn-outline-secondary btn-sm">edit</button>
-              <button id={lyric.Id} onClick={(e) => this.delete(e, lyric.Id)} className="btn btn-outline-danger btn-sm">delete</button>
+              <button id={lyric.Id} onClick={() => this.vote(lyric.Id)} className="btn btn-outline-warning">vote Up: {lyric.Votes}</button>
+              <button id={lyric.Id} onClick={() => this.edit(lyric.Id)} type="button" className="btn btn-outline-secondary ">edit</button>
+              <button id={lyric.Id} onClick={(e) => this.delete(e, lyric.Id)} className="btn btn-outline-danger">delete</button>
             </div>
         </div>
       )
@@ -151,15 +152,18 @@ class LyricsForm extends Component {
     return (
       <React.Fragment>
         <div className="row" >
-          <div className="col-3 offset-1">
-            <div className='text-success' style={{ fontSize: '20px' }}>write your lyrics  </div>
-            <textarea className="form-control" onChange={this.handleChange} value={this.state.lyrics} name='lyrics' style={{ whiteSpace: 'pre-wrap', textAlign:'center', width: '500px', height: '450px' }}></textarea>
+          <div className="col-3 offset-1" >
+            <div className='text-white' style={{textAlign:'center', fontSize: '20px' }}>write your lyrics  </div>
+            <textarea className="form-control" onChange={this.handleChange} value={this.state.lyrics} name='lyrics' 
+            style={{backgroundColor:'rgba(242,242,242,0.5)',borderColor: 'rgba(0, 0, 0, 0)', whiteSpace: 'pre-wrap', 
+            textAlign:'center', width: '500px', height: '450px',
+            fontSize:'15px' }}></textarea>
             <div>
-              <button className="btn btn-primary" onClick={this.submit}>{this.state.submitButton}</button>
+              <button className="btn btn-primary btn-lg" onClick={this.submit}>{this.state.submitButton}</button>
             </div>
           </div>
           <div className="col-4 offset-2" style={{textAlign:'center'}}>
-            <div className='text-white badge badge-primary' style={{ textAlign:'center', fontSize: '20px' }}>Load Soundcloud or Youtube</div>
+            <div className='text-white ' style={{ textAlign:'center', fontSize: '20px' }}>Load Soundcloud or Youtube</div>
             <div className='input-group' >
               <input className="form-control" value={this.state.inputUrl} onChange={this.handleChange} style={{ width: '400px' }} name="inputUrl" />
               <div className='input-group-append'>
