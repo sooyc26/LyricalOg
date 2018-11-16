@@ -3,9 +3,13 @@ import './App.css';
 import LyricsForm from './lyrics/lyricsForm'
 import Header from './layout/Header';
 import LyricsList from './lyrics/lyricsList';
+import Background from './cloudLightning.png';
 
 class App extends Component {
   render() {
+
+
+
     return (
       <div>
         {/* <Header></Header> */}
@@ -14,7 +18,9 @@ class App extends Component {
             <h1>Lyrical OG</h1>
             {/* <LyricsList/> */}
           </header>
-          <LyricsForm />
+          <div >
+            <LyricsForm />
+          </div>
         </div>
       </div>
     );
