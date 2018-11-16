@@ -12,11 +12,9 @@ class App extends Component {
 
     return (
       <div>
-        {/* <Header></Header> */}
         <div className="Mint">
           <header className="App-header">
             <h1>Lyrical OG</h1>
-            {/* <LyricsList/> */}
           </header>
           <div >
             <LyricsForm />
