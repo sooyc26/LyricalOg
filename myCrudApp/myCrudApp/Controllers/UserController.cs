@@ -11,18 +11,19 @@ using System.Web.Http.Cors;
 
 namespace myCrudApp.Controllers
 {
-    public class Users
+    public class UserController
     {
         [AllowAnonymous]
         [RoutePrefix("api")]
         [EnableCors(origins: "*", headers: "*", methods: "*")]
-        public class LyricsController : ApiController
+        public class UserController : ApiController
         {
             UserService _userService;
+        }
 
             HttpRequestMessage req = new HttpRequestMessage();
             HttpConfiguration configuration = new HttpConfiguration();
-            public LyricsController()
+            public UserController()
             {
                 _userService = new UserService();
                 req.Properties[System.Web.Http.Hosting.HttpPropertyKeys.HttpConfigurationKey] = configuration;
