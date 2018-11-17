@@ -10,20 +10,20 @@ class LyricsForm extends Component {
     this.state = {
       lyrics: '',
       url: 'https://www.youtube.com/watch?v=8EfITcCqauc',
-     // url: 'https://soundcloud.com/thebandits26/perrier-1',
+      // url: 'https://soundcloud.com/thebandits26/perrier-1',
       inputUrl: '',
       displayLyrics: [],
       soundCloud: true
 
       , submitButton: 'submit'
       , editMode: false
-      ,editId:''
+      , editId: ''
 
     }
     this.handleChange = this.handleChange.bind(this)
     this.submit = this.submit.bind(this)
     this.getAll = this.getAll.bind(this)
-    this.setUrl=this.setUrl.bind(this)
+    this.setUrl = this.setUrl.bind(this)
 
     this.edit = this.edit.bind(this)
     this.vote = this.vote.bind(this)
@@ -85,18 +85,18 @@ class LyricsForm extends Component {
         this.setState({
           lyrics: response.Lyric,
           editMode: true,
-          editId:id,
-          submitButton:'edit'
+          editId: id,
+          submitButton: 'edit'
         })
       })
   }
 
   vote(id) {
     lyricService.vote(id)
-    .then(()=>this.getAll())
+      .then(() => this.getAll())
   }
 
-  setUrl(){
+  setUrl() {
     this.setState({ url: this.state.inputUrl })
   }
 
@@ -110,42 +110,43 @@ class LyricsForm extends Component {
       soundCloud = false;
     }
 
-    const displayLyrics = this.state.displayLyrics.map((lyric,index) => {
+    const displayLyrics = this.state.displayLyrics.map((lyric, index) => {
       //if ranked 1st
-      if(index===0){
+      if (index === 0) {
         return (
           <div>
             <p></p>
             {/* TOP RATED */}
             <div style={{ textAlign: 'center' }}>
-            <div className="text-white" style={{ textAlign: 'center',fontSize:'20px' }}>
-            <span class="glyphicon glyphicon-flash" style={{ color: "yellow" }}></span>
-            Highest Vote<span class="glyphicon glyphicon-flash" style={{ color: "yellow" }}></span></div>
+              <label className="text-white" style={{ textAlign: 'center', fontSize: '20px' }}>
+                <span class="glyphicon glyphicon-flash" style={{ color: "yellow" }}></span>
+                Highest Vote<span class="glyphicon glyphicon-flash" style={{ color: "yellow" }}></span>
+              </label>
             </div>
-            <div className="card text-white bg-primary mb-3" key={lyric.Id} style={{opacity: 0.95,width: '500px', textAlign: "center" }}>
-          <div class="card-header" style={{ whiteSpace: 'pre-wrap', textAlign: "center", fontSize: '18px' }}>written by:</div>
+            <div className="card text-white bg-primary mb-3" key={lyric.Id} style={{ opacity: 0.95, width: '500px', textAlign: "center" }}>
+              <div class="card-header" style={{ whiteSpace: 'pre-wrap', textAlign: "center", fontSize: '18px' }}>{lyric.Votes} Votes written by:</div>
 
-          <div class="card-body">
-              <ul className='text-white' style={{ whiteSpace: 'pre-wrap', textAlign: "center", fontSize: '18px' }}>{lyric.Lyric}</ul>
-              <div></div>
-              <button id={lyric.Id} onClick={() => this.vote(lyric.Id)} className="btn btn-warning">vote Up: {lyric.Votes}</button>
-              <button id={lyric.Id} onClick={() => this.edit(lyric.Id)} type="button" className="btn btn-secondary ">edit</button>
-              <button id={lyric.Id} onClick={(e) => this.delete(e, lyric.Id)} className="btn btn-secondary">delete</button>
+              <div class="card-body">
+                <ul className='text-white' style={{ whiteSpace: 'pre-wrap', textAlign: "center", fontSize: '18px' }}>{lyric.Lyric}</ul>
+                <div></div>
+                <button id={lyric.Id} onClick={() => this.vote(lyric.Id)} className="btn btn-warning">vote Up: {lyric.Votes}</button>
+                <button id={lyric.Id} onClick={() => this.edit(lyric.Id)} type="button" className="btn btn-secondary ">edit</button>
+                <button id={lyric.Id} onClick={(e) => this.delete(e, lyric.Id)} className="btn btn-secondary">delete</button>
+              </div>
             </div>
-        </div>
-        </div>
+          </div>
         )
       }
       return (
-        <div className="card border-light mb-3" key={lyric.Id} style={{opacity: 0.95, width: '500px', textAlign: "center" ,border: '1px solid black', borderRadius: '5px!important' }}>
-          <div class="card-header text-muted" style={{ whiteSpace: 'pre-wrap', textAlign: "center", fontSize: '15px' }}>written by: </div>
+        <div className="card border-light mb-3" key={lyric.Id} style={{ opacity: 0.95, width: '500px', textAlign: "center", border: '1px solid black', borderRadius: '5px!important' }}>
+          <div class="card-header text-muted" style={{ whiteSpace: 'pre-wrap', textAlign: "center", fontSize: '15px' }}>{lyric.Votes} Votes written by: </div>
           <div class="card-body">
-              <ul className='text-muted' style={{ whiteSpace: 'pre-wrap', textAlign: "center", fontSize: '15px' }} >{lyric.Lyric}</ul>
-              <div></div>
-              <button id={lyric.Id} onClick={() => this.vote(lyric.Id)} className="btn btn-outline-warning">vote Up: {lyric.Votes}</button>
-              <button id={lyric.Id} onClick={() => this.edit(lyric.Id)} type="button" className="btn btn-outline-secondary ">edit</button>
-              <button id={lyric.Id} onClick={(e) => this.delete(e, lyric.Id)} className="btn btn-outline-danger">delete</button>
-            </div>
+            <ul className='text-muted' style={{ whiteSpace: 'pre-wrap', textAlign: "center", fontSize: '15px' }} >{lyric.Lyric}</ul>
+            <div></div>
+            <button id={lyric.Id} onClick={() => this.vote(lyric.Id)} className="btn btn-outline-warning">vote Up: {lyric.Votes}</button>
+            <button id={lyric.Id} onClick={() => this.edit(lyric.Id)} type="button" className="btn btn-outline-secondary ">edit</button>
+            <button id={lyric.Id} onClick={(e) => this.delete(e, lyric.Id)} className="btn btn-outline-danger">delete</button>
+          </div>
         </div>
       )
     })
@@ -155,16 +156,16 @@ class LyricsForm extends Component {
         <h1 style={{ textAlign: 'center', fontSize: '60px', color: 'white' }}>LYRICAL OG</h1>
         <div className="row" >
           <div className="col-4 offset-1" >
-        <p></p>
+            <p></p>
 
-          <div className='text-white ' style={{ textAlign: 'center', fontSize: '20px' }}>Load Soundcloud or Youtube</div>
+            <label className='text-white ' style={{ textAlign: 'center', fontSize: '20px' }}>Load Soundcloud or Youtube</label>
             <div className='input-group' >
-              <input className="form-control" value={this.state.inputUrl} onChange={this.handleChange} style={{ opacity: 0.6,width: '90%' }} name="inputUrl" />
+              <input className="form-control" value={this.state.inputUrl} onChange={this.handleChange} style={{ opacity: 0.6, width: '90%' }} name="inputUrl" />
               <div className='input-group-append'>
                 <button className="btn btn-primary" onClick={() => this.setUrl()}>Load</button>
               </div>
             </div>
-            
+
             {soundCloud ?
               <iframe width="500px" height="166" scrolling="no" frameborder="no"
                 src={"https://w.soundcloud.com/player/?url=" + this.state.url + "&amp;{ ADD YOUR PARAMETERS HERE }"}>
@@ -172,16 +173,16 @@ class LyricsForm extends Component {
               : <iframe width="500px" height="166" src={"https://www.youtube.com/embed/" + youtube}
                 frameBorder="0" allow="autoplay; encrypted-media" allowFullScreen>
               </iframe>}
-          {/* LYRICS TEXT AREA */}
+            {/* LYRICS TEXT AREA */}
 
-            <div className='text-white' style={{ textAlign: 'center', fontSize: '20px' }}>write your lyrics  </div>
+            <label className='text-white' style={{ textAlign: 'center', fontSize: '20px' }}>write your lyrics  </label>
             <textarea className="form-control" onChange={this.handleChange} value={this.state.lyrics} name='lyrics'
               style={{
                 backgroundColor: 'rgba(242,242,242,0.5)', borderColor: 'rgba(0, 0, 0, 0)', whiteSpace: 'pre-wrap',
                 textAlign: 'center', width: '500px', height: '450px',
                 fontSize: '15px'
               }}>
-              </textarea>
+            </textarea>
             <div>
               <button className="btn btn-primary btn-lg" onClick={this.submit}>{this.state.submitButton}</button>
             </div>
