@@ -28,7 +28,7 @@ namespace myCrudApp.Controllers
             req.Properties[System.Web.Http.Hosting.HttpPropertyKeys.HttpConfigurationKey] = configuration;
         }
 
-        [HttpPost, Route("lyrics")]
+        [HttpPost, Route("users")]
         public HttpResponseMessage Create(UsersCreateRequest request)
         {
             if (request == null)
@@ -40,35 +40,28 @@ namespace myCrudApp.Controllers
             return req.CreateResponse(HttpStatusCode.OK, id);
         }
 
-        [HttpGet, Route("lyrics")]
+        [HttpGet, Route("users")]
         public HttpResponseMessage ReadAll()
         {
             var lyrics = _userService.ReadAll();
             return req.CreateResponse(HttpStatusCode.OK, lyrics);
         }
 
-        [HttpGet, Route("lyrics/{id:int}")]
+        [HttpGet, Route("users/{id:int}")]
         public HttpResponseMessage ReadById(int id)
         {
             var lyric = _userService.ReadById(id);
             return req.CreateResponse(HttpStatusCode.OK, lyric);
         }
 
-        [HttpPut, Route("lyrics/{id:int}")]
+        [HttpPut, Route("users/{id:int}")]
         public HttpResponseMessage UpdateById(UsersUpdateRequest request, int id)
         {
-            var retId = _userService.UpdateLyrics(request, id);
+            var retId = _userService.UpdateUser(request, id);
             return Request.CreateResponse(HttpStatusCode.OK, retId);
         }
 
-        [HttpGet, Route("lyrics/vote/{id:int}")]
-        public HttpResponseMessage UpdateVotes(int id)
-        {
-            var retId = _userService.UpdateVotes(id);
-            return Request.CreateResponse(HttpStatusCode.OK, retId);
-        }
-
-        [HttpDelete, Route("lyrics/{id:int}")]
+        [HttpDelete, Route("users/{id:int}")]
         public HttpResponseMessage Delete(int id)
         {
             var retId = _userService.Delete(id);

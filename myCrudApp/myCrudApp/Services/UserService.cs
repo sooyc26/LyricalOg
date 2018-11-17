@@ -21,14 +21,16 @@ namespace myCrudApp.Services
                 conn.Open();
 
                 SqlCommand cmd = conn.CreateCommand();
-                cmd.CommandText = "Lyrics_Insert";
+                cmd.CommandText = "Users_Insert";
                 cmd.CommandType = System.Data.CommandType.StoredProcedure;
 
-                cmd.Parameters.AddWithValue("@Lyrics", request.Lyrics);
-                cmd.Parameters.AddWithValue("@Votes", 0);
+                cmd.Parameters.AddWithValue("@TypeId", request.TypeId);
+                cmd.Parameters.AddWithValue("@FirstName", request.FirstName);
+                cmd.Parameters.AddWithValue("@LastName", request.LastName);
+                cmd.Parameters.AddWithValue("@Email", request.Email);
+                cmd.Parameters.AddWithValue("@Paswword", request.Paswword);
+                cmd.Parameters.AddWithValue("@Confirmed", request.Confirmed);
                 cmd.Parameters.AddWithValue("@Id", SqlDbType.Int).Direction = ParameterDirection.Output;
-
-                //cmd.ExecuteNonQuery();
 
                 using (SqlDataReader reader = cmd.ExecuteReader())
                 {
@@ -53,7 +55,7 @@ namespace myCrudApp.Services
                 conn.Open();
 
                 SqlCommand cmd = conn.CreateCommand();
-                cmd.CommandText = "Lyrics_SelectAll";
+                cmd.CommandText = "Users_Select_All";
                 cmd.CommandType = System.Data.CommandType.StoredProcedure;
 
                 using (SqlDataReader reader = cmd.ExecuteReader())
@@ -63,8 +65,14 @@ namespace myCrudApp.Services
                         var User = new User()
                         {
                             Id = (int)reader["Id"],
-                            Lyric = (string)reader["Lyrics"],
-                            Votes = (int)reader["Votes"]
+                            TypeId = (int)reader["TypeId"],
+                            FirstName = (string)reader["FirstName"],
+                            LastName = (string)reader["LastName"],
+                            Email = (string)reader["Email"],
+                            Password = (string)reader["Password"],
+                            Confirmed = (bool)reader["Confirmed"],
+                            DateCreated = (DateTime)reader["DateCreated"],
+                            DateModified = (DateTime)reader["DateModified"]
                         };
                         Users.Add(User);
                     }
@@ -94,8 +102,14 @@ namespace myCrudApp.Services
                         var User = new User()
                         {
                             Id = (int)reader["Id"],
-                            Lyric = (string)reader["Lyrics"],
-                            Votes = (int)reader["Votes"]
+                            TypeId = (int)reader["TypeId"],
+                            FirstName = (string)reader["FirstName"],
+                            LastName = (string)reader["LastName"],
+                            Email = (string)reader["Email"],
+                            Password = (string)reader["Password"],
+                            Confirmed = (bool)reader["Confirmed"],
+                            DateCreated = (DateTime)reader["DateCreated"],
+                            DateModified = (DateTime)reader["DateModified"]
                         };
                         Users = User;
                     }
@@ -105,7 +119,7 @@ namespace myCrudApp.Services
             return Users;
         }
 
-        public int UpdateLyrics(UsersUpdateRequest request, int id)
+        public int UpdateUser(UsersUpdateRequest request, int id)
         {
             int retId = 0;
             using (SqlConnection conn = new SqlConnection(connString))
@@ -113,36 +127,16 @@ namespace myCrudApp.Services
                 conn.Open();
 
                 SqlCommand cmd = conn.CreateCommand();
-                cmd.CommandText = "Lyrics_Update";
+                cmd.CommandText = "Users_Update";
                 cmd.CommandType = System.Data.CommandType.StoredProcedure;
 
                 cmd.Parameters.AddWithValue("@Id", id);
-                cmd.Parameters.AddWithValue("@Lyrics", request.Lyrics);
-
-                using (SqlDataReader reader = cmd.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        retId = (int)reader["Id"];
-                    }
-                }
-                conn.Close();
-            }
-            return retId;
-        }
-
-        public int UpdateVotes(int id)
-        {
-            int retId = 0;
-            using (SqlConnection conn = new SqlConnection(connString))
-            {
-                conn.Open();
-
-                SqlCommand cmd = conn.CreateCommand();
-                cmd.CommandText = "Lyrics_Update_Votes";
-                cmd.CommandType = System.Data.CommandType.StoredProcedure;
-
-                cmd.Parameters.AddWithValue("@Id", id);
+                cmd.Parameters.AddWithValue("@TypeId", request.TypeId);
+                cmd.Parameters.AddWithValue("@FirstName", request.FirstName);
+                cmd.Parameters.AddWithValue("@LastName", request.LastName);
+                cmd.Parameters.AddWithValue("@Email", request.Email);
+                cmd.Parameters.AddWithValue("@Paswword", request.Paswword);
+                cmd.Parameters.AddWithValue("@Confirmed", request.Confirmed);
 
                 using (SqlDataReader reader = cmd.ExecuteReader())
                 {
@@ -163,7 +157,7 @@ namespace myCrudApp.Services
                 conn.Open();
 
                 SqlCommand cmd = conn.CreateCommand();
-                cmd.CommandText = "Lyrics_Delete";
+                cmd.CommandText = "Users_Delete";
                 cmd.CommandType = System.Data.CommandType.StoredProcedure;
 
                 cmd.Parameters.AddWithValue("@Id", id);

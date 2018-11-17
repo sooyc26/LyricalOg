@@ -16,7 +16,7 @@ class App extends Component {
         <div className="Mint">
           <Navbar/>
           <header className="App-header">
-            <h1>Lyrical OG</h1>
+            <h1>Lyrical OG Bitch!!</h1>
             <Login/>
           </header>
           <div >
