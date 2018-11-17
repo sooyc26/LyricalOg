@@ -11,70 +11,69 @@ using System.Web.Http.Cors;
 
 namespace myCrudApp.Controllers
 {
-    public class UserController
+
+    [AllowAnonymous]
+    [RoutePrefix("api")]
+    [EnableCors(origins: "*", headers: "*", methods: "*")]
+    public class UserController : ApiController
     {
-        [AllowAnonymous]
-        [RoutePrefix("api")]
-        [EnableCors(origins: "*", headers: "*", methods: "*")]
-        public class UserController : ApiController
+        readonly UserService _userService;
+
+        HttpRequestMessage req = new HttpRequestMessage();
+        HttpConfiguration configuration = new HttpConfiguration();
+
+        public UserController()
         {
-            UserService _userService;
+            _userService = new UserService();
+            req.Properties[System.Web.Http.Hosting.HttpPropertyKeys.HttpConfigurationKey] = configuration;
         }
 
-            HttpRequestMessage req = new HttpRequestMessage();
-            HttpConfiguration configuration = new HttpConfiguration();
-            public UserController()
+        [HttpPost, Route("lyrics")]
+        public HttpResponseMessage Create(UsersCreateRequest request)
+        {
+            if (request == null)
             {
-                _userService = new UserService();
-                req.Properties[System.Web.Http.Hosting.HttpPropertyKeys.HttpConfigurationKey] = configuration;
+                return this.Request.CreateResponse(HttpStatusCode.BadRequest, "please enter valid input");
             }
+            int id = _userService.Create(request);
 
-            [HttpPost, Route("lyrics")]
-            public HttpResponseMessage Create(UsersCreateRequest request)
-            {
-                if (request == null)
-                {
-                    return this.Request.CreateResponse(HttpStatusCode.BadRequest, "please enter valid input");
-                }
-                int id = _userService.Create(request);
-
-                return req.CreateResponse(HttpStatusCode.OK, id);
-            }
-
-            [HttpGet, Route("lyrics")]
-            public HttpResponseMessage ReadAll()
-            {
-                var lyrics = _userService.ReadAll();
-                return req.CreateResponse(HttpStatusCode.OK, lyrics);
-            }
-
-            [HttpGet, Route("lyrics/{id:int}")]
-            public HttpResponseMessage ReadById(int id)
-            {
-                var lyric = _userService.ReadById(id);
-                return req.CreateResponse(HttpStatusCode.OK, lyric);
-            }
-
-            [HttpPut, Route("lyrics/{id:int}")]
-            public HttpResponseMessage UpdateById(UsersUpdateRequest request, int id)
-            {
-                var retId = _userService.UpdateLyrics(request, id);
-                return Request.CreateResponse(HttpStatusCode.OK, retId);
-            }
-
-            [HttpGet, Route("lyrics/vote/{id:int}")]
-            public HttpResponseMessage UpdateVotes(int id)
-            {
-                var retId = _userService.UpdateVotes(id);
-                return Request.CreateResponse(HttpStatusCode.OK, retId);
-            }
-
-            [HttpDelete, Route("lyrics/{id:int}")]
-            public HttpResponseMessage Delete(int id)
-            {
-                var retId = _userService.Delete(id);
-                var message = "deleted Id: " + retId;
-                return Request.CreateResponse(HttpStatusCode.OK, message);
-            }
+            return req.CreateResponse(HttpStatusCode.OK, id);
         }
+
+        [HttpGet, Route("lyrics")]
+        public HttpResponseMessage ReadAll()
+        {
+            var lyrics = _userService.ReadAll();
+            return req.CreateResponse(HttpStatusCode.OK, lyrics);
+        }
+
+        [HttpGet, Route("lyrics/{id:int}")]
+        public HttpResponseMessage ReadById(int id)
+        {
+            var lyric = _userService.ReadById(id);
+            return req.CreateResponse(HttpStatusCode.OK, lyric);
+        }
+
+        [HttpPut, Route("lyrics/{id:int}")]
+        public HttpResponseMessage UpdateById(UsersUpdateRequest request, int id)
+        {
+            var retId = _userService.UpdateLyrics(request, id);
+            return Request.CreateResponse(HttpStatusCode.OK, retId);
+        }
+
+        [HttpGet, Route("lyrics/vote/{id:int}")]
+        public HttpResponseMessage UpdateVotes(int id)
+        {
+            var retId = _userService.UpdateVotes(id);
+            return Request.CreateResponse(HttpStatusCode.OK, retId);
+        }
+
+        [HttpDelete, Route("lyrics/{id:int}")]
+        public HttpResponseMessage Delete(int id)
+        {
+            var retId = _userService.Delete(id);
+            var message = "deleted Id: " + retId;
+            return Request.CreateResponse(HttpStatusCode.OK, message);
+        }
+    }
 }

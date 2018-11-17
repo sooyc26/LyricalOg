@@ -17,12 +17,10 @@ class App extends Component {
           <Navbar/>
           <header className="App-header">
             <h1>Lyrical OG</h1>
-            <Login />
-
+            <Login/>
           </header>
-
           <div >
-            <LyricsForm />
+            <LyricsForm/>
           </div>
         </div>
       </div>
