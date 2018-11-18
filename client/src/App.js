@@ -7,19 +7,26 @@ import Navbar from './layout/Navbar';
 import Login from './login/Login';
 
 class App extends Component {
+  constructor(props){
+    super(props)
+
+  }
+
+  componentDidMount(){
+
+  }
   render() {
-
-
 
     return (
       <div>
         <div className="Mint">
           <Navbar/>
           <header className="App-header">
-            <h1>Lyrical OG Bitch!!</h1>
+            <h1>Lyrical OG</h1>
             <Login/>
           </header>
           <div >
+            {}
             <LyricsForm/>
           </div>
         </div>
