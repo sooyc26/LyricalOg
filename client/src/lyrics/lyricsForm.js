@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import * as lyricService from '../services/lyricService'
-// import Background from '../../public/images/cloudLightning.png';
+import { ReactMic, AudioPlayer } from 'react-mic';
 
 class LyricsForm extends Component {
 
@@ -19,6 +19,9 @@ class LyricsForm extends Component {
       , editMode: false
       , editId: ''
 
+      , record: false
+      , blobObject: ''
+
     }
     this.handleChange = this.handleChange.bind(this)
     this.submit = this.submit.bind(this)
@@ -28,6 +31,10 @@ class LyricsForm extends Component {
     this.edit = this.edit.bind(this)
     this.vote = this.vote.bind(this)
     this.delete = this.delete.bind(this);
+
+    this.startRecording = this.startRecording.bind(this)
+    this.stopRecording = this.stopRecording.bind(this)
+
   }
 
   componentDidMount() {
@@ -100,6 +107,33 @@ class LyricsForm extends Component {
     this.setState({ url: this.state.inputUrl })
   }
 
+  startRecording = () => {
+    this.setState({
+      record: true
+    });
+  }
+
+  ////recording functions /////
+  stopRecording = () => {
+    this.setState({
+      record: false
+    });
+  }
+
+  onData(recordedBlob) {
+    console.log('chunk of real-time data is: ', recordedBlob);
+  }
+
+  onStop = (recordedBlob) => {
+    console.log('recordedBlob is: ', recordedBlob);
+
+    this.setState({ blobObject: recordedBlob.blobURL })
+  }
+
+  onSave = (recordedBlob) => {
+  }
+
+
   render() {
     let soundCloud = false;
     let youtube = ''
@@ -109,6 +143,9 @@ class LyricsForm extends Component {
       youtube = this.state.url.split("=").pop();
       soundCloud = false;
     }
+
+    const { record } = this.state;
+
 
     const displayLyrics = this.state.displayLyrics.map((lyric, index) => {
       //if ranked 1st
@@ -127,6 +164,9 @@ class LyricsForm extends Component {
               <div class="card-header" style={{ whiteSpace: 'pre-wrap', textAlign: "center", fontSize: '18px' }}>{lyric.Votes} Votes written by:</div>
 
               <div class="card-body">
+              <div>
+                  <audio ref="audioSource" controls="controls" style={{height:'50px',width:'150px' ,opacity: 0.9}} src={this.state.blobObject}></audio>
+                </div>
                 <ul className='text-white' style={{ whiteSpace: 'pre-wrap', textAlign: "center", fontSize: '18px' }}>{lyric.Lyric}</ul>
                 <div></div>
                 <button id={lyric.Id} onClick={() => this.vote(lyric.Id)} className="btn btn-warning">vote Up: {lyric.Votes}</button>
@@ -141,8 +181,12 @@ class LyricsForm extends Component {
         <div className="card border-light mb-3" key={lyric.Id} style={{ opacity: 0.95, width: '500px', textAlign: "center", border: '1px solid black', borderRadius: '5px!important' }}>
           <div class="card-header text-muted" style={{ whiteSpace: 'pre-wrap', textAlign: "center", fontSize: '15px' }}>{lyric.Votes} Votes written by: </div>
           <div class="card-body">
+          <div>
+              <audio ref="audioSource" controls="controls" style={{height:'50px',width:'150px'}} src={this.state.blobObject}></audio>
+            </div>
             <ul className='text-muted' style={{ whiteSpace: 'pre-wrap', textAlign: "center", fontSize: '15px' }} >{lyric.Lyric}</ul>
             <div></div>
+
             <button id={lyric.Id} onClick={() => this.vote(lyric.Id)} className="btn btn-outline-warning">vote Up: {lyric.Votes}</button>
             <button id={lyric.Id} onClick={() => this.edit(lyric.Id)} type="button" className="btn btn-outline-secondary ">edit</button>
             <button id={lyric.Id} onClick={(e) => this.delete(e, lyric.Id)} className="btn btn-outline-danger">delete</button>
@@ -179,14 +223,42 @@ class LyricsForm extends Component {
             <textarea className="form-control" onChange={this.handleChange} value={this.state.lyrics} name='lyrics'
               style={{
                 backgroundColor: 'rgba(242,242,242,0.5)', borderColor: 'rgba(0, 0, 0, 0)', whiteSpace: 'pre-wrap',
-                textAlign: 'center', width: '500px', height: '450px',
+                textAlign: 'center', width: '500px', height: '350px',
                 fontSize: '15px'
               }}>
             </textarea>
+
+            <div>
+              <div className='row'>
+                <ReactMic
+                  record={this.state.record}
+                  className="sound-wave"
+                  height={50}
+                  width={100}
+                  onStop={this.onStop}
+                  onData={this.onData}
+                  onSave={this.onSave}
+                  audioBitsPerSecond={192000}
+                  strokeColor="#000000"
+                  visualSetting='sinewave'
+                  backgroundColor="#55b298" />
+                <button onClick={this.startRecording} type="button" style={{ height: 50, width: 50 }}>
+                  <span class="glyphicon glyphicon-record" style={{ color: "red" }} />
+                </button>
+                <button onClick={this.stopRecording} type="button" style={{ height: 50, width: 50 }}>
+                  <span class="glyphicon glyphicon-stop" />
+                </button>
+              </div>
+            </div>
+            {/* Audio Playback */}
+            <div>
+              <audio ref="audioSource" controls="controls" src={this.state.blobObject}></audio>
+            </div>
             <div>
               <button className="btn btn-primary btn-lg" onClick={this.submit}>{this.state.submitButton}</button>
             </div>
           </div>
+          
           {/* Media LOAD */}
           <div className="col-4 offset-2" style={{ textAlign: 'center' }}>
             <div>

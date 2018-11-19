@@ -9,8 +9,7 @@ namespace myCrudApp.Models
     {
         public int Id { get; set; }
         public int TypeId { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
+        public string Name { get; set; }
         public string Email { get; set; }
         public string Paswword { get; set; }
         public Boolean Confirmed { get; set; }

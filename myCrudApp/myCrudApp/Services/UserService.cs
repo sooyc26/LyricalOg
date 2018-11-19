@@ -25,8 +25,7 @@ namespace myCrudApp.Services
                 cmd.CommandType = System.Data.CommandType.StoredProcedure;
 
                 cmd.Parameters.AddWithValue("@TypeId", request.TypeId);
-                cmd.Parameters.AddWithValue("@FirstName", request.FirstName);
-                cmd.Parameters.AddWithValue("@LastName", request.LastName);
+                cmd.Parameters.AddWithValue("@Name", request.Name);
                 cmd.Parameters.AddWithValue("@Email", request.Email);
                 cmd.Parameters.AddWithValue("@Paswword", request.Paswword);
                 cmd.Parameters.AddWithValue("@Confirmed", request.Confirmed);
@@ -66,8 +65,7 @@ namespace myCrudApp.Services
                         {
                             Id = (int)reader["Id"],
                             TypeId = (int)reader["TypeId"],
-                            FirstName = (string)reader["FirstName"],
-                            LastName = (string)reader["LastName"],
+                            Name = (string)reader["Name"],
                             Email = (string)reader["Email"],
                             Password = (string)reader["Password"],
                             Confirmed = (bool)reader["Confirmed"],
@@ -103,8 +101,7 @@ namespace myCrudApp.Services
                         {
                             Id = (int)reader["Id"],
                             TypeId = (int)reader["TypeId"],
-                            FirstName = (string)reader["FirstName"],
-                            LastName = (string)reader["LastName"],
+                            Name = (string)reader["Name"],
                             Email = (string)reader["Email"],
                             Password = (string)reader["Password"],
                             Confirmed = (bool)reader["Confirmed"],
@@ -132,8 +129,7 @@ namespace myCrudApp.Services
 
                 cmd.Parameters.AddWithValue("@Id", id);
                 cmd.Parameters.AddWithValue("@TypeId", request.TypeId);
-                cmd.Parameters.AddWithValue("@FirstName", request.FirstName);
-                cmd.Parameters.AddWithValue("@LastName", request.LastName);
+                cmd.Parameters.AddWithValue("@Name", request.Name);
                 cmd.Parameters.AddWithValue("@Email", request.Email);
                 cmd.Parameters.AddWithValue("@Paswword", request.Paswword);
                 cmd.Parameters.AddWithValue("@Confirmed", request.Confirmed);
