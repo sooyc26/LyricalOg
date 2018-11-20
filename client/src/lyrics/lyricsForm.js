@@ -9,8 +9,8 @@ class LyricsForm extends Component {
 
     this.state = {
       lyrics: '',
-      url: 'https://www.youtube.com/watch?v=8EfITcCqauc',
-      // url: 'https://soundcloud.com/thebandits26/perrier-1',
+      //url: 'https://www.youtube.com/watch?v=8EfITcCqauc',
+       url: 'https://soundcloud.com/thebandits26/perrier-1',
       inputUrl: '',
       displayLyrics: [],
       soundCloud: true
@@ -35,6 +35,7 @@ class LyricsForm extends Component {
 
     this.startRecording = this.startRecording.bind(this)
     this.stopRecording = this.stopRecording.bind(this)
+    this.playBack=this.playBack.bind(this)
 
   }
 
@@ -111,7 +112,7 @@ class LyricsForm extends Component {
   startRecording = () => {
     this.setState({
       record: true,
-      autoPlay:1
+      autoPlay:true
     });
   }
 
@@ -119,7 +120,7 @@ class LyricsForm extends Component {
   stopRecording = () => {
     this.setState({
       record: false
-      ,autoPlay:0
+      ,autoPlay:false
     });
   }
 
@@ -134,6 +135,11 @@ class LyricsForm extends Component {
   }
 
   onSave = (recordedBlob) => {
+  }
+
+  playBack(){
+
+    this.setState({ autoPlay:true})
   }
 
 
@@ -215,7 +221,7 @@ class LyricsForm extends Component {
 
             {soundCloud ?
               <iframe width="500px" height="166" scrolling="no" frameborder="no"
-                src={"https://w.soundcloud.com/player/?url=" + this.state.url + "&amp;{ ADD YOUR PARAMETERS HERE }"} auto_play={this.state.autoPlay}>
+                src={"https://w.soundcloud.com/player/?url=" + this.state.url + "&amp;auto_play="+this.state.autoPlay}>
               </iframe>
               : <iframe width="500px" height="166" src={"https://www.youtube.com/embed/" + youtube+"?autoplay="+this.state.autoPlay} 
                 frameBorder="0" allow="autoplay; encrypted-media" allowFullScreen>
@@ -253,7 +259,8 @@ class LyricsForm extends Component {
               </div>
             </div>
             <div>
-              <audio ref="audioSource" controls="controls" src={this.state.blobObject}></audio>
+              <audio ref="audioSource" onPlay={()=>this.playBack()} onPause={()=>this.setState({autoPlay:false})}controls="controls" src={this.state.blobObject}></audio>
+              <button onClick={'play both at same time'}>play icon</button>
               
             </div>
             <div>
