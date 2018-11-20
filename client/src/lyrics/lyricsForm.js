@@ -21,6 +21,7 @@ class LyricsForm extends Component {
 
       , record: false
       , blobObject: ''
+      ,autoPlay:0
 
     }
     this.handleChange = this.handleChange.bind(this)
@@ -109,7 +110,8 @@ class LyricsForm extends Component {
 
   startRecording = () => {
     this.setState({
-      record: true
+      record: true,
+      autoPlay:1
     });
   }
 
@@ -117,6 +119,7 @@ class LyricsForm extends Component {
   stopRecording = () => {
     this.setState({
       record: false
+      ,autoPlay:0
     });
   }
 
@@ -212,13 +215,12 @@ class LyricsForm extends Component {
 
             {soundCloud ?
               <iframe width="500px" height="166" scrolling="no" frameborder="no"
-                src={"https://w.soundcloud.com/player/?url=" + this.state.url + "&amp;{ ADD YOUR PARAMETERS HERE }"}>
+                src={"https://w.soundcloud.com/player/?url=" + this.state.url + "&amp;{ ADD YOUR PARAMETERS HERE }"} auto_play={this.state.autoPlay}>
               </iframe>
-              : <iframe width="500px" height="166" src={"https://www.youtube.com/embed/" + youtube}
+              : <iframe width="500px" height="166" src={"https://www.youtube.com/embed/" + youtube+"?autoplay="+this.state.autoPlay} 
                 frameBorder="0" allow="autoplay; encrypted-media" allowFullScreen>
               </iframe>}
             {/* LYRICS TEXT AREA */}
-
             <label className='text-white' style={{ textAlign: 'center', fontSize: '20px' }}>write your lyrics  </label>
             <textarea className="form-control" onChange={this.handleChange} value={this.state.lyrics} name='lyrics'
               style={{
@@ -229,37 +231,38 @@ class LyricsForm extends Component {
             </textarea>
 
             <div>
-              <div className='row'>
-                <ReactMic
-                  record={this.state.record}
-                  className="sound-wave"
-                  height={50}
-                  width={100}
-                  onStop={this.onStop}
-                  onData={this.onData}
-                  onSave={this.onSave}
-                  audioBitsPerSecond={192000}
-                  strokeColor="#000000"
-                  visualSetting='sinewave'
-                  backgroundColor="#55b298" />
-                <button onClick={this.startRecording} type="button" style={{ height: 50, width: 50 }}>
-                  <span class="glyphicon glyphicon-record" style={{ color: "red" }} />
-                </button>
-                <button onClick={this.stopRecording} type="button" style={{ height: 50, width: 50 }}>
-                  <span class="glyphicon glyphicon-stop" />
-                </button>
+              <div>
+                <div className='row'>
+                  <button onClick={this.state.record ? this.stopRecording : this.startRecording} type="button" style={{ height: 50, width: 50 }}>
+                    <span className={this.state.record ? "glyphicon glyphicon-stop" : "glyphicon glyphicon-record"} style={{ color: "red" }} />
+                  </button>
+                  <ReactMic
+                    record={this.state.record}
+                    className="sound-wave"
+                    height={50}
+                    width={100}
+                    onStop={this.onStop}
+                    onData={this.onData}
+                    onSave={this.onSave}
+                    audioBitsPerSecond={192000}
+                    strokeColor="#000000"
+                    visualSetting='sinewave'
+                    backgroundColor="#55b298" />
+                </div>
+
               </div>
             </div>
-            {/* Audio Playback */}
             <div>
               <audio ref="audioSource" controls="controls" src={this.state.blobObject}></audio>
+              
             </div>
             <div>
               <button className="btn btn-primary btn-lg" onClick={this.submit}>{this.state.submitButton}</button>
             </div>
           </div>
-          
-          {/* Media LOAD */}
+
+          {/* Load Lyrics */}
+
           <div className="col-4 offset-2" style={{ textAlign: 'center' }}>
             <div>
               {displayLyrics}
