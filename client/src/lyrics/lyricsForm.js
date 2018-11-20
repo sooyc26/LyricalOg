@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import * as lyricService from '../services/lyricService'
 import { ReactMic, AudioPlayer } from 'react-mic';
+import Youtube from 'react-youtube'
 
 class LyricsForm extends Component {
 
@@ -22,6 +23,8 @@ class LyricsForm extends Component {
       , record: false
       , blobObject: ''
       , autoPlay: 0
+      , mediaEvent: ''
+      , playback: ''
 
     }
     this.handleChange = this.handleChange.bind(this)
@@ -111,16 +114,21 @@ class LyricsForm extends Component {
 
   startRecording = () => {
     this.setState({
-      autoPlay: true
+      autoPlay: true,
+      record: false
     });
+    this.state.mediaEvent.target.seekTo(0).playVideo();
   }
 
   ////recording functions /////
   stopRecording = () => {
     this.setState({
       autoPlay: false,
-      record:false
+      record: false,
+      blobObject: ''
     });
+    this.state.mediaEvent.target.pauseVideo();
+
   }
 
   onData(recordedBlob) {
@@ -136,19 +144,37 @@ class LyricsForm extends Component {
   onSave = (recordedBlob) => {
   }
 
-  playBack() {
-    this.setState({ autoPlay: true })
+  playBack(e) {
+    this.setState({ playback: e })
+    this.state.mediaEvent.target.seekTo(0).playVideo();
   }
 
-  onPlayerStateChange=()=>{
-    if(this.state.blobObject){
-    this.audio.play();
-    }else{
-      this.setState({record:true})
+  onPlayerStateChange = () => {
+    if (this.state.blobObject) {
+      this.audio.play();
+    } else {
+      this.setState({ record: true })
     }
   }
 
+  _onReady = event => {
+    this.setState({ mediaEvent: event })
+    // access to player in all event handlers via event.target
+    event.target.pauseVideo();
+  }
+
   render() {
+
+    const opts = {
+      height: '166',
+      width: '500',
+      playerVars: {
+        autoplay: this.state.autoPlay
+      }
+    }
+
+    var audio = new Audio(this.state.blobObject);
+
     let soundCloud = false;
     let youtube = ''
     if (this.state.url.includes('sound')) {
@@ -188,24 +214,36 @@ class LyricsForm extends Component {
                 <button id={lyric.Id} onClick={(e) => this.delete(e, lyric.Id)} className="btn btn-secondary">delete</button>
               </div>
             </div>
+            <p></p>
+          {/* TOP RATED */}
+          <div style={{ textAlign: 'center' }}>
+            <label className="text-white" style={{ textAlign: 'center', fontSize: '20px' }}>
+              <span class="glyphicon glyphicon-flash" ></span>
+              Chasers<span class="glyphicon glyphicon-flash" ></span>
+            </label>
+          </div>
           </div>
         )
       }
       return (
-        <div className="card border-light mb-3" key={lyric.Id} style={{ opacity: 0.95, width: '500px', textAlign: "center", border: '1px solid black', borderRadius: '5px!important' }}>
-          <div class="card-header text-muted" style={{ whiteSpace: 'pre-wrap', textAlign: "center", fontSize: '15px' }}>{lyric.Votes} Votes written by: </div>
-          <div class="card-body">
-            <div>
-              <audio ref="audioSource" controls="controls" style={{ height: '50px', width: '150px' }} src={this.state.blobObject}></audio>
-            </div>
-            <ul className='text-muted' style={{ whiteSpace: 'pre-wrap', textAlign: "center", fontSize: '15px' }} >{lyric.Lyric}</ul>
-            <div></div>
+        <div>
 
-            <button id={lyric.Id} onClick={() => this.vote(lyric.Id)} className="btn btn-outline-warning">vote Up: {lyric.Votes}</button>
-            <button id={lyric.Id} onClick={() => this.edit(lyric.Id)} type="button" className="btn btn-outline-secondary ">edit</button>
-            <button id={lyric.Id} onClick={(e) => this.delete(e, lyric.Id)} className="btn btn-outline-danger">delete</button>
+          <div className="card border-light mb-3" key={lyric.Id} style={{ opacity: 0.95, width: '500px', textAlign: "center", border: '1px solid black', borderRadius: '5px!important' }}>
+            <div class="card-header text-muted" style={{ whiteSpace: 'pre-wrap', textAlign: "center", fontSize: '15px' }}>{lyric.Votes} Votes written by: </div>
+            <div class="card-body">
+              <div>
+                <audio ref="audioSource" controls="controls" style={{ height: '50px', width: '150px' }} src={this.state.blobObject}></audio>
+              </div>
+              <ul className='text-muted' style={{ whiteSpace: 'pre-wrap', textAlign: "center", fontSize: '15px' }} >{lyric.Lyric}</ul>
+              <div></div>
+
+              <button id={lyric.Id} onClick={() => this.vote(lyric.Id)} className="btn btn-outline-warning">vote Up: {lyric.Votes}</button>
+              <button id={lyric.Id} onClick={() => this.edit(lyric.Id)} type="button" className="btn btn-outline-secondary ">edit</button>
+              <button id={lyric.Id} onClick={(e) => this.delete(e, lyric.Id)} className="btn btn-outline-danger">delete</button>
+            </div>
           </div>
         </div>
+
       )
     })
 
@@ -226,12 +264,15 @@ class LyricsForm extends Component {
             {/* MEDIA PLAYER */}
             {soundCloud ?
               <iframe width="500px" height="166" onChange={this.onPlayerStateChange} scrolling="no" frameborder="no"
-                src={"https://w.soundcloud.com/player/?url=" + this.state.url + "&amp;auto_play=" + this.state.autoPlay}>
+                src={"https://w.soundcloud.com/player/?url=" + this.state.url + "&amp;auto_play=" + this.state.autoPlay + "enablejsapi=1"}>
               </iframe>
-              : <iframe id="youtube" width="500px" height="166" onPlay={this.onPlayerStateChange} 
-              src={"https://www.youtube.com/embed/" + youtube + "?autoplay=" + this.state.autoPlay}
-                frameBorder="0" fs='0' allow="autoplay; encrypted-media" allowFullScreen>
-              </iframe>}
+              : <Youtube width="500px" height="166" onReady={this._onReady} videoId={youtube} opts={opts}
+                onPlay={this.state.blobObject ? () => audio.play() : () => this.setState({ record: true })} />}
+
+            {/* // <iframe id="youtube" width="500px" height="166" onPlay={this.onPlayerStateChange} 
+              // src={"https://www.youtube.com/embed/" + youtube + "?autoplay=" + this.state.autoPlay}
+              //   frameBorder="0" fs='0' allow="autoplay; encrypted-media" allowFullScreen>
+              // </iframe>} */}
             {/* LYRICS TEXT AREA */}
             <label className='text-white' style={{ textAlign: 'center', fontSize: '20px' }}>write your lyrics  </label>
             <textarea className="form-control" onChange={this.handleChange} value={this.state.lyrics} name='lyrics'
@@ -243,9 +284,9 @@ class LyricsForm extends Component {
             </textarea>
 
             <div>
-              <div>
-                <div className='row'>
-                {/* record button */}
+              <div className='container'>
+                <div className='row col-offset-2'>
+                  {/* record button */}
                   <button onClick={this.state.record ? this.stopRecording : this.startRecording} type="button" style={{ height: 50, width: 50 }}>
                     <span className={this.state.record ? "glyphicon glyphicon-stop" : "glyphicon glyphicon-record"} style={{ color: "red" }} />
                   </button>
@@ -253,28 +294,28 @@ class LyricsForm extends Component {
                     record={this.state.record}
                     className="sound-wave"
                     height={50}
-                    width={100}
+                    width={300}
                     onStop={this.onStop}
                     onData={this.onData}
                     onSave={this.onSave}
                     audioBitsPerSecond={192000}
                     strokeColor="#000000"
                     visualSetting='sinewave'
-                    backgroundColor="#55b298" />
-                  <audio ref="audioSource" onPlay={() => this.playBack()} onPause={() => this.setState({ autoPlay: false })} controls="controls" src={this.state.blobObject}></audio>
+                    backgroundColor="#78C2AD" />
+                  {/* <audio id='playback' ref="audioSource" onPlay={(e) => this.playBack(e)} onPause={() => this.setState({ autoPlay: false })} controls="controls" src={this.state.blobObject}></audio> */}
+                  <button className="btn btn-secondary btn-lg" style={{ height: 50, width: 50 }} onClick={() => this.playBack()}><span className="glyphicon glyphicon-play"></span></button>
+                  <button className="btn btn-primary btn-lg" onClick={this.submit}>{this.state.submitButton}</button>
                 </div>
 
               </div>
             </div>
             <div>
             </div>
-            <div>
-              <button className="btn btn-primary btn-lg" onClick={this.submit}>{this.state.submitButton}</button>
-            </div>
           </div>
           {/* Load Lyrics */}
           <div className="col-4 offset-2" style={{ textAlign: 'center' }}>
             <div>
+              
               {displayLyrics}
             </div>
           </div>
