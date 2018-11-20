@@ -9,8 +9,8 @@ class LyricsForm extends Component {
 
     this.state = {
       lyrics: '',
-      //url: 'https://www.youtube.com/watch?v=8EfITcCqauc',
-       url: 'https://soundcloud.com/thebandits26/perrier-1',
+      url: 'https://www.youtube.com/watch?v=8EfITcCqauc',
+      //url: 'https://soundcloud.com/thebandits26/perrier-1',
       inputUrl: '',
       displayLyrics: [],
       soundCloud: true
@@ -21,7 +21,7 @@ class LyricsForm extends Component {
 
       , record: false
       , blobObject: ''
-      ,autoPlay:0
+      , autoPlay: 0
 
     }
     this.handleChange = this.handleChange.bind(this)
@@ -35,7 +35,7 @@ class LyricsForm extends Component {
 
     this.startRecording = this.startRecording.bind(this)
     this.stopRecording = this.stopRecording.bind(this)
-    this.playBack=this.playBack.bind(this)
+    this.playBack = this.playBack.bind(this)
 
   }
 
@@ -111,16 +111,15 @@ class LyricsForm extends Component {
 
   startRecording = () => {
     this.setState({
-      record: true,
-      autoPlay:true
+      autoPlay: true
     });
   }
 
   ////recording functions /////
   stopRecording = () => {
     this.setState({
-      record: false
-      ,autoPlay:false
+      autoPlay: false,
+      record:false
     });
   }
 
@@ -137,11 +136,17 @@ class LyricsForm extends Component {
   onSave = (recordedBlob) => {
   }
 
-  playBack(){
-
-    this.setState({ autoPlay:true})
+  playBack() {
+    this.setState({ autoPlay: true })
   }
 
+  onPlayerStateChange=()=>{
+    if(this.state.blobObject){
+    this.audio.play();
+    }else{
+      this.setState({record:true})
+    }
+  }
 
   render() {
     let soundCloud = false;
@@ -173,8 +178,8 @@ class LyricsForm extends Component {
               <div class="card-header" style={{ whiteSpace: 'pre-wrap', textAlign: "center", fontSize: '18px' }}>{lyric.Votes} Votes written by:</div>
 
               <div class="card-body">
-              <div>
-                  <audio ref="audioSource" controls="controls" style={{height:'50px',width:'150px' ,opacity: 0.9}} src={this.state.blobObject}></audio>
+                <div>
+                  <audio ref="audioSource" controls="controls" style={{ height: '50px', width: '150px', opacity: 0.9 }} src={this.state.blobObject}></audio>
                 </div>
                 <ul className='text-white' style={{ whiteSpace: 'pre-wrap', textAlign: "center", fontSize: '18px' }}>{lyric.Lyric}</ul>
                 <div></div>
@@ -190,8 +195,8 @@ class LyricsForm extends Component {
         <div className="card border-light mb-3" key={lyric.Id} style={{ opacity: 0.95, width: '500px', textAlign: "center", border: '1px solid black', borderRadius: '5px!important' }}>
           <div class="card-header text-muted" style={{ whiteSpace: 'pre-wrap', textAlign: "center", fontSize: '15px' }}>{lyric.Votes} Votes written by: </div>
           <div class="card-body">
-          <div>
-              <audio ref="audioSource" controls="controls" style={{height:'50px',width:'150px'}} src={this.state.blobObject}></audio>
+            <div>
+              <audio ref="audioSource" controls="controls" style={{ height: '50px', width: '150px' }} src={this.state.blobObject}></audio>
             </div>
             <ul className='text-muted' style={{ whiteSpace: 'pre-wrap', textAlign: "center", fontSize: '15px' }} >{lyric.Lyric}</ul>
             <div></div>
@@ -218,13 +223,14 @@ class LyricsForm extends Component {
                 <button className="btn btn-primary" onClick={() => this.setUrl()}>Load</button>
               </div>
             </div>
-
+            {/* MEDIA PLAYER */}
             {soundCloud ?
-              <iframe width="500px" height="166" scrolling="no" frameborder="no"
-                src={"https://w.soundcloud.com/player/?url=" + this.state.url + "&amp;auto_play="+this.state.autoPlay}>
+              <iframe width="500px" height="166" onChange={this.onPlayerStateChange} scrolling="no" frameborder="no"
+                src={"https://w.soundcloud.com/player/?url=" + this.state.url + "&amp;auto_play=" + this.state.autoPlay}>
               </iframe>
-              : <iframe width="500px" height="166" src={"https://www.youtube.com/embed/" + youtube+"?autoplay="+this.state.autoPlay} 
-                frameBorder="0" allow="autoplay; encrypted-media" allowFullScreen>
+              : <iframe id="youtube" width="500px" height="166" onPlay={this.onPlayerStateChange} 
+              src={"https://www.youtube.com/embed/" + youtube + "?autoplay=" + this.state.autoPlay}
+                frameBorder="0" fs='0' allow="autoplay; encrypted-media" allowFullScreen>
               </iframe>}
             {/* LYRICS TEXT AREA */}
             <label className='text-white' style={{ textAlign: 'center', fontSize: '20px' }}>write your lyrics  </label>
@@ -239,6 +245,7 @@ class LyricsForm extends Component {
             <div>
               <div>
                 <div className='row'>
+                {/* record button */}
                   <button onClick={this.state.record ? this.stopRecording : this.startRecording} type="button" style={{ height: 50, width: 50 }}>
                     <span className={this.state.record ? "glyphicon glyphicon-stop" : "glyphicon glyphicon-record"} style={{ color: "red" }} />
                   </button>
@@ -254,22 +261,18 @@ class LyricsForm extends Component {
                     strokeColor="#000000"
                     visualSetting='sinewave'
                     backgroundColor="#55b298" />
+                  <audio ref="audioSource" onPlay={() => this.playBack()} onPause={() => this.setState({ autoPlay: false })} controls="controls" src={this.state.blobObject}></audio>
                 </div>
 
               </div>
             </div>
             <div>
-              <audio ref="audioSource" onPlay={()=>this.playBack()} onPause={()=>this.setState({autoPlay:false})}controls="controls" src={this.state.blobObject}></audio>
-              <button onClick={'play both at same time'}>play icon</button>
-              
             </div>
             <div>
               <button className="btn btn-primary btn-lg" onClick={this.submit}>{this.state.submitButton}</button>
             </div>
           </div>
-
           {/* Load Lyrics */}
-
           <div className="col-4 offset-2" style={{ textAlign: 'center' }}>
             <div>
               {displayLyrics}
