@@ -65,7 +65,8 @@ class LyricsForm extends Component {
         .then(() => {
           this.setState({
             lyrics: '',
-            editMode: false
+            editMode: false,
+            submitButton: 'Submit'
           })
         })
     } else {
@@ -237,9 +238,9 @@ class LyricsForm extends Component {
               <ul className='text-muted' style={{ whiteSpace: 'pre-wrap', textAlign: "center", fontSize: '15px' }} >{lyric.Lyric}</ul>
               <div></div>
 
-              <button id={lyric.Id} onClick={() => this.vote(lyric.Id)} className="btn btn-outline-warning">vote Up: {lyric.Votes}</button>
-              <button id={lyric.Id} onClick={() => this.edit(lyric.Id)} type="button" className="btn btn-outline-secondary ">edit</button>
-              <button id={lyric.Id} onClick={(e) => this.delete(e, lyric.Id)} className="btn btn-outline-danger">delete</button>
+              <button id={lyric.Id} onClick={() => this.vote(lyric.Id)} className="btn btn-outline-warning text-muted">vote Up: {lyric.Votes}</button>
+              <button id={lyric.Id} onClick={() => this.edit(lyric.Id)} type="button" className="btn btn-outline-secondary text-muted">edit</button>
+              <button id={lyric.Id} onClick={(e) => this.delete(e, lyric.Id)} className="btn btn-outline-danger text-muted">delete</button>
             </div>
           </div>
         </div>
@@ -303,7 +304,7 @@ class LyricsForm extends Component {
                     visualSetting='sinewave'
                     backgroundColor="#78C2AD" />
                   {/* <audio id='playback' ref="audioSource" onPlay={(e) => this.playBack(e)} onPause={() => this.setState({ autoPlay: false })} controls="controls" src={this.state.blobObject}></audio> */}
-                  <button className="btn btn-secondary btn-lg" style={{ height: 50, width: 50 }} onClick={() => this.playBack()}><span className="glyphicon glyphicon-play"></span></button>
+                  <button className="btn btn-secondary btn-lg" style={{ height: 50, width: 50 }} onClick={this.state.blobObject?() => this.playBack():()=>this.stopRecording}><span className="glyphicon glyphicon-play"></span></button>
                   <button className="btn btn-primary btn-lg" onClick={this.submit}>{this.state.submitButton}</button>
                 </div>
 
