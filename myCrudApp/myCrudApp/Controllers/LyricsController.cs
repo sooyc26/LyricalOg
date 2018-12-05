@@ -33,9 +33,9 @@ namespace myCrudApp.Controllers
             {
                 return this.Request.CreateResponse(HttpStatusCode.BadRequest, "please enter valid input");
             }
-            int id = _lyricService.Create(request);
+            var response = _lyricService.Create(request);
 
-            return req.CreateResponse(HttpStatusCode.OK, id);
+            return req.CreateResponse(HttpStatusCode.OK, response);
         }
 
         [HttpGet, Route("lyrics")]

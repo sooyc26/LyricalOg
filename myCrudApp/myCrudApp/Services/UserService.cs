@@ -1,4 +1,8 @@
-﻿using myCrudApp.Models;
+﻿using Amazon;
+using Amazon.Runtime;
+using Amazon.S3;
+using Amazon.S3.Model;
+using myCrudApp.Models;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -16,6 +20,7 @@ namespace myCrudApp.Services
         public int Create(UsersCreateRequest request)
         {
             int id = 0;
+
             using (SqlConnection conn = new SqlConnection(connString))
             {
                 conn.Open();
@@ -39,7 +44,6 @@ namespace myCrudApp.Services
                     }
                     reader.Close();
                 }
-
                 conn.Close();
             }
             return id;

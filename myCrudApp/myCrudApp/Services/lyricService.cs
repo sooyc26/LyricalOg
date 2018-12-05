@@ -1,4 +1,8 @@
-﻿using myCrudApp.Models;
+﻿using Amazon;
+using Amazon.Runtime;
+using Amazon.S3;
+using Amazon.S3.Model;
+using myCrudApp.Models;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -12,10 +16,21 @@ namespace myCrudApp.Services
     public class LyricService
     {
         readonly string connString = ConfigurationManager.ConnectionStrings["Default"].ConnectionString;
+        readonly string accessKey = ConfigurationManager.AppSettings["S3_AccessKeyId"];                     //get S3 Access Key Id from web.config
+        readonly string secretKey = ConfigurationManager.AppSettings["S3_SecretAccessKey"];                 //get S3 secret Key from web.config
 
-        public int Create(LyricsCreateRequest request)
+        private const string bucketName = "arctrade";
+        private static readonly RegionEndpoint bucketRegion = RegionEndpoint.USWest1;                       //s3 region N California
+        private static IAmazonS3 s3Client;
+
+        public LyricsCreateResponse Create(LyricsCreateRequest request)
         {
             int id = 0;
+
+            var response = new LyricsCreateResponse();
+
+            var signedURL = GeneratePreSignedURL(request.File, request.ContentType);  //get signedURL to update resumeUrl in S3
+
             using (SqlConnection conn = new SqlConnection(connString))
             {
                 conn.Open();
@@ -28,8 +43,6 @@ namespace myCrudApp.Services
                 cmd.Parameters.AddWithValue("@Votes", 0);
                 cmd.Parameters.AddWithValue("@Id", SqlDbType.Int).Direction = ParameterDirection.Output;
 
-                //cmd.ExecuteNonQuery();
-
                 using (SqlDataReader reader = cmd.ExecuteReader())
                 {
                     while (reader.Read())
@@ -38,10 +51,29 @@ namespace myCrudApp.Services
                     }
                     reader.Close();
                 }
-
                 conn.Close();
             }
-            return id;
+            response.UserId = id;
+            response.SignedUrl = signedURL;
+            return response;
+        }
+
+        public string GeneratePreSignedURL(string fileName, string contentType)
+        {
+            AWSCredentials credentials = new BasicAWSCredentials(accessKey, secretKey);
+            s3Client = new AmazonS3Client(credentials, bucketRegion);
+
+            GetPreSignedUrlRequest request = new GetPreSignedUrlRequest
+            {
+                BucketName = bucketName,
+                Key = fileName,
+                ContentType = contentType,
+                Verb = HttpVerb.PUT,
+                Expires = DateTime.Now.AddDays(15)
+            };
+
+            string url = s3Client.GetPreSignedURL(request);
+            return url;
         }
 
         public List<Lyrics> ReadAll()
@@ -64,7 +96,7 @@ namespace myCrudApp.Services
                         {
                             Id = (int)reader["Id"],
                             Lyric = (string)reader["Lyrics"],
-                            Votes=(int)reader["Votes"]
+                            Votes = (int)reader["Votes"]
                         };
                         lyrics.Add(lyric);
                     }
