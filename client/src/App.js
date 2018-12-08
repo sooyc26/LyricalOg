@@ -19,18 +19,16 @@ class App extends Component {
 
     return (
       <div>
-        <div className="Mint">
           <Navbar/>
-          <header className="App-header">
-            <h1>Lyrical OG</h1>
-            <Login/>
+          <header className="App-header" style={{opacity:0.8}}>
+            <div style={{lineHeight:'200px'}}>
+            <h1 className="text-primary" style={{top: "25%", fontSize:"30px"}}>Lyrical OG</h1>
+            </div>
           </header>
           <div >
-            {}
             <LyricsForm/>
           </div>
         </div>
-      </div>
     );
   }
 }

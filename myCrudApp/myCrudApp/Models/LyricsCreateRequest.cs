@@ -9,7 +9,7 @@ namespace myCrudApp.Models
     {
         public string Lyrics { get; set; }
         public string File { get; set; }
-        public string ContentType { get; set; }
+        public string ContentType { get; set; } 
         public int Votes { get; set; }
 
     }

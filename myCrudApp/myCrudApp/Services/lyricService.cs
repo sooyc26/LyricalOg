@@ -19,7 +19,7 @@ namespace myCrudApp.Services
         readonly string accessKey = ConfigurationManager.AppSettings["S3_AccessKeyId"];                     //get S3 Access Key Id from web.config
         readonly string secretKey = ConfigurationManager.AppSettings["S3_SecretAccessKey"];                 //get S3 secret Key from web.config
 
-        private const string bucketName = "arctrade";
+        private const string bucketName = "lyricalog";
         private static readonly RegionEndpoint bucketRegion = RegionEndpoint.USWest1;                       //s3 region N California
         private static IAmazonS3 s3Client;
 
@@ -41,6 +41,8 @@ namespace myCrudApp.Services
 
                 cmd.Parameters.AddWithValue("@Lyrics", request.Lyrics);
                 cmd.Parameters.AddWithValue("@Votes", 0);
+                cmd.Parameters.AddWithValue("@FileUrl", signedURL);
+
                 cmd.Parameters.AddWithValue("@Id", SqlDbType.Int).Direction = ParameterDirection.Output;
 
                 using (SqlDataReader reader = cmd.ExecuteReader())

@@ -14,6 +14,27 @@ function create(data) {
         .catch(responseError)
 }
 
+
+function uploadFile(responseData, uploadFile) {
+
+    const s3UploadURL = responseData.SignedUrl;
+
+    const header = {
+        headers: {
+            'Content-Type': uploadFile.type
+        }
+    }
+    debugger
+    const promise = axios.put(s3UploadURL, uploadFile, header)
+        .then(response => {
+            console.log(response);
+            return response
+        })
+        .catch(responseError);
+
+    return promise;
+}
+
 function getAll() {
     const url= 'http://localhost:49694/api/lyrics'
     
@@ -82,7 +103,7 @@ const responseError = error => {
     }
     return Promise.reject(error);
 }
-export {create, getAll,vote, getById,update,deleteById}
+export {create, getAll,vote, getById,update,uploadFile,deleteById}
   
 /*
 split an array and add the splitted items at end of the array

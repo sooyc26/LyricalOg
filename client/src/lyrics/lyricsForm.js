@@ -3,6 +3,7 @@ import * as lyricService from '../services/lyricService'
 import { ReactMic, AudioPlayer } from 'react-mic';
 import Youtube from 'react-youtube'
 
+let blobObject = {};
 class LyricsForm extends Component {
 
   constructor(props) {
@@ -26,20 +27,10 @@ class LyricsForm extends Component {
       , mediaEvent: ''
       , playback: ''
 
+      , playbackAudio: ''
+
     }
-    this.handleChange = this.handleChange.bind(this)
     this.submit = this.submit.bind(this)
-    this.getAll = this.getAll.bind(this)
-    this.setUrl = this.setUrl.bind(this)
-
-    this.edit = this.edit.bind(this)
-    this.vote = this.vote.bind(this)
-    this.delete = this.delete.bind(this);
-
-    this.startRecording = this.startRecording.bind(this)
-    this.stopRecording = this.stopRecording.bind(this)
-    this.playBack = this.playBack.bind(this)
-
   }
 
   componentDidMount() {
@@ -69,8 +60,13 @@ class LyricsForm extends Component {
             submitButton: 'Submit'
           })
         })
+
     } else {
       lyricService.create(data)
+        .then(response => {
+          debugger
+          lyricService.uploadFile(response, window.uploadFile)
+        })
         .then(() => this.getAll())
         .then(() => {
           this.setState({
@@ -81,18 +77,37 @@ class LyricsForm extends Component {
     }
   }
 
-  handleChange(e) {
+  convertBlobToMp3 = blob => {
+
+    var file = {};
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', blob.blobURL, true);
+    xhr.responseType = 'blob';
+    xhr.onload = function (e) {
+      if (this.status == 200) {
+        file.file = this.response;
+        file.name = blob;
+        file.size = blob.blob.size;
+        file.type = "audio/mpeg";
+
+        window.uploadFile = file
+      }
+    }
+    xhr.send();
+  }
+
+  handleChange = e => {
     this.setState({ [e.target.name]: e.target.value })
   }
 
-  delete(e, id) {
+  delete = (e, id) => {
     if (window.confirm('Delete the item?')) {
       lyricService.deleteById(id)
         .then(() => this.getAll())
     }
   }
 
-  edit(id) {
+  edit = id => {
     lyricService.getById(id)
       .then(response => {
         this.setState({
@@ -104,12 +119,12 @@ class LyricsForm extends Component {
       })
   }
 
-  vote(id) {
+  vote = id => {
     lyricService.vote(id)
       .then(() => this.getAll())
   }
 
-  setUrl() {
+  setUrl = () => {
     this.setState({ url: this.state.inputUrl })
   }
 
@@ -129,7 +144,6 @@ class LyricsForm extends Component {
       blobObject: ''
     });
     this.state.mediaEvent.target.pauseVideo();
-
   }
 
   onData(recordedBlob) {
@@ -138,14 +152,14 @@ class LyricsForm extends Component {
 
   onStop = (recordedBlob) => {
     console.log('recordedBlob is: ', recordedBlob);
-
-    this.setState({ blobObject: recordedBlob.blobURL })
+    this.convertBlobToMp3(recordedBlob)
   }
 
   onSave = (recordedBlob) => {
   }
 
-  playBack(e) {
+  playBack = e => {
+    debugger
     this.setState({ playback: e })
     this.state.mediaEvent.target.seekTo(0).playVideo();
   }
@@ -174,7 +188,7 @@ class LyricsForm extends Component {
       }
     }
 
-    var audio = new Audio(this.state.blobObject);
+    var audio = new Audio(this.state.blobObject.blobURL);
 
     let soundCloud = false;
     let youtube = ''
@@ -206,7 +220,7 @@ class LyricsForm extends Component {
 
               <div class="card-body">
                 <div>
-                  <audio ref="audioSource" controls="controls" style={{ height: '50px', width: '150px', opacity: 0.9 }} src={this.state.blobObject}></audio>
+                  <audio ref="audioSource" controls="controls" style={{ height: '50px', width: '150px', opacity: 0.9 }} src={this.state.playbackAudio}></audio>
                 </div>
                 <ul className='text-white' style={{ whiteSpace: 'pre-wrap', textAlign: "center", fontSize: '18px' }}>{lyric.Lyric}</ul>
                 <div></div>
@@ -216,13 +230,13 @@ class LyricsForm extends Component {
               </div>
             </div>
             <p></p>
-          {/* TOP RATED */}
-          <div style={{ textAlign: 'center' }}>
-            <label className="text-white" style={{ textAlign: 'center', fontSize: '20px' }}>
-              <span class="glyphicon glyphicon-flash" ></span>
-              Chasers<span class="glyphicon glyphicon-flash" ></span>
-            </label>
-          </div>
+            {/* TOP RATED */}
+            <div style={{ textAlign: 'center' }}>
+              <label className="text-white" style={{ textAlign: 'center', fontSize: '20px' }}>
+                <span class="glyphicon glyphicon-flash" ></span>
+                Chasers<span class="glyphicon glyphicon-flash" ></span>
+              </label>
+            </div>
           </div>
         )
       }
@@ -233,7 +247,7 @@ class LyricsForm extends Component {
             <div class="card-header text-muted" style={{ whiteSpace: 'pre-wrap', textAlign: "center", fontSize: '15px' }}>{lyric.Votes} Votes written by: </div>
             <div class="card-body">
               <div>
-                <audio ref="audioSource" controls="controls" style={{ height: '50px', width: '150px' }} src={this.state.blobObject}></audio>
+                <audio ref="audioSource" controls="controls" style={{ height: '50px', width: '150px' }} src={this.state.playbackAudio}></audio>
               </div>
               <ul className='text-muted' style={{ whiteSpace: 'pre-wrap', textAlign: "center", fontSize: '15px' }} >{lyric.Lyric}</ul>
               <div></div>
@@ -255,13 +269,14 @@ class LyricsForm extends Component {
           <div className="col-4 offset-1" >
             <p></p>
 
-            <label className='text-white ' style={{ textAlign: 'center', fontSize: '20px' }}>Load Soundcloud or Youtube</label>
+            <label className='text-white ' style={{ textAlign: 'center', fontSize: '20px' }}><div style={{ textAlign: 'center', fontSize: '20px' }}>Load Soundcloud or Youtube</div></label>
             <div className='input-group' >
               <input className="form-control" value={this.state.inputUrl} onChange={this.handleChange} style={{ opacity: 0.6, width: '90%' }} name="inputUrl" />
               <div className='input-group-append'>
                 <button className="btn btn-primary" onClick={() => this.setUrl()}>Load</button>
               </div>
             </div>
+
             {/* MEDIA PLAYER */}
             {soundCloud ?
               <iframe width="500px" height="166" onChange={this.onPlayerStateChange} scrolling="no" frameborder="no"
@@ -270,21 +285,31 @@ class LyricsForm extends Component {
               : <Youtube width="500px" height="166" onReady={this._onReady} videoId={youtube} opts={opts}
                 onPlay={this.state.blobObject ? () => audio.play() : () => this.setState({ record: true })} />}
 
-            {/* // <iframe id="youtube" width="500px" height="166" onPlay={this.onPlayerStateChange} 
-              // src={"https://www.youtube.com/embed/" + youtube + "?autoplay=" + this.state.autoPlay}
-              //   frameBorder="0" fs='0' allow="autoplay; encrypted-media" allowFullScreen>
-              // </iframe>} */}
             {/* LYRICS TEXT AREA */}
             <label className='text-white' style={{ textAlign: 'center', fontSize: '20px' }}>write your lyrics  </label>
             <textarea className="form-control" onChange={this.handleChange} value={this.state.lyrics} name='lyrics'
               style={{
-                backgroundColor: 'rgba(242,242,242,0.5)', borderColor: 'rgba(0, 0, 0, 0)', whiteSpace: 'pre-wrap',
+                backgroundColor: 'rgba(242,242,242,0.5)',color:"white", borderColor: 'rgba(0, 0, 0, 0)', whiteSpace: 'pre-wrap',
                 textAlign: 'center', width: '500px', height: '350px',
                 fontSize: '15px'
               }}>
             </textarea>
 
-            <div>
+            <div className="container">
+              <div className="row" style={{padding: "30px 10px"}} >
+                <div style={{ color: "white", paddingRight: "10px" }}>
+                  Name <input className="form-control" type="text" value={this.state.name} onChange={this.handleChange} style={{ opacity: 0.5 }} placeholder="name"></input>
+                </div>
+                <div style={{ color: "white", paddingRight: "10px" }}>
+                  Password <input className="form-control" type="password" value={this.state.password} onChange={this.handleChange} style={{ opacity: 0.5 }} placeholder="password"></input>
+                </div>
+                <div style={{padding: "10px 10px", paddingTop:"20px"}}>
+                <button className="btn btn-primary" onClick={this.submit}>{this.state.submitButton}</button>
+                </div>
+              </div>
+            </div>
+            
+              <div>
               <div className='container'>
                 <div className='row col-offset-2'>
                   {/* record button */}
@@ -304,10 +329,10 @@ class LyricsForm extends Component {
                     visualSetting='sinewave'
                     backgroundColor="#78C2AD" />
                   {/* <audio id='playback' ref="audioSource" onPlay={(e) => this.playBack(e)} onPause={() => this.setState({ autoPlay: false })} controls="controls" src={this.state.blobObject}></audio> */}
-                  <button className="btn btn-secondary btn-lg" style={{ height: 50, width: 50 }} onClick={this.state.blobObject?() => this.playBack():()=>this.stopRecording}><span className="glyphicon glyphicon-play"></span></button>
-                  <button className="btn btn-primary btn-lg" onClick={this.submit}>{this.state.submitButton}</button>
-                </div>
+                  {/* <button className="btn btn-secondary btn-lg" style={{ height: 50, width: 50 }} onClick={window.uploadFile ? () => this.playBack() : () => this.stopRecording}><span className="glyphicon glyphicon-play"></span></button> */}
+                  <button className="btn btn-secondary btn-lg" style={{ height: 50, width: 50 }} onClick={() => this.playBack()}><span class="glyphicon glyphicon-play"></span></button>
 
+                </div>
               </div>
             </div>
             <div>
@@ -316,7 +341,6 @@ class LyricsForm extends Component {
           {/* Load Lyrics */}
           <div className="col-4 offset-2" style={{ textAlign: 'center' }}>
             <div>
-              
               {displayLyrics}
             </div>
           </div>

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import * as lyricService from '../services/lyricService'
+import * as lyricService from './lyricService'
 
 class LyricsForm extends Component {
   
