@@ -70,7 +70,7 @@ const responseError = error => {
     }
     return Promise.reject(error);
 }
-export {create, getAll,vote, getById,update,deleteById}
+export {create, getAll, getById,update,deleteById}
   
 /*
 split an array and add the splitted items at end of the array

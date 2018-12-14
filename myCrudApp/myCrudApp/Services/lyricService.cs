@@ -23,13 +23,13 @@ namespace myCrudApp.Services
         private static readonly RegionEndpoint bucketRegion = RegionEndpoint.USWest1;                       //s3 region N California
         private static IAmazonS3 s3Client;
 
-        public LyricsCreateResponse Create(LyricsCreateRequest request)
+        public int Create(LyricsCreateRequest request)
         {
             int id = 0;
 
             var response = new LyricsCreateResponse();
 
-            var signedURL = GeneratePreSignedURL(request.File, request.ContentType);  //get signedURL to update resumeUrl in S3
+            //var signedURL = GeneratePreSignedURL(request.File, request.ContentType);  //get signedURL to update resumeUrl in S3
 
             using (SqlConnection conn = new SqlConnection(connString))
             {
@@ -41,7 +41,7 @@ namespace myCrudApp.Services
 
                 cmd.Parameters.AddWithValue("@Lyrics", request.Lyrics);
                 cmd.Parameters.AddWithValue("@Votes", 0);
-                cmd.Parameters.AddWithValue("@FileUrl", signedURL);
+                cmd.Parameters.AddWithValue("@UserId", request.UserId);
 
                 cmd.Parameters.AddWithValue("@Id", SqlDbType.Int).Direction = ParameterDirection.Output;
 
@@ -55,9 +55,9 @@ namespace myCrudApp.Services
                 }
                 conn.Close();
             }
-            response.UserId = id;
-            response.SignedUrl = signedURL;
-            return response;
+            //response.UserId = id;
+            //response.SignedUrl = signedURL;
+            return id;
         }
 
         public string GeneratePreSignedURL(string fileName, string contentType)
@@ -97,6 +97,7 @@ namespace myCrudApp.Services
                         var lyric = new Lyrics()
                         {
                             Id = (int)reader["Id"],
+                            UserId=(int)reader["UserId"],
                             Lyric = (string)reader["Lyrics"],
                             Votes = (int)reader["Votes"]
                         };
@@ -119,7 +120,7 @@ namespace myCrudApp.Services
                 SqlCommand cmd = conn.CreateCommand();
                 cmd.CommandText = "Lyrics_Select_ById";
                 cmd.CommandType = System.Data.CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@Id", id);
+                cmd.Parameters.AddWithValue("@UserId", id);
 
                 using (SqlDataReader reader = cmd.ExecuteReader())
                 {
@@ -128,6 +129,7 @@ namespace myCrudApp.Services
                         var lyric = new Lyrics()
                         {
                             Id = (int)reader["Id"],
+                            UserId = (int)reader["UserId"],
                             Lyric = (string)reader["Lyrics"],
                             Votes = (int)reader["Votes"]
                         };
@@ -150,14 +152,14 @@ namespace myCrudApp.Services
                 cmd.CommandText = "Lyrics_Update";
                 cmd.CommandType = System.Data.CommandType.StoredProcedure;
 
-                cmd.Parameters.AddWithValue("@Id", id);
+                cmd.Parameters.AddWithValue("@UserId", id);
                 cmd.Parameters.AddWithValue("@Lyrics", request.Lyrics);
 
                 using (SqlDataReader reader = cmd.ExecuteReader())
                 {
                     while (reader.Read())
                     {
-                        retId = (int)reader["Id"];
+                        retId = (int)reader["UserId"];
                     }
                 }
                 conn.Close();
@@ -176,13 +178,13 @@ namespace myCrudApp.Services
                 cmd.CommandText = "Lyrics_Update_Votes";
                 cmd.CommandType = System.Data.CommandType.StoredProcedure;
 
-                cmd.Parameters.AddWithValue("@Id", id);
+                cmd.Parameters.AddWithValue("@UserId", id);
 
                 using (SqlDataReader reader = cmd.ExecuteReader())
                 {
                     while (reader.Read())
                     {
-                        retId = (int)reader["Id"];
+                        retId = (int)reader["UserId"];
                     }
                 }
                 conn.Close();
@@ -200,7 +202,7 @@ namespace myCrudApp.Services
                 cmd.CommandText = "Lyrics_Delete";
                 cmd.CommandType = System.Data.CommandType.StoredProcedure;
 
-                cmd.Parameters.AddWithValue("@Id", id);
+                cmd.Parameters.AddWithValue("@UserId", id);
                 cmd.ExecuteNonQuery();
 
                 conn.Close();

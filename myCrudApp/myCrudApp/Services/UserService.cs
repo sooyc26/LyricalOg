@@ -15,6 +15,14 @@ namespace myCrudApp.Services
 {
     public class UserService
     {
+        LyricService _lyricService;
+        RecordService _recordService;
+
+        public UserService()
+        {
+            _lyricService = new LyricService();
+            _recordService = new RecordService();
+        }
         readonly string connString = ConfigurationManager.ConnectionStrings["Default"].ConnectionString;
 
         public int Create(UsersCreateRequest request)
@@ -29,11 +37,9 @@ namespace myCrudApp.Services
                 cmd.CommandText = "Users_Insert";
                 cmd.CommandType = System.Data.CommandType.StoredProcedure;
 
-                cmd.Parameters.AddWithValue("@TypeId", request.TypeId);
                 cmd.Parameters.AddWithValue("@Name", request.Name);
                 cmd.Parameters.AddWithValue("@Email", request.Email);
-                cmd.Parameters.AddWithValue("@Paswword", request.Paswword);
-                cmd.Parameters.AddWithValue("@Confirmed", request.Confirmed);
+                cmd.Parameters.AddWithValue("@Password", request.Password);
                 cmd.Parameters.AddWithValue("@Id", SqlDbType.Int).Direction = ParameterDirection.Output;
 
                 using (SqlDataReader reader = cmd.ExecuteReader())
@@ -68,11 +74,14 @@ namespace myCrudApp.Services
                         var User = new User()
                         {
                             Id = (int)reader["Id"],
-                            TypeId = (int)reader["TypeId"],
                             Name = (string)reader["Name"],
                             Email = (string)reader["Email"],
                             Password = (string)reader["Password"],
-                            Confirmed = (bool)reader["Confirmed"],
+                            Lyrics = (string)reader["Lyrics"],
+                            Votes = (int)reader["Votes"],
+                            BeatUrl = (string)reader["BeatUrl"],
+                            RecordS3Url = (string)reader["RecordS3Url"],
+
                             DateCreated = (DateTime)reader["DateCreated"],
                             DateModified = (DateTime)reader["DateModified"]
                         };
@@ -104,11 +113,9 @@ namespace myCrudApp.Services
                         var User = new User()
                         {
                             Id = (int)reader["Id"],
-                            TypeId = (int)reader["TypeId"],
                             Name = (string)reader["Name"],
                             Email = (string)reader["Email"],
                             Password = (string)reader["Password"],
-                            Confirmed = (bool)reader["Confirmed"],
                             DateCreated = (DateTime)reader["DateCreated"],
                             DateModified = (DateTime)reader["DateModified"]
                         };
@@ -132,11 +139,9 @@ namespace myCrudApp.Services
                 cmd.CommandType = System.Data.CommandType.StoredProcedure;
 
                 cmd.Parameters.AddWithValue("@Id", id);
-                cmd.Parameters.AddWithValue("@TypeId", request.TypeId);
                 cmd.Parameters.AddWithValue("@Name", request.Name);
                 cmd.Parameters.AddWithValue("@Email", request.Email);
                 cmd.Parameters.AddWithValue("@Paswword", request.Paswword);
-                cmd.Parameters.AddWithValue("@Confirmed", request.Confirmed);
 
                 using (SqlDataReader reader = cmd.ExecuteReader())
                 {

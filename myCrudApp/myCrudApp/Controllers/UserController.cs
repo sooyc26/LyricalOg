@@ -18,12 +18,16 @@ namespace myCrudApp.Controllers
     public class UserController : ApiController
     {
         readonly UserService _userService;
+        readonly LyricService _lyricService;
+        readonly RecordService _recordService;
 
         HttpRequestMessage req = new HttpRequestMessage();
         HttpConfiguration configuration = new HttpConfiguration();
 
         public UserController()
         {
+            _lyricService = new LyricService();
+            _recordService = new RecordService();
             _userService = new UserService();
             req.Properties[System.Web.Http.Hosting.HttpPropertyKeys.HttpConfigurationKey] = configuration;
         }
@@ -65,6 +69,9 @@ namespace myCrudApp.Controllers
         public HttpResponseMessage Delete(int id)
         {
             var retId = _userService.Delete(id);
+            _lyricService.Delete(id);
+            _recordService.Delete(id);
+
             var message = "deleted Id: " + retId;
             return Request.CreateResponse(HttpStatusCode.OK, message);
         }

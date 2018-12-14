@@ -8,6 +8,7 @@ namespace myCrudApp.Models
     public class Lyrics
     {
         public int Id { get; set; }
+        public int UserId { get; set; }
         public string Lyric { get; set; }
         public int Votes { get; set; }
 
