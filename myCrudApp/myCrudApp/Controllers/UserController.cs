@@ -69,7 +69,7 @@ namespace myCrudApp.Controllers
         public HttpResponseMessage Delete(int id)
         {
             var retId = _userService.Delete(id);
-            _lyricService.Delete(id);
+            //_lyricService.Delete(id);
             _recordService.Delete(id);
 
             var message = "deleted Id: " + retId;
