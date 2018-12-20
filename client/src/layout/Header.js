@@ -10,25 +10,25 @@ export default class Header extends Component {
   render() {
     return (
       <div>
-          <nav className="navbar navbar-inverse navbar-fixed-top">
-            <div className="container">
-              <div className="navbar-header">
-                
-              </div>
-              <div id="navbar" className="collapse navbar-collapse">
-                <ul className="nav navbar-nav">
-                  <li>
-                    <NavLink to="/lyrics-form">lyrics</NavLink>
-                  </li>
-                </ul>
-              </div>
+        <nav className="navbar navbar-inverse navbar-fixed-top">
+          <div className="container">
+            <div className="navbar-header">
+
             </div>
-          </nav>
-          <div style={{ marginTop: "60px" }}>
-            <div>
-              <Route path="/lyrics-form" component={LyricsForm}/> 
+            <div id="navbar" className="collapse navbar-collapse">
+              <ul className="nav navbar-nav">
+                <li>
+                  <NavLink to="/lyrics-form">lyrics</NavLink>
+                </li>
+              </ul>
             </div>
           </div>
+        </nav>
+        <div style={{ marginTop: "60px" }}>
+          <div>
+            <Route path="/lyrics-form" component={LyricsForm} />
+          </div>
+        </div>
 
       </div>
     );

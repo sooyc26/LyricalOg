@@ -15,10 +15,10 @@ export default class Navbar extends React.Component {
           <div style={{ float: 'right' }}>
             <ul className="nav ml-auto">
               <li className="nav-item">
-                <a className="nav-link float-right text-primary" href="https://bootswatch.com/minty/" target="_blank">Built With Bootstrap</a>
+                <a className="nav-link float-right text-primary" href="https://bootswatch.com/minty/" target="_blank">Write Lyrics</a>
               </li>
               <li className="nav-item">
-                <a className="nav-link text-primary" href="https://bootswatch.com/minty/" target="_blank">WrapBootstrap</a>
+                <a className="nav-link text-primary" href="https://bootswatch.com/minty/" target="_blank">Vote</a>
               </li>
             </ul>
           </div>

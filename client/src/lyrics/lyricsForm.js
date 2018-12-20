@@ -273,7 +273,7 @@ class LyricsForm extends Component {
                 <button id={lyric.Id} onClick={() => this.vote(lyric.Id)} className="btn btn-warning">vote Up: {lyric.Votes}</button>
                 <button id={lyric.Id} onClick={() => this.edit(lyric.Id)} type="button" className="btn btn-secondary ">edit</button>
                 <button id={lyric.Id} onClick={(e) => this.delete(e, lyric.Id)} className="btn btn-secondary">delete</button>
-                <button className="btn btn-circle" style={{ backgroundColor: "rgba(73,81,95,1)", color: "rgba(120,194,173,0.9)" }} onClick={e => this.playBack(lyric.Id)}><span className="fas fa-play"></span></button>
+                <button className="btn btn-circle" style={{ backgroundColor: "#49515f", color: "rgba(120,194,173,0.9)" }} onClick={e => this.playBack(lyric.Id)}><span className="fas fa-play"></span></button>
               </div>
             </div>
 
@@ -302,7 +302,7 @@ class LyricsForm extends Component {
               <button id={lyric.Id} onClick={() => this.vote(lyric.Id)} className="btn btn-outline-warning text-muted">vote Up: {lyric.Votes}</button>
               <button id={lyric.Id} onClick={() => this.edit(lyric.Id)} type="button" className="btn btn-outline-secondary text-muted">edit</button>
               <button id={lyric.Id} onClick={(e) => this.delete(e, lyric.Id)} className="btn btn-outline-danger text-muted">delete</button>
-              <button className="btn btn-circle" style={{ backgroundColor: "rgba(73,81,95,1)", color: "rgba(120,194,173,0.9)" }} onClick={e => this.playBack(lyric.Id)}><span className="fas fa-play"></span></button>
+              <button className="btn btn-circle" style={{ backgroundColor: "#49515f", color: "rgba(120,194,173,0.9)" }} onClick={e => this.playBack(lyric.Id)}><span className="fas fa-play"></span></button>
             </div>
           </div>
         </div>
@@ -335,14 +335,14 @@ class LyricsForm extends Component {
 
             {/* LYRICS TEXT AREA */}
             <label className='text-white' style={{ textAlign: 'center', fontSize: '20px' }}>Write your lyrics  </label>
-            <textarea className="form-control" onChange={this.handleChange} value={this.state.lyrics} name='lyrics'
+            <textarea className="form-control" onChange={this.handleChange} value={this.state.lyrics} name='lyrics' placeholder="lyrics here"
               style={{
                 backgroundColor: 'rgba(73,81,95,0.5)', color: "white", borderColor: 'rgba(120,194,173,0.9)', whiteSpace: 'pre-wrap',
                 textAlign: 'center', width: '500px', height: '350px',
                 fontSize: '15px'
               }}>
             </textarea>
-            <div>
+            <div style={{ paddingTop: "15px" }}>
               <label className='text-white' style={{ textAlign: 'center', fontSize: '20px' }}>Record </label>
               <div className='container'>
 
@@ -363,10 +363,10 @@ class LyricsForm extends Component {
                     audioBitsPerSecond={192000}
                     strokeColor="rgba(120,194,173,0.9)"
                     visualSetting='sinewave'
-                    backgroundColor="rgba(73,81,95,0.5)" />
+                    backgroundColor="#49515f" />
 
                   {/* PLAY BUTTON */}
-                  <button className="btn btn-circle" style={{ backgroundColor: "rgba(73,81,95,0.2)", color: "rgba(120,194,173,0.9)" }} onClick={() => this.playBack()}><span className="fas fa-play"></span></button>
+                  <button className="btn btn-circle" style={{ backgroundColor: "#49515f", color: "rgba(120,194,173,0.9)" }} onClick={() => this.playBack()}><span className="fas fa-play"></span></button>
                 </div>
 
               </div>
