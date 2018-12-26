@@ -7,6 +7,7 @@
     "create-react-app": "^2.1.1",
     "react": "^16.6.1",
     "react-audio-recorder": "^2.2.0",
+    "react-bootstrap": "^0.32.4",
     "react-dom": "^16.6.1",
     "react-mic": "^12.2.3",
     "react-router-dom": "^4.3.1",

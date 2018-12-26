@@ -102,7 +102,7 @@ namespace myCrudApp.Services
                 conn.Open();
 
                 SqlCommand cmd = conn.CreateCommand();
-                cmd.CommandText = "Lyrics_Select_ById";
+                cmd.CommandText = "Users_Select_ById";
                 cmd.CommandType = System.Data.CommandType.StoredProcedure;
                 cmd.Parameters.AddWithValue("@Id", id);
 
@@ -116,6 +116,11 @@ namespace myCrudApp.Services
                             Name = (string)reader["Name"],
                             Email = (string)reader["Email"],
                             Password = (string)reader["Password"],
+                            Lyrics = (string)reader["Lyrics"],
+                            Votes = (int)reader["Votes"],
+                            BeatUrl = (string)reader["BeatUrl"],
+                            RecordS3Url = (string)reader["RecordS3Url"],
+
                             DateCreated = (DateTime)reader["DateCreated"],
                             DateModified = (DateTime)reader["DateModified"]
                         };

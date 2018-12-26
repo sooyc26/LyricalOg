@@ -4,8 +4,7 @@ import * as userService from '../services/userService'
 import * as recordService from '../services/recordService'
 import { ReactMic, AudioPlayer } from 'react-mic';
 import Youtube from 'react-youtube'
-import swal from 'sweetalert2'
-
+import { Modal } from 'react-bootstrap'
 class LyricsForm extends Component {
 
   constructor(props) {
@@ -24,12 +23,8 @@ class LyricsForm extends Component {
       , editId: ''
 
       , record: false
-      , blobObject: ''
       , autoPlay: 0
       , mediaEvent: ''
-      , playback: ''
-
-      , playbackAudio: ''
 
       , name: ''
       , password: ''
@@ -38,8 +33,10 @@ class LyricsForm extends Component {
       , s3Url: false
       , audioId: ''
 
+      , editData: {}
+      , lyricModal: ''
+
     }
-    this.submit = this.submit.bind(this)
   }
 
   componentDidMount() {
@@ -55,23 +52,18 @@ class LyricsForm extends Component {
       })
   }
 
-  submit() {
+  submit = () => {
+
     const userData = {      //user insert data
       name: this.state.name,
       email: this.state.email,
       password: this.state.password
     }
+
     const lyricData = {     //lyric insert data
       userId: 'waiting',
       lyrics: this.state.lyrics
     }
-    const recordData = {      //record insert data
-      userId: 'waiting',
-      beatUrl: this.state.url,
-      file: 'userId_',
-      contentType: window.uploadFile.type
-    }
-
 
     if (this.state.editMode) {  //edit input
       lyricService.update(this.state.editId, lyricData)
@@ -83,46 +75,42 @@ class LyricsForm extends Component {
             submitButton: 'Submit'
           })
         })
+
     } else {      // create
+
+      const recordData = {      //record insert data
+        userId: 'waiting',
+        beatUrl: this.state.url,
+        file: 'userId_',
+        contentType: window.uploadFile.type
+      }
+
       userService.create(userData)
         .then(response => {
           return response
         })
-        .then(response => {
-          lyricData.userId = response
-          recordData.userId = response
-          recordData.file = recordData.file + response
+        .then(responseId => {
+          lyricData.userId = responseId
+          recordData.userId = responseId
+          recordData.file = recordData.file + responseId
 
           lyricService.create(lyricData)
           recordService.create(recordData)
             .then(response => {
-              recordService.uploadFile(response, window.uploadFile)//window.uploadFile , window.blob
+              recordService.uploadFile(response, window.uploadFile)
             })
             .then(() => this.getAll())
         })
-      // .then(() => {
-      //   this.setState({
-      //     lyrics: '',
-      //     name: '',
-      //     password: '',
-      //     email: '',
-      //     editMode: false
-      //   })
-      // })
+        .then(() => {
+          this.setState({
+            lyrics: '',
+            name: '',
+            password: '',
+            email: '',
+            editMode: false
+          })
+        })
     }
-  }
-
-  convertBlobToMp3 = blob => {
-
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', blob.blobURL, true);
-    xhr.responseType = 'blob';
-    xhr.onload = function (e) {
-      if (this.status == 200) {
-        window.uploadFile = this.response;
-      }
-    }
-    xhr.send();
   }
 
   handleChange = e => {
@@ -134,19 +122,21 @@ class LyricsForm extends Component {
       userService.deleteById(id)
         .then(() => this.getAll())
     }
-
   }
 
   edit = id => {
-    lyricService.getById(id)
+    userService.getById(id)
       .then(response => {
+
         this.setState({
-          lyrics: response.Lyrics,
+          editData: response,
+
+          lyricModal: response.Lyrics,
           editMode: true,
-          editId: id,
           submitButton: 'edit'
         })
       })
+    this.handleShow();
   }
 
   vote = id => {
@@ -171,7 +161,6 @@ class LyricsForm extends Component {
     this.setState({
       autoPlay: false,
       record: false,
-      blobObject: ''
     });
     this.state.mediaEvent.target.pauseVideo();
   }
@@ -180,13 +169,24 @@ class LyricsForm extends Component {
     console.log('chunk of real-time data is: ', recordedBlob);
   }
 
+  convertBlobToMp3 = blob => {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', blob.blobURL, true);
+    xhr.responseType = 'blob';
+    xhr.onload = function (e) {
+      if (this.status == 200) {
+        window.uploadFile = this.response;
+      }
+    }
+    xhr.send();
+  }
+
   onStop = (recordedBlob) => {
     console.log('recordedBlob is: ', recordedBlob);
 
     window.blobURL = recordedBlob.blobURL
     window.blob = recordedBlob
     this.convertBlobToMp3(recordedBlob)
-
   }
 
   playBack = id => {
@@ -219,9 +219,15 @@ class LyricsForm extends Component {
 
   playUrl = id => {
     // this.state.mediaEvent.target.seekTo(0).playVideo()
-
     this.refs[id].play()
+  }
 
+  handleClose = e => {
+    this.setState({ show: false });
+  }
+
+  handleShow = e => {
+    this.setState({ show: true });
   }
 
   render() {
@@ -338,7 +344,7 @@ class LyricsForm extends Component {
             <textarea className="form-control" onChange={this.handleChange} value={this.state.lyrics} name='lyrics' placeholder="lyrics here"
               style={{
                 backgroundColor: 'rgba(73,81,95,0.5)', color: "white", borderColor: 'rgba(120,194,173,0.9)', whiteSpace: 'pre-wrap',
-                textAlign: 'center', width: '500px', height: '350px',
+                textAlign: 'center', width: '500px', height: '200px',
                 fontSize: '15px'
               }}>
             </textarea>
@@ -348,7 +354,7 @@ class LyricsForm extends Component {
 
                 {/* RECORD BUTTON */}
                 <div className="row">
-                  <button className="btn btn-circle" onClick={this.state.record ? this.stopRecording : this.startRecording} type="button" >
+                  <button className="btn btn-circle" onClick={this.state.record ? this.stopRecording : this.startRecording} type="button" style={{ backgroundColor: "rgba(120,194,173,0.9)" }} >
                     <i className={this.state.record ? "fas fa-square" : "fas fa-microphone"} style={{ color: "red" }} />
                   </button>
 
@@ -366,12 +372,13 @@ class LyricsForm extends Component {
                     backgroundColor="#49515f" />
 
                   {/* PLAY BUTTON */}
-                  <button className="btn btn-circle" style={{ backgroundColor: "#49515f", color: "rgba(120,194,173,0.9)" }} onClick={() => this.playBack()}><span className="fas fa-play"></span></button>
+                  <button className="btn btn-circle" style={{ color: "#49515f", backgroundColor: "rgba(120,194,173,0.9)" }} onClick={() => this.playBack()}><span className="fas fa-play"></span></button>
                 </div>
 
               </div>
             </div>
             <div className="container">
+
               <div className="row" style={{ padding: "30px 10px" }} >
                 <div style={{ color: "white", paddingRight: "10px" }}>
                   Name <input className="form-control text-white" type="text" name='name' value={this.state.name} onChange={this.handleChange} style={{ backgroundColor: 'rgba(73,81,95,0.5)' }} placeholder="name"></input>
@@ -396,6 +403,65 @@ class LyricsForm extends Component {
               {displayLyrics}
             </div>
           </div>
+
+          <Modal animation={false} backdropStyle={{ opacity: 0.5 }} style={{ backgroundColor: (0, 0, 0, 0.2), top: "25%" }} show={this.state.show} onHide={this.handleClose} >
+            <Modal.Header >
+              <Modal.Title id='ModalHeader'>Edit Lyrics </Modal.Title>
+              <div>password: <input className="form-control" name="passwordModal" type="password" value={this.state.passwordModal} onChange={this.handleChange}></input>
+                <button>checkPW</button>
+              </div>
+              <p>{this.state.editData.Id},{this.state.editData.Name}</p>
+            </Modal.Header>
+            <Modal.Body>
+              <div className="container">
+                <div className="row">
+                  <div style={{ padding: "0px 20px" }}>
+                    <textarea style={{
+                      backgroundColor: 'rgba(73,81,95,0.5)', color: "white", borderColor: 'rgba(120,194,173,0.9)', whiteSpace: 'pre-wrap',
+                      textAlign: 'center', width: '450px', height: '200px',
+                      fontSize: '15px'
+                    }} disabled={this.state.editMode.Password === this.state.passwordModal ? false : true} name="lyricModal" value={this.state.editData.Lyrics} onChange={this.handleChange}></textarea>
+                  </div>
+                  <div style={{ margin: 'auto' }}>
+                  </div>
+                </div>
+              </div>
+            </Modal.Body>
+            <Modal.Footer >
+              <button id={this.state.editId} className='btn btn-primary' onClick={e => this.edit(e)}> Edit </button>
+              <button className='btn btn-default' onClick={() => this.handleClose()}> Close </button>
+            </Modal.Footer >
+          </Modal>
+
+          <Modal animation={false} backdropStyle={{ opacity: 0.5 }} style={{ backgroundColor: (0, 0, 0, 0.2), top: "25%" }} show={this.state.show} onHide={this.handleClose} >
+            <Modal.Header >
+              <Modal.Title id='ModalHeader'>Edit Lyrics </Modal.Title>
+              <div>password: <input className="form-control" name="passwordModal" type="password" value={this.state.passwordModal} onChange={this.handleChange}></input>
+                <button>checkPW</button>
+              </div>
+              <p>{this.state.editData.Id},{this.state.editData.Name}</p>
+            </Modal.Header>
+            <Modal.Body>
+              <div className="container">
+                <div className="row">
+                  <div style={{ padding: "0px 20px" }}>
+                    <textarea style={{
+                      backgroundColor: 'rgba(73,81,95,0.5)', color: "white", borderColor: 'rgba(120,194,173,0.9)', whiteSpace: 'pre-wrap',
+                      textAlign: 'center', width: '450px', height: '200px',
+                      fontSize: '15px'
+                    }} disabled={this.state.editMode.Password === this.state.passwordModal ? false : true} name="lyricModal" value={this.state.editData.Lyrics} onChange={this.handleChange}></textarea>
+                  </div>
+                  <div style={{ margin: 'auto' }}>
+                  </div>
+                </div>
+              </div>
+            </Modal.Body>
+            <Modal.Footer >
+              <button id={this.state.editId} className='btn btn-primary' onClick={e => this.edit(e)}> Edit </button>
+              <button className='btn btn-default' onClick={() => this.handleClose()}> Close </button>
+            </Modal.Footer >
+          </Modal>
+
         </div>
       </React.Fragment>
     );
