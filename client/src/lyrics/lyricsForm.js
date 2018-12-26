@@ -4,7 +4,7 @@ import * as userService from '../services/userService'
 import * as recordService from '../services/recordService'
 import { ReactMic, AudioPlayer } from 'react-mic';
 import Youtube from 'react-youtube'
-import { Modal } from 'react-bootstrap'
+import { Modal, HelpBlock } from 'react-bootstrap'
 class LyricsForm extends Component {
 
   constructor(props) {
@@ -62,11 +62,12 @@ class LyricsForm extends Component {
 
     const lyricData = {     //lyric insert data
       userId: 'waiting',
-      lyrics: this.state.lyrics
+      lyrics: this.state.lyricModal
     }
 
     if (this.state.editMode) {  //edit input
-      lyricService.update(this.state.editId, lyricData)
+
+      lyricService.update(this.state.editData.Id, lyricData)
         .then(() => this.getAll())
         .then(() => {
           this.setState({
@@ -225,7 +226,7 @@ class LyricsForm extends Component {
   }
 
   handleClose = e => {
-    this.setState({ show: false });
+    this.setState({ show: false, passwordModal: '' });
   }
 
   handleShow = e => {
@@ -409,8 +410,10 @@ class LyricsForm extends Component {
           <Modal animation={false} backdropStyle={{ opacity: 0.5 }} style={{ backgroundColor: (0, 0, 0, 0.2), top: "25%" }} show={this.state.show} onHide={this.handleClose} >
             <Modal.Header >
               <Modal.Title id='ModalHeader'>Edit Lyrics </Modal.Title>
-              <div>password: <input className="form-control" name="passwordModal" type="password" value={this.state.passwordModal} onChange={this.handleChange}></input>
+              <div>password: <input className={this.state.editData.Password === this.state.passwordModal ? "form-control is-valid" : "form-control is-invalid"}
+                name="passwordModal" type="password" value={this.state.passwordModal} onChange={this.handleChange}></input>
                 {/* <button>checkPW</button> */}
+                <HelpBlock>{this.state.editData.Password === this.state.passwordModal ? "" : "enter valid password"}</HelpBlock>
               </div>
               <p>{this.state.editData.Id},{this.state.editData.Name}</p>
             </Modal.Header>
@@ -418,11 +421,14 @@ class LyricsForm extends Component {
               <div className="container">
                 <div className="row">
                   <div style={{ padding: "0px 20px" }}>
-                    <textarea style={{
-                      backgroundColor: 'rgba(73,81,95,0.5)', color: "white", borderColor: 'rgba(120,194,173,0.9)', whiteSpace: 'pre-wrap',
-                      textAlign: 'center', width: '450px', height: '200px',
-                      fontSize: '15px'
-                    }} disabled={this.state.editData.Password == this.state.passwordModal ? false : true} name="lyricModal" value={this.state.lyricModal} onChange={this.handleChange}></textarea>
+                    <textarea
+                      className="form-control"
+                      style={{
+                        margin: 'auto',
+                        backgroundColor: 'rgba(73,81,95,0.5)', color: "white", borderColor: 'rgba(120,194,173,0.9)', whiteSpace: 'pre-wrap',
+                        textAlign: 'center', width: '450px', height: '200px',
+                        fontSize: '15px'
+                      }} disabled={this.state.editData.Password == this.state.passwordModal ? false : true} name="lyricModal" value={this.state.lyricModal} onChange={this.handleChange}></textarea>
                   </div>
                   <div style={{ margin: 'auto' }}>
                   </div>
@@ -430,7 +436,7 @@ class LyricsForm extends Component {
               </div>
             </Modal.Body>
             <Modal.Footer >
-              <button id={this.state.editId} className='btn btn-primary' onClick={e => this.submit(e)}> Edit </button>
+              <button id={this.state.editId} className='btn btn-primary' disabled={this.state.editData.Password == this.state.passwordModal ? false : true} onClick={e => this.submit(e)}> Edit </button>
               <button className='btn btn-default' onClick={() => this.handleClose()}> Close </button>
             </Modal.Footer >
           </Modal>
