@@ -81,38 +81,42 @@ class LyricsForm extends Component {
 
     } else {      // create
 
-      const recordData = {      //record insert data
-        userId: 'waiting',
-        beatUrl: this.state.url,
-        file: 'userId_',
-        contentType: window.uploadFile.type
-      }
+      lyricData.lyrics = this.state.lyrics
 
-      userService.create(userData)
-        .then(response => {
-          return response
-        })
-        .then(responseId => {
-          lyricData.userId = responseId
-          recordData.userId = responseId
-          recordData.file = recordData.file + responseId
+      if (window.uploadFile) {
+        const recordData = {      //record insert data
+          userId: 'waiting',
+          beatUrl: this.state.url,
+          file: 'userId_',
+          contentType: window.uploadFile.type
+        }
 
-          lyricService.create(lyricData)
-          recordService.create(recordData)
-            .then(response => {
-              recordService.uploadFile(response, window.uploadFile)
-            })
-            .then(() => this.getAll())
-        })
-        .then(() => {
-          this.setState({
-            lyrics: '',
-            name: '',
-            password: '',
-            email: '',
-            editMode: false
+        userService.create(userData)
+          .then(response => {
+            return response
           })
-        })
+          .then(responseId => {
+            lyricData.userId = responseId
+            recordData.userId = responseId
+            recordData.file = recordData.file + responseId
+
+            lyricService.create(lyricData)
+            recordService.create(recordData)
+              .then(response => {
+                recordService.uploadFile(response, window.uploadFile)
+              })
+          })
+          .then(() => this.getAll())
+          .then(() => {
+            this.setState({
+              lyrics: '',
+              name: '',
+              password: '',
+              email: '',
+              editMode: false
+            })
+          })
+      } else console.log("no recording")
     }
   }
 
@@ -184,6 +188,7 @@ class LyricsForm extends Component {
     xhr.send();
   }
 
+  
   onStop = (recordedBlob) => {
     console.log('recordedBlob is: ', recordedBlob);
 
