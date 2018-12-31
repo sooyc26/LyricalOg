@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import * as lyricService from '../services/lyricService'
 import * as userService from '../services/userService'
 import * as recordService from '../services/recordService'
-import { ReactMic, AudioPlayer } from 'react-mic';
+import { ReactMic } from 'react-mic';
 import Youtube from 'react-youtube'
 import { Modal, HelpBlock } from 'react-bootstrap'
 class LyricsForm extends Component {
@@ -158,7 +158,6 @@ class LyricsForm extends Component {
   startRecording = () => {
     this.setState({
       autoPlay: true,
-      //record: true
     });
     this.state.mediaEvent.target.seekTo(0).playVideo();
   }
@@ -188,7 +187,7 @@ class LyricsForm extends Component {
     xhr.send();
   }
 
-  
+
   onStop = (recordedBlob) => {
     console.log('recordedBlob is: ', recordedBlob);
 
@@ -221,12 +220,10 @@ class LyricsForm extends Component {
 
   _onReady = event => {
     this.setState({ mediaEvent: event })
-    // access to player in all event handlers via event.target
     event.target.pauseVideo();
   }
 
   playUrl = id => {
-    // this.state.mediaEvent.target.seekTo(0).playVideo()
     this.refs[id].play()
   }
 
@@ -267,7 +264,6 @@ class LyricsForm extends Component {
       if (index === 0) {
         return (
           <div>
-            {/* TOP RATED */}
             <div style={{ textAlign: 'center' }}>
               <label className="text-white" style={{ textAlign: 'center', fontSize: '20px' }}>
                 <span class="fas fa-bolt" style={{ color: "yellow" }}></span>
