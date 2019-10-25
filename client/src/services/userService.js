@@ -1,5 +1,17 @@
 import axios from 'axios';
 
+function login(data){
+    const url= 'http://localhost:49694/api/users/login'
+
+    const config={
+        method:'POST',
+        data:data,
+    }
+    return axios(url, config)
+        .then(responseSuccess)
+        .catch(responseError)
+}
+
 function create(data) {
     const url= 'http://localhost:49694/api/users'
     
@@ -70,7 +82,7 @@ const responseError = error => {
     }
     return Promise.reject(error);
 }
-export {create, getAll, getById,update,deleteById}
+export {create, getAll, getById,update,deleteById,login}
   
 /*
 split an array and add the splitted items at end of the array

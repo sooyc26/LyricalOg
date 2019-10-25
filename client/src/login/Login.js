@@ -1,73 +1,138 @@
-import React from 'react'
+import React from 'react';
+import * as userService from '../services/userService'
+import {connect } from 'react-redux'
+import {updateUser, authUser} from '../actions/userActions'
 
-export default class Login extends React.Component {
+class Login extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = {
+            name: '',
             email: '',
-            password: ''
+            regisEmail: '',
+            password: '',
+            confirmPassword: ''
 
             , RegisterModal: false
+            ,wrongInput:false
         }
         this.handleChange = this.handleChange.bind(this)
         this.submit = this.submit.bind(this)
-        this.register = this.register.bind(this)
+        this.toggleLoginRegis = this.toggleLoginRegis.bind(this)
+        this.onUpdateUser = this.onUpdateUser.bind(this)
     }
+
+    onUpdateUser(name){
+
+        this.props.onUpdateUser(name)
+    
+      }
 
     handleChange(e) {
-        this.setState({ [e.target.id]: e.target.value })
+        this.setState({ [e.target.id]: e.target.value,wrongInput:false })
     }
 
-    register() {
-        this.setState({ RegisterModal: true })
+    toggleLoginRegis(e) {
+        e.preventDefault();
+        this.setState({ RegisterModal: !this.state.RegisterModal })
     }
 
-    submit() {
+    submit(e) {
+        e.preventDefault();
+        var data = {
+            Name: this.state.name,
+            Email: this.state.email,
+            Password: this.state.password
+        }
+
+        if (this.state.RegisterModal) {
+            userService.create(data)
+        } else {
+            userService.login(data)
+                .then(response => {
+                    if (response.SessionToken !== null) {
+
+                        localStorage.setItem('loginToken', JSON.stringify(response))
+                        this.props.onUpdateUser(response)
+                        this.props.onAuthUser()
+                        this.props.history.push("/beatsList");
+                    } else {
+                        this.setState({ wrongInput: true })
+                    }
+                })
+        }
 
     }
 
     render() {
         return (
             <React.Fragment>
-                <form>
-                    <div class="form-group">
-                        <label for="exampleInputEmail1">Email address</label>
-                        <input type="email" value={this.state.email} onChange={this.handleChange} class="form-control" id="email" aria-describedby="emailHelp" placeholder="Enter email" />
+                <header className="App-header" style={{ opacity: 0.8 }}>
+                    <div style={{ lineHeight: '200px' }}>
+                        <h1 className="text-primary" style={{ paddingTop: "40px", fontSize: "30px" }}>Lyrical OG</h1>
                     </div>
-                    <div class="form-group">
-                        <label for="exampleInputPassword1">Password</label>
-                        <input type="password" value={this.state.password} onChange={this.handleChange} class="form-control" id="password" placeholder="Password" />
-                    </div>
-                    <button onSubmit={() => this.submit()} className="btn btn-primary">Login</button>
-                    <button onClick={() => this.register()} className="btn btn-secondary">Register</button>
-
-                </form>
-
-                {this.state.RegisterModal ?
-                    (<div class="modal">
-                        <div class="modal-dialog" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title">Modal title</h5>
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>
-                                <div class="modal-body">
-                                    <p>Modal body text goes here.</p>
-                                    <form>
-
-                                    </form>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-primary">Save changes</button>
-                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                </div>
+                    {this.state.RegisterModal ?
+                        <form>
+                            <header>Register</header>
+                            <div className="form-group">
+                                <label>Name</label>
+                                <input value={this.state.name} onChange={this.handleChange} className="form-control" id="name" aria-describedby="emailHelp" placeholder="Enter name" />
                             </div>
-                        </div>
-                    </div>) : ''}
+                            <div className="form-group">
+                                <label >Email address</label>
+                                <input type="email" value={this.state.regisEmail} onChange={this.handleChange} className="form-control" id="regisEmail" aria-describedby="emailHelp" placeholder="Enter email" />
+                            </div>
+                            <div className="form-group">
+                                <label >Password</label>
+                                <input type="password" value={this.state.regisPassword} onChange={this.handleChange} className="form-control" id="regisPassword" placeholder="Password" />
+                            </div>
+                            <div className="form-group">
+                                <label >Confirm Password</label>
+                                <input type="password" value={this.state.confirmPassword} onChange={this.handleChange} className="form-control" id="confirmPassword" placeholder="Password" />
+                            </div>
+                            <button onClick={(e) => this.submit(e)} className="btn btn-primary">Register</button>
+                            <button onClick={(e) => this.toggleLoginRegis(e)} className="btn btn-outline-secondary">Login?</button>
+                        </form>
+
+                        :
+                        <form>
+                            <header>Login</header>
+                            <div className="form-group">
+                                <label >Email Address</label>
+                                <input type="email" value={this.state.email} onChange={this.handleChange} className="form-control" id="email" placeholder="Enter email" />
+                            </div>
+                            <div className="form-group">
+                                <label >Password</label>
+                                <input type="password" value={this.state.password} onChange={this.handleChange} className="form-control" id="password" placeholder="Password" />
+                            </div>
+                            <div>
+
+                                {this.state.wrongInput ?
+                                    <div className="alert alert-dismissible alert-danger">
+                                        <button type="button" className="close" data-dismiss="alert" onClick={()=>this.setState({wrongInput:false})}>&times;</button>
+                                         <a href="#" className="alert-link"></a> Wrong email or password.
+                            </div> : ''}
+                            </div>
+
+                            <button onClick={(e) => this.submit(e)} className="btn btn-primary">Login</button>
+                            <button onClick={(e) => this.toggleLoginRegis(e)} className="btn btn-secondary">Register</button>
+                            <button onClick={() => this.password()} className="btn btn-outline-secondary">forgot password?</button>
+                        </form>
+                    }
+                </header>
+
             </React.Fragment>
         )
     }
 }
+const mapStateToProps = state=> ({
+      user:state.user,
+      authed:state.authed 
+});
+
+const mapActionsToProps = {
+    onUpdateUser:updateUser,
+    onAuthUser: authUser
+}
+export default connect(mapStateToProps,mapActionsToProps)(Login);

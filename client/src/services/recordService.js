@@ -14,12 +14,12 @@ function create(data) {
 }
 
 function uploadFile(responseData, uploadFile) {
-
     const s3UploadURL = responseData.SignedUrl;
-
+    
     const header = {
         headers: {
-            'Content-Type': uploadFile.type
+            'Content-Type': uploadFile.type, 
+            //'x-amz-acl': 'public-read'
         }
     }
 
