@@ -42,7 +42,7 @@ class App extends Component {
     this.setState({
       authed: true
     })
-    this.props.history.push("/lyricsForm");
+    this.props.history.push("/beatsList");
 
   }
 
@@ -67,7 +67,10 @@ class App extends Component {
 
               <Route exact path="/" render={props => <Header {...props} />} >
               </Route>
-              <PrivateRoute path="/beatsList" authed={store.getState().authed} component={BeatsList} />
+              <PrivateRoute path="/beatsList" 
+              //authed={store.getState().authed} 
+              authed={localStorage.getItem('loginToken') !=null? true:false} 
+              component={BeatsList} />
               <Route path="/Login" render={props => <Login {...props} />} />
               <Route path="/beatsList" render={props => <BeatsList {...props} />} />
               <Route exact path="/lyricsForm/:id"render={props => <LyricsForm {...props} />}  />

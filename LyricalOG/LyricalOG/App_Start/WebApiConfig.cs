@@ -34,6 +34,7 @@ namespace LyricalOG
 
             //dependency resolver register
             var container = new UnityContainer();
+
             container.RegisterType<IUsersProvider, UserService>(new HierarchicalLifetimeManager());
             container.RegisterType<IUsersProvider>(
                 new InjectionFactory(c => new UserService()));

@@ -13,7 +13,7 @@ namespace LyricalOG.Models.Users
         public string Email { get; set; }
         public string Password { get; set; }
         public string SessionToken { get; set; }
-
+        public bool IsAdmin { get; set; }
         public UserIdentity Identity { get; set; }
         public DateTime DateCreated { get; set; }
     }

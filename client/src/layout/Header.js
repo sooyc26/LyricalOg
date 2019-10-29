@@ -43,8 +43,14 @@ export default class Header extends Component {
             <div style={{ lineHeight: '200px' }}>
               <h1 className="text-primary" style={{ paddingTop: "40px", fontSize: "30px" }}>Lyrical OG</h1>
             </div>
-            <button type="button" onClick={() => this.props.history.push("/Login")} className="btn btn-outline-primary">Register</button>
-            <button type="button" onClick={()=> this.toLogin()} className="btn btn-outline-secondary">Login</button>
+            {localStorage.getItem('loginToken') !=null?
+              <button style={{ float: 'center',position:"relative" }} type="button" onClick={() => this.props.history.push("/beatsList")} className="btn btn-outline-warning">Begin OG</button>
+              :
+              <span>
+                <button type="button" onClick={() => this.props.history.push("/Login")} className="btn btn-outline-primary">Register</button>
+                <button type="button" onClick={() => this.toLogin()} className="btn btn-outline-secondary">Login</button>
+              </span>
+            }
           </form>
         </header>
       </React.Fragment>

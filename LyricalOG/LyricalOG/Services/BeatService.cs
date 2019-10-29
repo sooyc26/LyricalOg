@@ -39,6 +39,7 @@ namespace LyricalOG.Services
 
                 cmd.Parameters.AddWithValue("@Producer", request.Producer);
                 cmd.Parameters.AddWithValue("@Title", request.Title);
+                cmd.Parameters.AddWithValue("@UploaderId", request.UploaderId);
                 cmd.Parameters.AddWithValue("@Vibe", request.Vibe);
                 cmd.Parameters.AddWithValue("@IsUpload", request.BeatUrl != ""? false:true);
                 cmd.Parameters.AddWithValue("@SourceUrl", request.BeatUrl!=""? request.BeatUrl: slicedUrl);
@@ -98,6 +99,7 @@ namespace LyricalOG.Services
                         var beat = new Beat()
                         {
                             Id = (int)reader["BeatId"],
+                            UploaderId = (int)reader["UploaderId"],
                             Title = (string)reader["Title"],
                             Producer = (string)reader["Producer"],
                             BeatUrl = (string)reader["BeatUrl"],

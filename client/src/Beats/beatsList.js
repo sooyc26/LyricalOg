@@ -21,12 +21,19 @@ export default class BeatsList extends React.Component{
             ,show:false
             ,valid:true
             ,edit:false
+            ,isAdmin:false
+            ,currUserId:0
 
         }
         this.getAll=this.getAll.bind(this)
         this.edit = this.edit.bind(this)
     }
     componentDidMount(){
+        var userData = JSON.parse(localStorage.getItem('loginToken'));
+        this.setState({
+            isAdmin:userData.IsAdmin,
+            currUserId:userData.UserId
+        })
         this.getAll();
     }
 
@@ -65,6 +72,7 @@ export default class BeatsList extends React.Component{
         const data = {
             Id:this.state.id,
             Producer:this.state.producer,
+            UploaderId:this.state.currUserId,
             Title:this.state.title,
             LyricsCount:this.state.lyricsCount,
             BeatUrl:this.state.beatUrl,
@@ -143,10 +151,12 @@ export default class BeatsList extends React.Component{
                     <td>{b.Vibe}</td>
                     <td>{b.LyricsCount}</td>
                     <td>{moment(b.DateCreated).format('MM/DD/YYYY')}</td>
-                    <td>
-                        <span onClick={() => this.edit(b.Id)} className="fas fa-edit"></span>
-                        <span onClick={() => this.delete(b.Id)} className="fas fa-trash-alt"></span>
-                    </td>
+                    {this.state.isAdmin || this.state.currUserId === b.UploaderId ?
+                        <td>
+                            <span onClick={() => this.edit(b.Id)} className="fas fa-edit"></span>
+                            <span onClick={() => this.delete(b.Id)} className="fas fa-trash-alt"></span>
+                        </td> : ''
+                    }
                 </tr>
             )
 

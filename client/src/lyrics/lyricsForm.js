@@ -42,11 +42,18 @@ class LyricsForm extends Component {
       , lyricModal: ''
       
       ,BeatId:0     //load on click
+      ,isAdmin:false
+      ,currUserId:0
 
     }
   }
 
   componentDidMount() {
+    var userData = JSON.parse(localStorage.getItem('loginToken'));
+    this.setState({
+        isAdmin:userData.IsAdmin,
+        currUserId:userData.UserId
+    })
     this.getAll()
   }
 
@@ -54,9 +61,7 @@ class LyricsForm extends Component {
     var id = this.props.match.params.id? this.props.match.params.id:1
 
     beatService.getById(id)
-    .then(response=>{
-    
-      debugger
+    .then(response=>{  
       this.setState({
         url: response.BeatUrl
       })
@@ -245,18 +250,15 @@ class LyricsForm extends Component {
     }
 
     let beatPlayer;
-    if(this.state.url.includes('sound')){
-      beatPlayer = 
-                      <iframe title="soundcloud" width="500px" height="166" onChange={this.onPlayerStateChange} scrolling="no" frameborder="no"
+    if(this.state.url.includes('sound')){//load soundcloud iframe
+      beatPlayer = <iframe title="soundcloud" width="500px" height="166" onChange={this.onPlayerStateChange} scrolling="no" frameborder="no"
                 src={"http://w.soundcloud.com/player/?url=" + this.state.url + "&amp;auto_play=" + 0 + "enablejsapi=1"}>
-              </iframe>
-      
-    }else if(this.state.url.includes('youtube')){
+              </iframe>     
+    }else if(this.state.url.includes('youtube')){//load youtube iframe
       youtube = this.state.url.split("=").pop();
       beatPlayer = <Youtube width="500px" height="166" onReady={this._onReady} videoId={youtube} opts={opts}
-      // onPlay={window.blobURL ? () => audio.play() : () => this.setState({ record: true })} />}
       onPlay={this.state.s3Url ? () => this.playUrl(this.state.audioId) : (window.blobURL ? () => audio.play() : () => this.setState({ record: true }))} />
-    }else{
+    }else{//load wp iframe
       beatPlayer =  <iframe src={this.state.url} width="500px" height="166"></iframe>
     }
 
@@ -286,7 +288,11 @@ class LyricsForm extends Component {
                 <div></div>
                 <button id={lyric.Id} onClick={() => this.vote(lyric.Id)} className="btn btn-warning">vote Up: {lyric.Votes}</button>
                 {/* <button id={lyric.Id} onClick={() => this.edit(lyric.Id)} type="button" className="btn btn-secondary ">edit</button> */}
-                <button id={lyric.Id} onClick={(e) => this.delete(e, lyric.Id)} className="btn btn-secondary">delete</button>
+                {
+                  lyric.UserId === this.state.currUserId || this.state.isAdmin ?
+                    <button id={lyric.Id} onClick={(e) => this.delete(e, lyric.Id)} className="btn btn-secondary">Delete</button>
+                    : ''
+                }
                 <button className="btn btn-circle" style={{ backgroundColor: "#49515f", color: "rgba(120,194,173,0.9)" }} onClick={e => this.playBack(lyric.Id)}><span className="fas fa-play"></span></button>
               </div>
             </div>
@@ -315,8 +321,11 @@ class LyricsForm extends Component {
 
               <button id={lyric.Id} onClick={() => this.vote(lyric.Id)} className="btn btn-outline-warning text-muted">vote Up: {lyric.Votes}</button>
               {/* <button id={lyric.Id} onClick={() => this.edit(lyric.Id)} type="button" className="btn btn-outline-secondary text-muted">edit</button> */}
-              <button id={lyric.Id} onClick={(e) => this.delete(e, lyric.Id)} className="btn btn-outline-danger text-muted">delete</button>
-              <button className="btn btn-circle" style={{ backgroundColor: "#49515f", color: "rgba(120,194,173,0.9)" }} onClick={e => this.playBack(lyric.Id)}><span className="fas fa-play"></span></button>
+              {
+                  lyric.UserId === this.state.currUserId || this.state.isAdmin ?
+                    <button id={lyric.Id} onClick={(e) => this.delete(e, lyric.Id)} className="btn btn-secondary">Delete</button>
+                    : ''
+                }              <button className="btn btn-circle" style={{ backgroundColor: "#49515f", color: "rgba(120,194,173,0.9)" }} onClick={e => this.playBack(lyric.Id)}><span className="fas fa-play"></span></button>
             </div>
           </div>
         </div>

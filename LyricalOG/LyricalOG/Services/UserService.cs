@@ -57,6 +57,7 @@ namespace LyricalOG.Services
                         //request.Identity.Authentication = (bool)reader["Authentication"];
                         request.Name = (string)reader["Name"];
                         request.DateCreated = (DateTime)reader["DateCreated"];
+                        request.IsAdmin = (bool)reader["IsAdmin"];
                         request.SessionToken = GenerateJSONWebToken(request);
 
                         //SignIn(request);

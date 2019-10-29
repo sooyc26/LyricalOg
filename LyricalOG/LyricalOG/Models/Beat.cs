@@ -8,6 +8,7 @@ namespace LyricalOG.Models
     public class Beat
     {
         public int Id { get; set; }
+        public int UploaderId { get; set; }
         public string Title { get; set; }
         public string Producer { get; set; }
         public string BeatUrl { get; set; }
