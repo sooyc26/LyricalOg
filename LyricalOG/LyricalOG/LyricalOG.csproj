@@ -517,6 +517,7 @@
     <Compile Include="Interfaces\IBeatProvider.cs" />
     <Compile Include="Interfaces\ILyricsProvider.cs" />
     <Compile Include="Interfaces\IS3RecordProvider.cs" />
+    <Compile Include="Interfaces\ISendGridProvider.cs" />
     <Compile Include="Interfaces\IUsersProvider.cs" />
     <Compile Include="Models\Beat.cs" />
     <Compile Include="Models\Lyrics.cs" />

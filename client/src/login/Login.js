@@ -39,20 +39,24 @@ class Login extends React.Component {
     }
 
     submit(e) {
-        e.preventDefault();
-        var data = {
-            Name: this.state.name,
-            Email: this.state.email,
-            Password: this.state.password
-        }
-
-        if (this.state.RegisterModal) {
+        e.preventDefault();        
+        if (this.state.RegisterModal) {//register
+            var data = {
+                Name: this.state.name,
+                Email: this.state.regisEmail,
+                Password: this.state.regisPassword
+            }
             userService.create(data)
-        } else {
+        } else {//login
+            var data = {
+                Email: this.state.email,
+                Password: this.state.password
+            }
             userService.login(data)
                 .then(response => {
                     if (response.SessionToken !== null) {
-
+                        //if not authenticated, resend validation email page
+                        
                         localStorage.setItem('loginToken', JSON.stringify(response))
                         this.props.onUpdateUser(response)
                         this.props.onAuthUser()

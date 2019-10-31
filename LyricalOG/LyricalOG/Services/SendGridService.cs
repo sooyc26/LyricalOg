@@ -14,10 +14,11 @@ using System.Net.Mail;
 using System.Data.SqlClient;
 using System.Data;
 using LyricalOG.Models.Users;
+using LyricalOG.Interfaces;
 
 namespace LyricalOG.Services
 {
-    public class SendGridService
+    public class SendGridService: ISendGridProvider
     {
         //private IDataProvider _dataProvider;
 
@@ -27,7 +28,6 @@ namespace LyricalOG.Services
 
         //}
         readonly string connString = ConfigurationManager.ConnectionStrings["Default"].ConnectionString;
-
 
         public string GetUniqueKey(int maxSize)
         {
@@ -49,7 +49,7 @@ namespace LyricalOG.Services
             return result.ToString();
         }
 
-        public async Task<HttpStatusCode> SendEmail(User request)
+        public async Task<Response> SendEmail(User request)
         {
 
             var user = new User();
@@ -88,7 +88,7 @@ namespace LyricalOG.Services
             var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
             Response response = await client.SendEmailAsync(msg);
 
-            return response.StatusCode;
+            return response;
 
         }
 

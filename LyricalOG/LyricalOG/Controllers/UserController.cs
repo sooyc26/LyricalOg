@@ -62,6 +62,13 @@ namespace LyricalOG.Controllers
             return req.CreateResponse(HttpStatusCode.OK, id);
         }
 
+        [HttpGet, Route("users/validate/{id:int}")]
+        public HttpResponseMessage ValidateUser(int id)
+        {
+            var userInfo = _usersProvider.ReadById(id);
+            var response = _usersProvider.EmailValidation(userInfo);
+            return req.CreateResponse(HttpStatusCode.OK, response);
+        }
         [HttpGet, Route("users")]
         public HttpResponseMessage ReadAll()
         {

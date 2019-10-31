@@ -48,6 +48,10 @@ namespace LyricalOG
             container.RegisterType<IBeatProvider>(
                 new InjectionFactory(c => new BeatService()));
             config.DependencyResolver = new UnityResolver(container);
+
+            container.RegisterType<ISendGridProvider>(
+    new InjectionFactory(c => new SendGridService()));
+            config.DependencyResolver = new UnityResolver(container);
         }
     }
 }
