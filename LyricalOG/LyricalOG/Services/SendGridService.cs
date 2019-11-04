@@ -49,14 +49,14 @@ namespace LyricalOG.Services
             return result.ToString();
         }
 
-        public async Task<Response> SendEmail(User request)
+        public async Task<Response> SendVerification(User request)
         {
-
-            var user = new User();
 
             int expireTime = int.Parse(ConfigurationManager.AppSettings["PasswordResetExpirationDate"]);
 
-            DateTime expireDate = DateTime.UtcNow.AddHours(expireTime);
+            var domain = ConfigurationManager.AppSettings["AppDomainAddress"];
+
+            //DateTime expireDate = DateTime.UtcNow.AddHours(expireTime);
 
             string SecretPasswordKey = GetUniqueKey(64);
 
@@ -66,27 +66,29 @@ namespace LyricalOG.Services
                 conn.Open();
 
                 SqlCommand cmd = conn.CreateCommand();
-                cmd.CommandText = "Users_IssuePasswordResetKey";
+                cmd.CommandText = "Users_Insert_VerificationKey";
                 cmd.CommandType = CommandType.StoredProcedure;
 
                 cmd.Parameters.AddWithValue("@Email", request.Email);
-                cmd.Parameters.AddWithValue("@PasswordResetKey", SecretPasswordKey);
-                cmd.Parameters.AddWithValue("@PasswordResetKeyExpirationDate", expireDate);
+                cmd.Parameters.AddWithValue("@VerificationKey", SecretPasswordKey);
 
                 conn.Close();
             }
 
             var apiKey = ConfigurationManager.AppSettings["SendGridKey"];
+            //var apiKey = Environment.GetEnvironmentVariable(sendGridKey);
+            //string apiKey = Environment.GetEnvironmentVariable(sendgridKey, EnvironmentVariableTarget.User);
+
             var client = new SendGridClient(apiKey);
-            var from = new EmailAddress("noreply@lyrical.og", "Lyrical OG");
-            var subject = "Lyrical OG Reset Password";
-            var to = new EmailAddress(request.Email, "");
+            var from = new EmailAddress("no-reply@lyrical.og", "Lyrical OG");
+            var subject = "Lyrical OG Verification Link";
+            var to = new EmailAddress("sooyc26@gmail.com", request.Name);
             var plainTextContent = "Please click on the link below to reset your account password!";
 
-            var resetAddress = ConfigurationManager.AppSettings["PasswordResetAddress"];
+            var resetAddress = ConfigurationManager.AppSettings["VerificationAddress"];
             string htmlContent = string.Format("<a href=\"{0}{1}\"> Click here to reset password</a>", resetAddress, SecretPasswordKey);
             var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
-            Response response = await client.SendEmailAsync(msg);
+            Response response = await client.SendEmailAsync(msg).ConfigureAwait(false);
 
             return response;
 

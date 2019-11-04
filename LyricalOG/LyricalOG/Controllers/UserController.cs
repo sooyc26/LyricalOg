@@ -23,17 +23,17 @@ namespace LyricalOG.Controllers
         private readonly IUsersProvider _usersProvider;
         private readonly ILyricsProvider _lyricProvider;
         private readonly IS3RecordProvider _S3Provider;
-        private readonly SendGridService _sendGridService;
+        private readonly ISendGridProvider _sendGridProvider;
 
         HttpRequestMessage req = new HttpRequestMessage();
         HttpConfiguration configuration = new HttpConfiguration();
 
-        public UserController(ILyricsProvider l, IUsersProvider u, IS3RecordProvider s)
+        public UserController(ILyricsProvider l, IUsersProvider u, IS3RecordProvider s, ISendGridProvider sg)
         {
             _lyricProvider = l;
             _S3Provider = s;
             _usersProvider = u;
-            _sendGridService = new SendGridService();
+            _sendGridProvider = sg;
 
             req.Properties[System.Web.Http.Hosting.HttpPropertyKeys.HttpConfigurationKey] = configuration;
         }
@@ -58,15 +58,16 @@ namespace LyricalOG.Controllers
                 return this.Request.CreateResponse(HttpStatusCode.BadRequest, "please enter valid input");
             }
             int id = _usersProvider.Create(request);
+            SendVerificationEmail(id);
 
             return req.CreateResponse(HttpStatusCode.OK, id);
         }
 
         [HttpGet, Route("users/validate/{id:int}")]
-        public HttpResponseMessage ValidateUser(int id)
+        public HttpResponseMessage SendVerificationEmail(int id)
         {
             var userInfo = _usersProvider.ReadById(id);
-            var response = _usersProvider.EmailValidation(userInfo);
+            var response =  _sendGridProvider.SendVerification(userInfo);
             return req.CreateResponse(HttpStatusCode.OK, response);
         }
         [HttpGet, Route("users")]
@@ -104,7 +105,7 @@ namespace LyricalOG.Controllers
         [HttpPut, Route("resetPassword")]
         public async Task<HttpResponseMessage> SendEmail(User request)
         {
-            var result = await _sendGridService.SendEmail(request);
+            var result = await _sendGridProvider.SendVerification(request);
 
             return Request.CreateResponse(HttpStatusCode.OK, result);
         }
@@ -112,7 +113,7 @@ namespace LyricalOG.Controllers
         [HttpGet, Route("expire-check/{key}")]
         public HttpResponseMessage CheckExpireDate(string key)
         {
-            UserKeyExpireCheck result = _sendGridService.CheckExpireDate(key);
+            UserKeyExpireCheck result = _sendGridProvider.CheckExpireDate(key);
 
             if (result.ExpireBoolean == false)
             {

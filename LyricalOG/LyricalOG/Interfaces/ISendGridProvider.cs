@@ -12,7 +12,7 @@ namespace LyricalOG.Interfaces
 {
     public interface ISendGridProvider
     {
-        Task<Response> SendEmail(User request);
+        Task<Response> SendVerification(User request);
         UserKeyExpireCheck CheckExpireDate(string check);
     }
 }

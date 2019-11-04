@@ -16,6 +16,6 @@ namespace LyricalOG.Interfaces
         User ReadById(int id);
         int UpdateUser(UsersUpdateRequest request, int id);
         int Delete(int id);
-        Task EmailValidation(User request);
+        Task EmailVerification(User request);
     }
 }

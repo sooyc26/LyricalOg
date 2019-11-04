@@ -6,6 +6,7 @@ import BeatsList from './Beats/beatsList'
 // import Background from './cloudLightning.png';
 import Navbar from './layout/Navbar';
 import Login from './login/Login';
+import Register from './login/Register';
 import { Route, BrowserRouter,Redirect,Switch } from 'react-router-dom';
 import Header from './layout/Header'
 
@@ -72,6 +73,7 @@ class App extends Component {
               authed={localStorage.getItem('loginToken') !=null? true:false} 
               component={BeatsList} />
               <Route path="/Login" render={props => <Login {...props} />} />
+              <Route path="/Register" render={props => <Register {...props} />} />
               <Route path="/beatsList" render={props => <BeatsList {...props} />} />
               <Route exact path="/lyricsForm/:id"render={props => <LyricsForm {...props} />}  />
 

@@ -155,7 +155,7 @@ namespace LyricalOG.Services
 
         public int Create(UsersCreateRequest request)
         {
-            int id = 0;
+            int retId = 0;
 
             using (SqlConnection conn = new SqlConnection(connString))
             {
@@ -174,13 +174,13 @@ namespace LyricalOG.Services
                 {
                     while (reader.Read())
                     {
-                        id = (int)reader["UserId"];
+                       retId = (int)reader["UserId"];
                     }
                     reader.Close();
                 }
                 conn.Close();
             }
-            return id;
+            return retId;
         }
 
         public List<User> ReadAll()
@@ -206,10 +206,10 @@ namespace LyricalOG.Services
                             Id = (int)reader["UserId"],
                             Name = ConvertFromDBVal<string>(reader["Name"]),
                             Email = (string)reader["Email"],
-                            Password = (string)reader["Password"],
                             Lyrics = ConvertFromDBVal<string>(reader["Lyrics"]),
                             Votes = ConvertFromDBVal<int>(reader["Votes"]),
                             BeatUrl = ConvertFromDBVal<string>(reader["BeatUrl"]),
+                            Password = (string)reader["Password"],
                             S3SignedUrl = ConvertFromDBVal<string>(reader["S3SignedUrl"]),
 
                             DateCreated = (DateTime)reader["DateCreated"],
@@ -309,17 +309,17 @@ namespace LyricalOG.Services
             return id;
         }
 
-        public async Task EmailValidation(User request)
+        public async Task EmailVerification(User request)
         {
-            var apiKey = Environment.GetEnvironmentVariable("NAME_OF_THE_ENVIRONMENT_VARIABLE_FOR_YOUR_SENDGRID_KEY");
-            var client = new SendGridClient(apiKey);
-            var from = new EmailAddress("noreply@lyrical.og", "Administrator");
-            var subject = "Email Validation for LyricalOG";
-            var to = new EmailAddress(request.Email, request.Name);
-            var plainTextContent = "Click Here to Validate your account";
-            string htmlContent = string.Format("<a href=\"{0}{1}\"> Click here to reset password</a>", request.link, SecretPasswordKey);
-            var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
-            var response = await client.SendEmailAsync(msg);
+            //var apiKey = Environment.GetEnvironmentVariable("NAME_OF_THE_ENVIRONMENT_VARIABLE_FOR_YOUR_SENDGRID_KEY");
+            //var client = new SendGridClient(apiKey);
+            //var from = new EmailAddress("noreply@lyrical.og", "Administrator");
+            //var subject = "Email Validation for LyricalOG";
+            //var to = new EmailAddress(request.Email, request.Name);
+            //var plainTextContent = "Click Here to Validate your account";
+            //string htmlContent = string.Format("<a href=\"{0}{1}\"> Click here to reset password</a>", request.VerificationLink, SecretPasswordKey);
+            //var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
+            //var response = await client.SendEmailAsync(msg);
         }
 
 

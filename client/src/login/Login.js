@@ -76,30 +76,6 @@ class Login extends React.Component {
                     <div style={{ lineHeight: '200px' }}>
                         <h1 className="text-primary" style={{ paddingTop: "40px", fontSize: "30px" }}>Lyrical OG</h1>
                     </div>
-                    {this.state.RegisterModal ?
-                        <form>
-                            <header>Register</header>
-                            <div className="form-group">
-                                <label>Name</label>
-                                <input value={this.state.name} onChange={this.handleChange} className="form-control" id="name" aria-describedby="emailHelp" placeholder="Enter name" />
-                            </div>
-                            <div className="form-group">
-                                <label >Email address</label>
-                                <input type="email" value={this.state.regisEmail} onChange={this.handleChange} className="form-control" id="regisEmail" aria-describedby="emailHelp" placeholder="Enter email" />
-                            </div>
-                            <div className="form-group">
-                                <label >Password</label>
-                                <input type="password" value={this.state.regisPassword} onChange={this.handleChange} className="form-control" id="regisPassword" placeholder="Password" />
-                            </div>
-                            <div className="form-group">
-                                <label >Confirm Password</label>
-                                <input type="password" value={this.state.confirmPassword} onChange={this.handleChange} className="form-control" id="confirmPassword" placeholder="Password" />
-                            </div>
-                            <button onClick={(e) => this.submit(e)} className="btn btn-primary">Register</button>
-                            <button onClick={(e) => this.toggleLoginRegis(e)} className="btn btn-outline-secondary">Login?</button>
-                        </form>
-
-                        :
                         <form>
                             <header>Login</header>
                             <div className="form-group">
@@ -120,10 +96,10 @@ class Login extends React.Component {
                             </div>
 
                             <button onClick={(e) => this.submit(e)} className="btn btn-primary">Login</button>
-                            <button onClick={(e) => this.toggleLoginRegis(e)} className="btn btn-secondary">Register</button>
+                            <button type="button" onClick={() => this.props.history.push("/Register")} className="btn btn-outline-primary">Register</button>
                             <button onClick={() => this.password()} className="btn btn-outline-secondary">forgot password?</button>
                         </form>
-                    }
+                    
                 </header>
 
             </React.Fragment>
