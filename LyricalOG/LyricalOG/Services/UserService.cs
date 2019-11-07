@@ -20,6 +20,9 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using System.Web.Script.Serialization;
+using System.Security.Principal;
+using Newtonsoft.Json;
 
 namespace LyricalOG.Services
 {
@@ -36,7 +39,7 @@ namespace LyricalOG.Services
 
         readonly string connString = ConfigurationManager.ConnectionStrings["Default"].ConnectionString;
         readonly string jwtStr = ConfigurationManager.AppSettings["Jwt"];
-        public UserLogin Login(UserLogin request)
+        public string Login(UserLogin request)
         {
             using (var con = new SqlConnection(connString))
             {
@@ -66,7 +69,7 @@ namespace LyricalOG.Services
                 }
                 con.Close();
             }
-            return request;
+            return request.SessionToken;
         }
 
         protected void SignIn(UserLogin loginUser)
@@ -124,22 +127,93 @@ namespace LyricalOG.Services
             //}
         }
 
+        //private string GenerateJSONWebToken(UserLogin userInfo)
+        //{
+        //    var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtStr));
+        //    var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+        //    var json = new JavaScriptSerializer().Serialize(userInfo);
+
+        //    var token = new JwtSecurityToken(jwtStr,
+        //      json,
+        //      null,
+        //      expires: DateTime.Now.AddMinutes(30),
+        //      signingCredentials: credentials);
+
+        //    IdentityModelEventSource.ShowPII = true;
+
+        //    return new JwtSecurityTokenHandler().WriteToken(token);
+        //}
+
         private string GenerateJSONWebToken(UserLogin userInfo)
         {
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtStr));
-            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+            var symmetricKey =Convert.FromBase64String(jwtStr);
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var now = DateTime.UtcNow;
 
-            var token = new JwtSecurityToken(jwtStr,
-              jwtStr,
-              null,
-              expires: DateTime.Now.AddMinutes(120),
-              signingCredentials: credentials);
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new[]
+                {
+                    new Claim(userInfo.Email, JsonConvert.SerializeObject(userInfo))
+                }),
 
-            IdentityModelEventSource.ShowPII = true;
+                Expires = now.AddMinutes(30),               //from expire date appsettings
+                SigningCredentials = new SigningCredentials(
+                    new SymmetricSecurityKey(symmetricKey),
+                SecurityAlgorithms.HmacSha256Signature)
+            };
+            var stoken = tokenHandler.CreateJwtSecurityToken(tokenDescriptor);
+            var token = tokenHandler.WriteToken(stoken);
 
-            return new JwtSecurityTokenHandler().WriteToken(token);
+            return token;
         }
 
+        public bool ValidateToken(string token,out string username)
+        {
+            username =null;
+
+            var simplePrinciple = GetPrincipal(token);
+            var identity = simplePrinciple.Identity as ClaimsIdentity;
+
+            if (identity == null)
+                return false;
+
+            if (!identity.IsAuthenticated)
+                return false;
+
+            var usernameClaim = identity.FindFirst(ClaimTypes.Name);
+            username = usernameClaim?.Value;
+
+            if (string.IsNullOrEmpty(username))
+                return false;
+
+            // More validate to check whether username exists in system
+
+            return true;
+        }
+
+        protected Task<IPrincipal> AuthenticateJwtToken(string token)
+        {
+            string username;
+
+            if (ValidateToken(token, out username))
+            {
+                // based on username to get more information from database 
+                // in order to build local identity
+                var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, username)
+                    // Add more claims if needed: Roles, ...
+                };
+
+                var identity = new ClaimsIdentity(claims, "Jwt");
+                IPrincipal user = new ClaimsPrincipal(identity);
+
+                return Task.FromResult(user);
+            }
+
+            return Task.FromResult<IPrincipal>(null);
+        }
         protected void SignOut(object sender, EventArgs e)
         {
             var authenticationManager = HttpContext.Current.GetOwinContext().Authentication;
@@ -147,10 +221,31 @@ namespace LyricalOG.Services
             //Response.Redirect("~/Login.aspx");
         }
     
-
-    public string CreateToken()
+        protected ClaimsPrincipal GetPrincipal(string token)
         {
-            return "";
+            try
+            {
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var jwtToken = (JwtSecurityToken)tokenHandler.ReadToken(token);
+
+                if (jwtToken == null) return null;
+                var key = Convert.FromBase64String(jwtStr);
+
+                var parameters = new TokenValidationParameters
+                {
+                    RequireExpirationTime = true,
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    IssuerSigningKey = new SymmetricSecurityKey(key)
+                };
+
+                var principal = tokenHandler.ValidateToken(token, parameters, out SecurityToken securityToken);
+                return principal;
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
         }
 
         public int Create(UsersCreateRequest request)

@@ -38,6 +38,7 @@ namespace LyricalOG.Controllers
             req.Properties[System.Web.Http.Hosting.HttpPropertyKeys.HttpConfigurationKey] = configuration;
         }
 
+        //[JwtAuthentication]
         [HttpPost, Route("users/login")]
         public HttpResponseMessage Login(UserLogin request)
         {
@@ -50,6 +51,11 @@ namespace LyricalOG.Controllers
             return req.CreateResponse(HttpStatusCode.OK, userLogin);
         }
 
+        //[HttpGet,Route("users/validate")]
+        //public HttpResponseMessage Validate(UsersCreateRequest request)
+        //{
+        //    var exists = new UserRepository().GetUser(request.Name) != null;
+        //}
         [HttpPost, Route("users")]
         public HttpResponseMessage Create(UsersCreateRequest request)
         {

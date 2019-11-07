@@ -1,4 +1,4 @@
-﻿using LyricalOG.Interfaces;
+﻿ using LyricalOG.Interfaces;
 using LyricalOG.Services;
 using System;
 using System.Collections.Generic;
@@ -20,6 +20,7 @@ namespace LyricalOG
             // Web API configuration and services
 
             // Web API routes
+            //config.Filters.Add(new AuthorizeAttribute());
 
             config.MapHttpAttributeRoutes();
             var cors = new EnableCorsAttribute("*", "*", "*");

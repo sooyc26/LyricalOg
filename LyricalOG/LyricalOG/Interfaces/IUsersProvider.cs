@@ -10,7 +10,7 @@ namespace LyricalOG.Interfaces
 {
     public interface IUsersProvider
     {
-        UserLogin Login(UserLogin request);
+        string Login(UserLogin request);
         int Create(UsersCreateRequest request);
         List<User> ReadAll();
         User ReadById(int id);

@@ -1,6 +1,6 @@
 import {Component} from 'react'
 import * as userService from '../services/userService'
-export default class Validation extends Component{
+export default class validateAccount extends Component{
 
     constructor(props){
         super(props)
