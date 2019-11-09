@@ -9,6 +9,7 @@ import { Modal, HelpBlock } from 'react-bootstrap'
 import {store} from '../store'
 import {connect} from 'react-redux'
 import {withRouter} from 'react-router-dom'
+import * as jwt_decode from "jwt-decode";
 
 class LyricsForm extends Component {
 
@@ -44,12 +45,13 @@ class LyricsForm extends Component {
       ,BeatId:0     //load on click
       ,isAdmin:false
       ,currUserId:0
-
+      ,title:''
+      ,producer:''
     }
   }
 
   componentDidMount() {
-    var userData = JSON.parse(localStorage.getItem('loginToken'));
+    var userData =JSON.parse(jwt_decode(localStorage.getItem('loginToken')).currUser)
     this.setState({
         isAdmin:userData.IsAdmin,
         currUserId:userData.UserId
@@ -63,7 +65,9 @@ class LyricsForm extends Component {
     beatService.getById(id)
     .then(response=>{  
       this.setState({
-        url: response.BeatUrl
+        url: response.BeatUrl,
+        title:response.Title,
+        producer:response.Producer
       })
     })
     lyricService.getByBeatId(id)
@@ -277,7 +281,7 @@ class LyricsForm extends Component {
               </label>
             </div>
 
-            <div className="card text-white mb-3" key={lyric.Id} style={{ borderColor: 'rgba(137, 196, 244, 1)', backgroundColor: 'rgba(120,194,173,0.9)', width: '500px', textAlign: "center" }}>
+            <div className="card text-white mb-3" key={lyric.Id} style={{ borderColor: 'rgba(137, 196, 244, 1)', backgroundColor: 'rgba(120,194,173,0.9)', width: '500px', margin:'auto' }}>
               <div className="card-header" style={{ whiteSpace: 'pre-wrap', textAlign: "center", fontSize: '18px' }}>{lyric.Votes} Votes written by: {lyric.User.Name}</div>
               <div className="card-body">
                 <div>
@@ -309,7 +313,7 @@ class LyricsForm extends Component {
       }
       return (
         <div  key={lyric.Id}>
-          <div className="card border-light mb-3" key={lyric.Id} style={{ opacity: 0.95, width: '500px', textAlign: "center", border: '1px solid black', borderRadius: '5px!important' }}>
+          <div className="card border-light mb-3" key={lyric.Id} style={{ opacity: 0.95, width: '500px', margin:'auto', border: '1px solid black', borderRadius: '5px!important' }}>
             <div className="card-header text-muted" style={{ whiteSpace: 'pre-wrap', textAlign: "center", fontSize: '15px' }}>{lyric.Votes} Votes written by: {lyric.User.Name} </div>
             <div className="card-body">
               <div>
@@ -350,6 +354,7 @@ class LyricsForm extends Component {
             </div> */}
 
             {/* MEDIA PLAYER */}
+            <h2 className="text-white" style={{ textAlign: 'left'}}>{this.state.title} - {this.state.producer}</h2>
 
             {beatPlayer}
 

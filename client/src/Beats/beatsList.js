@@ -3,6 +3,7 @@ import * as beatService from '../services/beatService'
 import * as recordService from '../services/recordService'
 import moment from '../../node_modules/moment'
 import { Modal, HelpBlock } from 'react-bootstrap'
+import * as jwt_decode from "jwt-decode";
 
 export default class BeatsList extends React.Component{
 
@@ -29,7 +30,8 @@ export default class BeatsList extends React.Component{
         this.edit = this.edit.bind(this)
     }
     componentDidMount(){
-        var userData = JSON.parse(localStorage.getItem('loginToken'));
+        var userData =JSON.parse(jwt_decode(localStorage.getItem('loginToken')).currUser)
+        
         this.setState({
             isAdmin:userData.IsAdmin,
             currUserId:userData.UserId

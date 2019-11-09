@@ -18,15 +18,17 @@ namespace LyricalOG.Controllers
     public class LyricsController : ApiController
     {
         private readonly ILyricsProvider _lyricsProvider;
-        readonly IS3RecordProvider _recordProvider;
+        private readonly IS3RecordProvider _recordProvider;
+        private readonly IUsersProvider _userProvider;
 
         HttpRequestMessage req = new HttpRequestMessage();
         HttpConfiguration configuration = new HttpConfiguration();
-        public LyricsController(ILyricsProvider l,IS3RecordProvider r)
+        public LyricsController(ILyricsProvider l,IS3RecordProvider r,IUsersProvider u)
         {
             _lyricsProvider = l;
             _recordProvider = r;
-        req.Properties[System.Web.Http.Hosting.HttpPropertyKeys.HttpConfigurationKey] = configuration;
+            _userProvider = u;
+            req.Properties[System.Web.Http.Hosting.HttpPropertyKeys.HttpConfigurationKey] = configuration;
         }
 
         [HttpPost, Route("lyrics")]

@@ -154,7 +154,7 @@ namespace LyricalOG.Services
             {
                 Subject = new ClaimsIdentity(new[]
                 {
-                    new Claim(userInfo.Email, JsonConvert.SerializeObject(userInfo))
+                    new Claim("currUser", JsonConvert.SerializeObject(userInfo))
                 }),
 
                 Expires = now.AddMinutes(30),               //from expire date appsettings
@@ -181,7 +181,7 @@ namespace LyricalOG.Services
             if (!identity.IsAuthenticated)
                 return false;
 
-            var usernameClaim = identity.FindFirst(ClaimTypes.Name);
+            var usernameClaim = identity.FindFirst("currUser");
             username = usernameClaim?.Value;
 
             if (string.IsNullOrEmpty(username))
@@ -192,7 +192,7 @@ namespace LyricalOG.Services
             return true;
         }
 
-        protected Task<IPrincipal> AuthenticateJwtToken(string token)
+        public Task<IPrincipal> AuthenticateJwtToken(string token)
         {
             string username;
 

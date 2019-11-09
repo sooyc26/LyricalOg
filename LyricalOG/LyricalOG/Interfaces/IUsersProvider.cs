@@ -3,6 +3,7 @@ using LyricalOG.Models.Users;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -17,5 +18,7 @@ namespace LyricalOG.Interfaces
         int UpdateUser(UsersUpdateRequest request, int id);
         int Delete(int id);
         Task EmailVerification(User request);
+        bool ValidateToken(string token, out string username);
+        Task<IPrincipal> AuthenticateJwtToken(string token);
     }
 }
