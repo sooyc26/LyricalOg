@@ -2,7 +2,7 @@ import React from 'react'
 import * as beatService from '../services/beatService'
 import * as recordService from '../services/recordService'
 import moment from '../../node_modules/moment'
-import { Modal, HelpBlock } from 'react-bootstrap'
+import { Modal } from 'react-bootstrap'
 import * as jwt_decode from "jwt-decode";
 
 export default class BeatsList extends React.Component{
@@ -141,11 +141,11 @@ export default class BeatsList extends React.Component{
     }
     render() {
         
-                {/* map beats */}
+                /* map beats */
                 
         const displayBeats = this.state.beats.map((b, i) => {
             return (
-                <tr key={b.Id} className={i % 2 === 0 ? "" : "", "text-primary"} >
+                <tr key={b.Id} className={i % 2 === 0 ? "" : "text-primary"} >
                     <td>{b.Producer}</td>
                     <td  
                         // onClick={() => this.lyricFormByBeatId(b.Id)}

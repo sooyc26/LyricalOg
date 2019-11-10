@@ -57,10 +57,8 @@ class Login extends React.Component {
                 .then(response => {
                     if (response !== null) {
                         //if not authenticated, resend validation email page
-                        var check = jwt_decode(response).currUser
-                        debugger
+
                         localStorage.setItem('loginToken', JSON.stringify(response))
-                        //localStorage.setItem('loginToken',response)
                         this.props.onUpdateUser(jwt_decode(response).currUser)
                         this.props.onAuthUser()
                         this.props.history.push("/beatsList");

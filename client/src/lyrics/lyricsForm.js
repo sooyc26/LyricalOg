@@ -6,7 +6,7 @@ import * as recordService from '../services/recordService'
 import { ReactMic } from 'react-mic';
 import Youtube from 'react-youtube'
 import { Modal, HelpBlock } from 'react-bootstrap'
-import {store} from '../store'
+// import {store} from '../store'
 import {connect} from 'react-redux'
 import {withRouter} from 'react-router-dom'
 import * as jwt_decode from "jwt-decode";
@@ -29,6 +29,7 @@ class LyricsForm extends Component {
       , editId: ''
 
       , record: false
+      ,play:false
       , autoPlay: 0
       , mediaEvent: ''
 
@@ -82,7 +83,7 @@ class LyricsForm extends Component {
 
     //const userData = store.getState().user; 
     //userData.UserId = store.getState().user? store.getState().user.UserId:4;
-    var userData = JSON.parse(localStorage.getItem('loginToken'));
+    var userData =JSON.parse(jwt_decode(localStorage.getItem('loginToken')).currUser)
     if (window.uploadFile) {
 
       const lyricData = {     //lyric insert data
@@ -161,7 +162,7 @@ class LyricsForm extends Component {
       autoPlay: false,
       record: false,
     });
-    this.state.mediaEvent.target.pauseVideo();
+   // this.state.mediaEvent.target.pauseVideo();
   }
 
   onData(recordedBlob) {
@@ -182,16 +183,15 @@ class LyricsForm extends Component {
 
 
   onStop = (recordedBlob) => {
-    debugger
+    
     console.log('recordedBlob is: ', recordedBlob);
 
     window.blobURL = recordedBlob.blobURL
-    window.blob = recordedBlob
+    //window.blob = recordedBlob
     this.convertBlobToMp3(recordedBlob)
   }
 
   playBack = id => {
-    debugger
     this.state.mediaEvent.target.seekTo(0).playVideo()
 
     if (id) {
@@ -201,8 +201,42 @@ class LyricsForm extends Component {
       })
     }
 
-    this.setState({ record: false })
+    this.setState({ 
+      record: false,
+    })
+  }
+  
+  playUrl = id => {
 
+    this.refs[id].play()
+  }
+  
+  pauseUrl =id=>{
+    this.state.mediaEvent.target.pauseVideo()
+
+    if (id) {
+      this.refs[id].pause()
+    }else{
+      this.pauseAudio()
+    }
+  }
+
+  pauseAudio = () =>{
+    
+    if (window.blobURL) {
+      this.audio.pause();
+    }    
+  }
+
+  togglePlay = e => {
+
+    if (e.target.className == "fas fa-pause") {
+      e.target.className = "fas fa-play"
+      this.pauseUrl(e.target.id)
+    } else {
+      e.target.className = "fas fa-pause"
+      this.playBack(e.target.id)
+    }
   }
 
   onPlayerStateChange = () => {
@@ -217,14 +251,9 @@ class LyricsForm extends Component {
   _onReady = event => {
     
     this.setState({ mediaEvent: event })
-    event.target.pauseVideo();
+    //event.target.pauseVideo();
+    console.log(this.state.mediaEvent)
   }
-
-  playUrl = id => {
-    debugger
-    this.refs[id].play()
-  }
-
   handleClose = e => {
     this.setState({ show: false, passwordModal: '' });
   }
@@ -244,14 +273,8 @@ class LyricsForm extends Component {
     }
     let audio = new Audio(window.blobURL);
 
-    let soundCloud = false;
     let youtube = ''
-    if (this.state.url.includes('sound')) {
-      soundCloud = true;
-    } else {
-      youtube = this.state.url.split("=").pop();
-      soundCloud = false;
-    }
+
 
     let beatPlayer;
     if(this.state.url.includes('sound')){//load soundcloud iframe
@@ -263,7 +286,10 @@ class LyricsForm extends Component {
       beatPlayer = <Youtube width="500px" height="166" onReady={this._onReady} videoId={youtube} opts={opts}
       onPlay={this.state.s3Url ? () => this.playUrl(this.state.audioId) : (window.blobURL ? () => audio.play() : () => this.setState({ record: true }))} />
     }else{//load wp iframe
-      beatPlayer =  <iframe src={this.state.url} width="500px" height="166"></iframe>
+      beatPlayer =  <iframe src={this.state.url} title="s3Player"
+      width="500px" height="166" allow="" onPause={this.onPlayerStateChange}
+      onLoad={e=>this._onReady(e)}    
+      > </iframe>
     }
 
     //const { record } = this.state;
@@ -297,11 +323,14 @@ class LyricsForm extends Component {
                     <button id={lyric.Id} onClick={(e) => this.delete(e, lyric.Id)} className="btn btn-secondary">Delete</button>
                     : ''
                 }
-                <button className="btn btn-circle" style={{ backgroundColor: "#49515f", color: "rgba(120,194,173,0.9)" }} onClick={e => this.playBack(lyric.Id)}><span className="fas fa-play"></span></button>
+
+                <button className="btn btn-outline-danger"  >
+                <span id ={lyric.Id} className="fas fa-play" onClick={e=>this.togglePlay(e)}></span>
+                  </button>
               </div>
             </div>
 
-            {/* TOP RATED */}
+            {/* sorted high -> low */}
             <div style={{ textAlign: 'center' }}>
               <label className="text-white" style={{ textAlign: 'center', fontSize: '20px' }}>
                 <span style={{ color: 'gray' }} className="fas fa-cloud" > </span>
@@ -329,8 +358,11 @@ class LyricsForm extends Component {
                   lyric.UserId === this.state.currUserId || this.state.isAdmin ?
                     <button id={lyric.Id} onClick={(e) => this.delete(e, lyric.Id)} className="btn btn-secondary">Delete</button>
                     : ''
-                }              <button className="btn btn-circle" style={{ backgroundColor: "#49515f", color: "rgba(120,194,173,0.9)" }} onClick={e => this.playBack(lyric.Id)}><span className="fas fa-play"></span></button>
-            </div>
+                }              
+                <button className="btn btn-outline-danger"  >
+                <span id ={lyric.Id} className="fas fa-play" onClick={e=>this.togglePlay(e)}></span>
+                  </button>            
+                  </div>
           </div>
         </div>
 
@@ -390,7 +422,9 @@ class LyricsForm extends Component {
                     backgroundColor="#49515f" />
 
                   {/* PLAY BUTTON */}
-                  <button className="btn btn-outline-primary"  onClick={() => this.playBack()}><span className="fas fa-play"></span></button>
+                  <button className="btn btn-outline-danger"  >
+                <span className="fas fa-play" onClick={e=>this.togglePlay(e)}></span>
+                  </button>
                   <div style={{marginLeft:'15%'}}>
                   <button className="btn btn-primary text-grey" style={{ float:'right' }} onClick={this.submit}>Submit</button>
                   </div>
@@ -406,41 +440,6 @@ class LyricsForm extends Component {
               {displayLyrics}
             </div>
           </div>
-
-          <Modal animation={false} backdropStyle={{ opacity: 0.5 }} style={{ backgroundColor: (0, 0, 0, 0.2), top: "25%" }} show={this.state.show} onHide={this.handleClose} >
-            <Modal.Header >
-              <Modal.Title id='ModalHeader'>Edit Lyrics </Modal.Title>
-              <div>password: <input className={this.state.editData.Password === this.state.passwordModal ? "form-control is-valid" : "form-control is-invalid"}
-                name="passwordModal" type="password" value={this.state.passwordModal} onChange={this.handleChange}></input>
-                {/* <button>checkPW</button> */}
-                <HelpBlock>{this.state.editData.Password === this.state.passwordModal ? "" : "enter valid password"}</HelpBlock>
-              </div>
-              <p>{this.state.editData.Id},{this.state.editData.Name}</p>
-            </Modal.Header>
-            <Modal.Body>
-              <div className="container">
-                <div className="row">
-                  <div style={{ padding: "0px 20px" }}>
-                    <textarea
-                      className="form-control"
-                      style={{
-                        margin: 'auto',
-                        backgroundColor: 'rgba(73,81,95,0.5)', color: "white", borderColor: 'rgba(120,194,173,0.9)', whiteSpace: 'pre-wrap',
-                        textAlign: 'center', width: '450px', height: '200px',
-                        fontSize: '15px'
-                      }} disabled={this.state.editData.Password === this.state.passwordModal ? false : true} name="lyricModal" value={this.state.lyricModal} onChange={this.handleChange}></textarea>
-                  </div>
-                  <div style={{ margin: 'auto' }}>
-                  </div>
-                </div>
-              </div>
-            </Modal.Body>
-            <Modal.Footer >
-              <button id={this.state.editId} className='btn btn-primary' disabled={this.state.editData.Password === this.state.passwordModal ? false : true} onClick={e => this.submit(e)}> Edit </button>
-              <button className='btn btn-default' onClick={() => this.handleClose()}> Close </button>
-            </Modal.Footer >
-          </Modal>
-
         </div>
         </div>
       </React.Fragment>
