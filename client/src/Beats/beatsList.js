@@ -145,11 +145,9 @@ export default class BeatsList extends React.Component{
                 
         const displayBeats = this.state.beats.map((b, i) => {
             return (
-                <tr key={b.Id} className={i % 2 === 0 ? "" : "text-primary"} >
+                <tr key={b.Id} className={i % 2 === 0 ? "text-primary" : "table-active text-primary"} >
                     <td>{b.Producer}</td>
-                    <td  
-                        // onClick={() => this.lyricFormByBeatId(b.Id)}
-                    > <a href={"/lyricsForm/"+b.Id}>{b.Title}</a></td>
+                    <td > <a href={"/lyricsForm/"+b.Id}>{b.Title}</a></td>
                     <td>{b.Vibe}</td>
                     <td>{b.LyricsCount}</td>
                     <td>{moment(b.DateCreated).format('MM/DD/YYYY')}</td>

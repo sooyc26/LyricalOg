@@ -5,7 +5,6 @@ import * as userService from '../services/userService'
 import * as recordService from '../services/recordService'
 import { ReactMic } from 'react-mic';
 import Youtube from 'react-youtube'
-import { Modal, HelpBlock } from 'react-bootstrap'
 // import {store} from '../store'
 import {connect} from 'react-redux'
 import {withRouter} from 'react-router-dom'
@@ -153,7 +152,10 @@ class LyricsForm extends Component {
     this.setState({
       autoPlay: true,
     });
-    this.state.mediaEvent.target.seekTo(0).playVideo();
+    // this.state.mediaEvent.target.seekTo(0).playVideo();
+    debugger
+    this.refs['s3Player'].currentTime = 0;
+    this.refs['s3Player'].play()
   }
 
   ////recording functions /////
@@ -163,6 +165,7 @@ class LyricsForm extends Component {
       record: false,
     });
    // this.state.mediaEvent.target.pauseVideo();
+   
   }
 
   onData(recordedBlob) {
@@ -192,8 +195,9 @@ class LyricsForm extends Component {
   }
 
   playBack = id => {
-    this.state.mediaEvent.target.seekTo(0).playVideo()
-
+    //this.state.mediaEvent.target.seekTo(0).playVideo()
+    this.refs['s3Player'].currentTime = 0;
+    this.refs['s3Player'].play()
     if (id) {
       this.setState({
         audioId: id,
@@ -207,8 +211,10 @@ class LyricsForm extends Component {
   }
   
   playUrl = id => {
-
+debugger
+    this.refs[id].currentTime = 0;
     this.refs[id].play()
+
   }
   
   pauseUrl =id=>{
@@ -230,11 +236,11 @@ class LyricsForm extends Component {
 
   togglePlay = e => {
 
-    if (e.target.className == "fas fa-pause") {
+    if (e.target.className == "fas fa-stop") {
       e.target.className = "fas fa-play"
       this.pauseUrl(e.target.id)
     } else {
-      e.target.className = "fas fa-pause"
+      e.target.className = "fas fa-stop"
       this.playBack(e.target.id)
     }
   }
@@ -247,12 +253,26 @@ class LyricsForm extends Component {
       this.setState({ record: true })
     }
   }
-
-  _onReady = event => {
+  bindEvents=()=> {
     
+    window.addEventListener("message", this.onMessageReceived, false);
+  }
+  onMessageReceived=event=> {
+    debugger
+    // var data = JSON.parse(event.data);
+    // console.log(data);
+    event.target.currentTime=20
+    this.loading = false;
+    this.render()
+  }
+  _onReady = event => {
+    //this.refs['s3Player'].currentTime = 20;
+    debugger
+    // this.refs['s3Player'].play()
     this.setState({ mediaEvent: event })
     //event.target.pauseVideo();
-    console.log(this.state.mediaEvent)
+    
+    //console.log(this.refs['s3Player'].currentTime)
   }
   handleClose = e => {
     this.setState({ show: false, passwordModal: '' });
@@ -279,7 +299,7 @@ class LyricsForm extends Component {
     let beatPlayer;
     if(this.state.url.includes('sound')){//load soundcloud iframe
       beatPlayer = <iframe title="soundcloud" width="500px" height="166" onChange={this.onPlayerStateChange} scrolling="no" frameborder="no"
-                src={"http://w.soundcloud.com/player/?url=" + this.state.url + "&amp;auto_play=" + 0 + "enablejsapi=1"}>
+                src={"http://w.soundcloud.com/player/?url=" + this.state.url + "&amp;auto_play=" + 0 + "&enablejsapi=1"}>
               </iframe>     
     }else if(this.state.url.includes('youtube')){//load youtube iframe
       youtube = this.state.url.split("=").pop();
@@ -288,8 +308,10 @@ class LyricsForm extends Component {
     }else{//load wp iframe
       beatPlayer =  <iframe src={this.state.url} title="s3Player"
       width="500px" height="166" allow="" onPause={this.onPlayerStateChange}
-      onLoad={e=>this._onReady(e)}    
-      > </iframe>
+      onLoad={this.bindEvents} >
+        <video ref={'s3Player'} autoPlay={false}
+      // onPlaying={this.state.s3Url ? () => this.playUrl(this.state.audioId) : (window.blobURL ? () => audio.play() : () => this.setState({ record: true }))}
+      ></video> </iframe>
     }
 
     //const { record } = this.state;
@@ -307,20 +329,26 @@ class LyricsForm extends Component {
               </label>
             </div>
 
-            <div className="card text-white mb-3" key={lyric.Id} style={{ borderColor: 'rgba(137, 196, 244, 1)', backgroundColor: 'rgba(120,194,173,0.9)', width: '500px', margin:'auto' }}>
+            <div className="card text-white mb-3 text-primary" key={lyric.Id} 
+            // style={{ borderColor: 'rgba(137, 196, 244, 1)', backgroundColor: 'rgba(120,194,173,0.9)', width: '500px', margin:'auto' }}
+            style={{
+              backgroundColor: 'rgba(73,81,95,0.5)', color: "white", borderColor: 'rgba(120,194,173,0.9)', whiteSpace: 'pre-wrap',
+              textAlign: 'center', 
+              fontSize: '15px'}}
+            >
               <div className="card-header" style={{ whiteSpace: 'pre-wrap', textAlign: "center", fontSize: '18px' }}>{lyric.Votes} Votes written by: {lyric.User.Name}</div>
               <div className="card-body">
                 <div>
 
                   <audio ref={`${lyric.Id}`} id={lyric.Id} onPlay={() => this.playBack()} controls="" style={{ height: '50px', width: '200px' }} src={lyric.S3SignedUrl}></audio>
                 </div>
-                <ul className='text-white' style={{ whiteSpace: 'pre-wrap', textAlign: "center", fontSize: '18px' }}>{lyric.Lyric}</ul>
+                <ul className='' style={{ whiteSpace: 'pre-wrap', textAlign: "center", fontSize: '18px' }}>{lyric.Lyric}</ul>
                 <div></div>
-                <button id={lyric.Id} onClick={() => this.vote(lyric.Id)} className="btn btn-warning">vote Up: {lyric.Votes}</button>
+                <button id={lyric.Id} onClick={() => this.vote(lyric.Id)} className="btn btn-outline-warning">vote Up: {lyric.Votes}</button>
                 {/* <button id={lyric.Id} onClick={() => this.edit(lyric.Id)} type="button" className="btn btn-secondary ">edit</button> */}
                 {
                   lyric.UserId === this.state.currUserId || this.state.isAdmin ?
-                    <button id={lyric.Id} onClick={(e) => this.delete(e, lyric.Id)} className="btn btn-secondary">Delete</button>
+                    <button id={lyric.Id} onClick={(e) => this.delete(e, lyric.Id)} className="btn btn-outline-secondary">Delete</button>
                     : ''
                 }
 
@@ -342,21 +370,31 @@ class LyricsForm extends Component {
       }
       return (
         <div  key={lyric.Id}>
-          <div className="card border-light mb-3" key={lyric.Id} style={{ opacity: 0.95, width: '500px', margin:'auto', border: '1px solid black', borderRadius: '5px!important' }}>
-            <div className="card-header text-muted" style={{ whiteSpace: 'pre-wrap', textAlign: "center", fontSize: '15px' }}>{lyric.Votes} Votes written by: {lyric.User.Name} </div>
+          <div className="card border-warning mb-3 text-white" key={lyric.Id} 
+          // style={{ opacity: 0.95, width: '500px', margin:'auto', border: '1px solid black', borderRadius: '5px!important' }}
+          style={{
+            backgroundColor: 'rgba(73,81,95,0.5)', color: "white", borderColor: 'rgba(120,194,173,0.9)', whiteSpace: 'pre-wrap',
+            textAlign: 'center', 
+            fontSize: '15px'}}
+          >
+            <div className="card-header"  style={{ whiteSpace: 'pre-wrap', textAlign: "left", fontSize: '15px' }}>
+              <span  >{lyric.Votes}Votes</span>   
+              <span className="" style={{ textAlign: "right !important" }}> by: {lyric.User.Name}</span>
+              </div>
+            
             <div className="card-body">
               <div>
 
                 <audio ref={`${lyric.Id}`} id={lyric.Id} onPlay={() => this.playBack()} controls="" style={{ height: '50px', width: '200px' }} src={lyric.S3SignedUrl}></audio>
               </div>
-              <ul className='text-muted' style={{ whiteSpace: 'pre-wrap', textAlign: "center", fontSize: '15px' }} >{lyric.Lyric}</ul>
+              <ul className='' style={{ whiteSpace: 'pre-wrap', textAlign: "center", fontSize: '15px' }} >{lyric.Lyric}</ul>
               <div></div>
 
-              <button id={lyric.Id} onClick={() => this.vote(lyric.Id)} className="btn btn-outline-warning text-muted">vote Up: {lyric.Votes}</button>
+              <button id={lyric.Id} onClick={() => this.vote(lyric.Id)} className="btn btn-outline-warning">vote Up: {lyric.Votes}</button>
               {/* <button id={lyric.Id} onClick={() => this.edit(lyric.Id)} type="button" className="btn btn-outline-secondary text-muted">edit</button> */}
               {
                   lyric.UserId === this.state.currUserId || this.state.isAdmin ?
-                    <button id={lyric.Id} onClick={(e) => this.delete(e, lyric.Id)} className="btn btn-secondary">Delete</button>
+                    <button id={lyric.Id} onClick={(e) => this.delete(e, lyric.Id)} className="btn btn-outline-secondary">Delete</button>
                     : ''
                 }              
                 <button className="btn btn-outline-danger"  >
@@ -426,7 +464,7 @@ class LyricsForm extends Component {
                 <span className="fas fa-play" onClick={e=>this.togglePlay(e)}></span>
                   </button>
                   <div style={{marginLeft:'15%'}}>
-                  <button className="btn btn-primary text-grey" style={{ float:'right' }} onClick={this.submit}>Submit</button>
+                  <button className="btn btn-outline-primary text-grey" style={{ float:'right' }} onClick={this.submit}>Submit</button>
                   </div>
                 </div>
               </div>
