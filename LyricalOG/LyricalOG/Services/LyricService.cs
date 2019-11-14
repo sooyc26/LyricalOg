@@ -4,13 +4,13 @@ using Amazon.S3;
 using Amazon.S3.Model;
 using LyricalOG.Interfaces;
 using LyricalOG.Models;
+using myCrudApp.Models;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
-using System.Web;
 
 namespace LyricalOG.Services
 {
@@ -169,27 +169,65 @@ namespace LyricalOG.Services
                             BeatId = Convert.ToInt32(reader["BeatId"]),
                             Lyric = (string)reader["Lyrics"],
                             Votes = Convert.ToInt32(reader["Votes"]),
+                            VoteCount = Convert.ToInt32(reader["VoteCount"]),
+                            VoterId = (int)(reader["VoterId"]),
                             BeatUrl = (string)reader["BeatUrl"],
                             S3SignedUrl = (string)reader["S3SignedUrl"],
 
                             DateCreated = (DateTime)reader["DateCreated"],
-                            DateModified = (DateTime)reader["DateModified"]
-                        };
-                        var user = new User()
-                        {
-                            Id = Convert.ToInt32(reader["UserId"]),
+                            DateModified = (DateTime)reader["DateModified"],
+                            
                             Name = (string)reader["Name"],
                             Email = (string)reader["Email"],
                             Password = (string)reader["Password"],
                         };
-                        lyrics.User = user;
                         Users.Add(lyrics);
                     }
+
                     conn.Close();
                 }
             }
-            Users = Users.OrderByDescending(u => u.Votes).ToList();
-            return Users;
+            var groupResult = Users.GroupBy(x => new
+            {
+                x.Id,
+                x.UserId,
+                x.BeatId,
+                x.Lyric,
+                x.VoteCount,
+                x.BeatUrl,
+                x.S3SignedUrl,
+                x.DateCreated,
+                x.DateModified,
+
+                x.Name,
+                x.Email,
+                x.Password
+            })
+            .Select(y => new Lyrics
+             {
+                 Id = y.Key.Id,
+                UserId = y.Key.UserId,
+                BeatId = y.Key.BeatId,
+                User = new User
+                {
+                    Id = y.Key.UserId,
+                    Name = y.Key.Name,
+                    Password = y.Key.Password,
+                    Email = y.Key.Email
+                },
+                Lyric = y.Key.Lyric,
+                VoteCount = y.Key.VoteCount,
+                BeatUrl = y.Key.BeatUrl,
+                S3SignedUrl = y.Key.S3SignedUrl,
+                DateCreated = y.Key.DateCreated,
+                DateModified = y.Key.DateModified,
+
+                VoterList = y.Select(z => z.VoterId).ToList()    //list of voters
+             }).ToList();
+
+            groupResult = groupResult.OrderByDescending(u => u.VoteCount).ToList();
+
+            return groupResult;
         }
         public int UpdateLyrics(LyricsUpdateRequest request, int id)
         {
@@ -217,7 +255,7 @@ namespace LyricalOG.Services
             return retId;
         }
 
-        public int UpdateVotes(int id)
+        public int UpdateVotes(VoteRequest vote)
         {
             int retId = 0;
             using (SqlConnection conn = new SqlConnection(connString))
@@ -225,16 +263,17 @@ namespace LyricalOG.Services
                 conn.Open();
 
                 SqlCommand cmd = conn.CreateCommand();
-                cmd.CommandText = "Lyrics_Vote";
+                cmd.CommandText = "Votes_Insert";
                 cmd.CommandType = System.Data.CommandType.StoredProcedure;
 
-                cmd.Parameters.AddWithValue("@LyricsId", id);
+                cmd.Parameters.AddWithValue("@LyricsId", vote.LyricsId);
+                cmd.Parameters.AddWithValue("@UserId", vote.VoterId);
 
                 using (SqlDataReader reader = cmd.ExecuteReader())
                 {
                     while (reader.Read())
                     {
-                        retId = (int)reader["LyricsId"];
+                        retId = (int)reader["VoteId"];
                     }
                 }
                 conn.Close();

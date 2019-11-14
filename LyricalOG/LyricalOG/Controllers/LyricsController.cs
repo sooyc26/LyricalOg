@@ -1,6 +1,7 @@
 ﻿using LyricalOG.Interfaces;
 using LyricalOG.Models;
 using LyricalOG.Services;
+using myCrudApp.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -69,10 +70,10 @@ namespace LyricalOG.Controllers
         //    return Request.CreateResponse(HttpStatusCode.OK, retId);
         //}
 
-        [HttpGet, Route("lyrics/vote/{id:int}")]
-        public HttpResponseMessage UpdateVotes( int id)
+        [HttpPost, Route("lyrics/vote")]
+        public HttpResponseMessage UpdateVotes(VoteRequest vote)
         {
-            var retId = _lyricsProvider.UpdateVotes(id);
+            var retId = _lyricsProvider.UpdateVotes(vote);
             return Request.CreateResponse(HttpStatusCode.OK, retId);
         }
 

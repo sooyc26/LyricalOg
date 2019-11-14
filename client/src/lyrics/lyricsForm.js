@@ -9,7 +9,7 @@ import Youtube from 'react-youtube'
 import {connect} from 'react-redux'
 import {withRouter} from 'react-router-dom'
 import * as jwt_decode from "jwt-decode";
-
+import './lyrics.css'
 class LyricsForm extends Component {
 
   constructor(props) {
@@ -139,8 +139,12 @@ class LyricsForm extends Component {
     this.handleShow();
   }
 
-  vote = id => {
-    lyricService.vote(id)
+  vote = lyricId => {
+    const data = {
+      VoterId:this.state.currUserId,
+      LyricsId: lyricId
+    }
+    lyricService.vote(data)
       .then(() => this.getAll())
   }
 
@@ -330,32 +334,36 @@ debugger
             </div>
 
             <div className="card text-white mb-3 text-primary" key={lyric.Id} 
-            // style={{ borderColor: 'rgba(137, 196, 244, 1)', backgroundColor: 'rgba(120,194,173,0.9)', width: '500px', margin:'auto' }}
             style={{
               backgroundColor: 'rgba(73,81,95,0.5)', color: "white", borderColor: 'rgba(120,194,173,0.9)', whiteSpace: 'pre-wrap',
               textAlign: 'center', 
               fontSize: '15px'}}
             >
-              <div className="card-header" style={{ whiteSpace: 'pre-wrap', textAlign: "center", fontSize: '18px' }}>{lyric.Votes} Votes written by: {lyric.User.Name}</div>
+              <div className="card-header badge badge-dark" style={{ whiteSpace: 'pre-wrap', textAlign: "center", fontSize: '18px' }}>By: {lyric.User.Name}</div>
               <div className="card-body">
                 <div>
 
                   <audio ref={`${lyric.Id}`} id={lyric.Id} onPlay={() => this.playBack()} controls="" style={{ height: '50px', width: '200px' }} src={lyric.S3SignedUrl}></audio>
                 </div>
-                <ul className='' style={{ whiteSpace: 'pre-wrap', textAlign: "center", fontSize: '18px' }}>{lyric.Lyric}</ul>
-                <div></div>
-                <button id={lyric.Id} onClick={() => this.vote(lyric.Id)} className="btn btn-outline-warning">vote Up: {lyric.Votes}</button>
-                {/* <button id={lyric.Id} onClick={() => this.edit(lyric.Id)} type="button" className="btn btn-secondary ">edit</button> */}
-                {
-                  lyric.UserId === this.state.currUserId || this.state.isAdmin ?
-                    <button id={lyric.Id} onClick={(e) => this.delete(e, lyric.Id)} className="btn btn-outline-secondary">Delete</button>
-                    : ''
-                }
-
-                <button className="btn btn-outline-danger"  >
-                <span id ={lyric.Id} className="fas fa-play" onClick={e=>this.togglePlay(e)}></span>
-                  </button>
+                <ul className='' style={{ whiteSpace: 'pre-wrap', fontSize: '18px' }}>{lyric.Lyric}</ul>
               </div>
+                <div class="card-footer">
+
+              <button id={lyric.Id} onClick={() => this.vote(lyric.Id)}disabled={lyric.VoterList.includes(this.state.currUserId) ? true : false} className={lyric.VoterList.includes(this.state.currUserId)?"btn btn-success":"btn btn-outline-success"}>
+                {lyric.VoteCount} 
+                <i class="fas fa-chevron-up"></i></button>
+              {/* <button id={lyric.Id} onClick={() => this.vote(lyric.Id)} className="btn btn-outline-warning">{lyric.Votes} <i class="fas fa-chevron-down"></i></button> */}
+
+              {
+                lyric.UserId === this.state.currUserId || this.state.isAdmin ?
+                  <button id={lyric.Id} onClick={(e) => this.delete(e, lyric.Id)} className="btn btn-outline-secondary">Delete</button>
+                  : ''
+              }
+              <button className="btn btn-outline-danger"  >
+                <span id={lyric.Id} className="fas fa-play" onClick={e => this.togglePlay(e)}></span>
+              </button>
+            </div>
+                
             </div>
 
             {/* sorted high -> low */}
@@ -369,38 +377,43 @@ debugger
         )
       }
       return (
-        <div  key={lyric.Id}>
-          <div className="card border-warning mb-3 text-white" key={lyric.Id} 
-          // style={{ opacity: 0.95, width: '500px', margin:'auto', border: '1px solid black', borderRadius: '5px!important' }}
-          style={{
-            backgroundColor: 'rgba(73,81,95,0.5)', color: "white", borderColor: 'rgba(120,194,173,0.9)', whiteSpace: 'pre-wrap',
-            textAlign: 'center', 
-            fontSize: '15px'}}
-          >
-            <div className="card-header"  style={{ whiteSpace: 'pre-wrap', textAlign: "left", fontSize: '15px' }}>
-              <span  >{lyric.Votes}Votes</span>   
-              <span className="" style={{ textAlign: "right !important" }}> by: {lyric.User.Name}</span>
-              </div>
-            
+        <div key={lyric.Id}>
+          <div className="card border-warning mb-3 text-white" key={lyric.Id}
+            // style={{ opacity: 0.95, width: '500px', margin:'auto', border: '1px solid black', borderRadius: '5px!important' }}
+            style={{
+              backgroundColor: 'rgba(73,81,95,0.5)', color: "white", borderColor: 'rgba(120,194,173,0.9)', whiteSpace: 'pre-wrap',
+              fontSize: '15px'
+            }} >
+
+            <div className="card-header">
+
+              <span className="badge badge-pill badge-light" style={{ textAlign: "center",fontSize: '15px'  }}> by: {lyric.User.Name}</span>
+
+            </div>
+
             <div className="card-body">
               <div>
 
                 <audio ref={`${lyric.Id}`} id={lyric.Id} onPlay={() => this.playBack()} controls="" style={{ height: '50px', width: '200px' }} src={lyric.S3SignedUrl}></audio>
               </div>
               <ul className='' style={{ whiteSpace: 'pre-wrap', textAlign: "center", fontSize: '15px' }} >{lyric.Lyric}</ul>
-              <div></div>
 
-              <button id={lyric.Id} onClick={() => this.vote(lyric.Id)} className="btn btn-outline-warning">vote Up: {lyric.Votes}</button>
-              {/* <button id={lyric.Id} onClick={() => this.edit(lyric.Id)} type="button" className="btn btn-outline-secondary text-muted">edit</button> */}
+
+            </div>
+            <div class="card-footer">
+              <button id={lyric.Id} onClick={() => this.vote(lyric.Id)} className={lyric.VoterList.includes(this.state.currUserId) ? "btn btn-warning" : "btn btn-outline-warning"} disabled={lyric.VoterList.includes(this.state.currUserId) ? true : false}>
+                {lyric.VoteCount}
+                <i class="fas fa-chevron-up"></i>
+              </button>
               {
-                  lyric.UserId === this.state.currUserId || this.state.isAdmin ?
-                    <button id={lyric.Id} onClick={(e) => this.delete(e, lyric.Id)} className="btn btn-outline-secondary">Delete</button>
-                    : ''
-                }              
-                <button className="btn btn-outline-danger"  >
-                <span id ={lyric.Id} className="fas fa-play" onClick={e=>this.togglePlay(e)}></span>
-                  </button>            
-                  </div>
+                lyric.UserId === this.state.currUserId || this.state.isAdmin ?
+                  <button id={lyric.Id} onClick={(e) => this.delete(e, lyric.Id)} className="btn btn-outline-secondary">Delete</button>
+                  : ''
+              }
+              <button className="btn btn-outline-danger"  >
+                <span id={lyric.Id} className="fas fa-play" onClick={e => this.togglePlay(e)}></span>
+              </button>
+            </div>
           </div>
         </div>
 

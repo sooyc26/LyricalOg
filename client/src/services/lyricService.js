@@ -73,11 +73,12 @@ function update(id, data) {
         .catch(responseError)
 }
 
-function vote(id) {
-    const url= 'http://localhost:49694/api/lyrics/vote/'+id
+function vote(data) {
+    const url= 'http://localhost:49694/api/lyrics/vote/'
     
     const config={
-        method:'GET',
+        method:'POST',
+        data:data,
     }
 
     return axios(url, config)

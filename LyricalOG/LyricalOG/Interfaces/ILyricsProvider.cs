@@ -1,4 +1,5 @@
 ﻿using LyricalOG.Models;
+using myCrudApp.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +14,7 @@ namespace LyricalOG.Interfaces
          List<Lyrics> ReadAll();
         Lyrics ReadById(int id);
         List<Lyrics> ReadByBeatId(int BeatId);
-        int UpdateVotes(int id);
+        int UpdateVotes(VoteRequest vote);
         int Delete(int id);
     }
 }
