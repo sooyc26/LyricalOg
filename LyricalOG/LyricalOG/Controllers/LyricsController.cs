@@ -73,10 +73,16 @@ namespace LyricalOG.Controllers
         [HttpPost, Route("lyrics/vote")]
         public HttpResponseMessage UpdateVotes(VoteRequest vote)
         {
-            var retId = _lyricsProvider.UpdateVotes(vote);
+            var retId = _lyricsProvider.VoteUp(vote);
             return Request.CreateResponse(HttpStatusCode.OK, retId);
         }
 
+        [HttpDelete, Route("lyrics/vote")]
+        public HttpResponseMessage VoteDown(VoteRequest vote)
+        {
+            var retId = _lyricsProvider.DeleteVote(vote);
+            return Request.CreateResponse(HttpStatusCode.OK, retId);
+        }
         [HttpDelete, Route("lyrics/{id:int}")]
         public HttpResponseMessage Delete(int id)
         {

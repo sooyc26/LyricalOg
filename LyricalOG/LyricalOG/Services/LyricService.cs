@@ -170,7 +170,7 @@ namespace LyricalOG.Services
                             Lyric = (string)reader["Lyrics"],
                             Votes = Convert.ToInt32(reader["Votes"]),
                             VoteCount = Convert.ToInt32(reader["VoteCount"]),
-                            VoterId = (int)(reader["VoterId"]),
+                            VoterId = reader["VoterId"] ==DBNull.Value? 0:(int)reader["VoterId"],
                             BeatUrl = (string)reader["BeatUrl"],
                             S3SignedUrl = (string)reader["S3SignedUrl"],
 
@@ -255,7 +255,7 @@ namespace LyricalOG.Services
             return retId;
         }
 
-        public int UpdateVotes(VoteRequest vote)
+        public int VoteUp(VoteRequest vote)
         {
             int retId = 0;
             using (SqlConnection conn = new SqlConnection(connString))
@@ -264,6 +264,32 @@ namespace LyricalOG.Services
 
                 SqlCommand cmd = conn.CreateCommand();
                 cmd.CommandText = "Votes_Insert";
+                cmd.CommandType = System.Data.CommandType.StoredProcedure;
+
+                cmd.Parameters.AddWithValue("@LyricsId", vote.LyricsId);
+                cmd.Parameters.AddWithValue("@UserId", vote.VoterId);
+
+                using (SqlDataReader reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        retId = (int)reader["VoteId"];
+                    }
+                }
+                conn.Close();
+            }
+            return retId;
+        }
+
+        public int DeleteVote(VoteRequest vote)
+        {
+            int retId = 0;
+            using (SqlConnection conn = new SqlConnection(connString))
+            {
+                conn.Open();
+
+                SqlCommand cmd = conn.CreateCommand();
+                cmd.CommandText = "Votes_Delete_ByVoterId";
                 cmd.CommandType = System.Data.CommandType.StoredProcedure;
 
                 cmd.Parameters.AddWithValue("@LyricsId", vote.LyricsId);

@@ -139,13 +139,22 @@ class LyricsForm extends Component {
     this.handleShow();
   }
 
-  vote = lyricId => {
+  upVote = lyricId => {
     const data = {
       VoterId:this.state.currUserId,
       LyricsId: lyricId
     }
     lyricService.vote(data)
       .then(() => this.getAll())
+  }
+
+  downVote = lyricId=>{
+    const data = {
+      VoterId:this.state.currUserId,
+      LyricsId: lyricId
+    }
+    lyricService.deleteByVoteId(data)
+    .then(() => this.getAll())
   }
 
   setUrl = () => {
@@ -156,10 +165,10 @@ class LyricsForm extends Component {
     this.setState({
       autoPlay: true,
     });
-    // this.state.mediaEvent.target.seekTo(0).playVideo();
+    this.state.mediaEvent.target.seekTo(0).playVideo();
     debugger
-    this.refs['s3Player'].currentTime = 0;
-    this.refs['s3Player'].play()
+    // this.refs['s3Player'].currentTime = 0;
+    // this.refs['s3Player'].play()
   }
 
   ////recording functions /////
@@ -168,7 +177,7 @@ class LyricsForm extends Component {
       autoPlay: false,
       record: false,
     });
-   // this.state.mediaEvent.target.pauseVideo();
+   this.state.mediaEvent.target.pauseVideo();
    
   }
 
@@ -348,10 +357,16 @@ debugger
                 <ul className='' style={{ whiteSpace: 'pre-wrap', fontSize: '18px' }}>{lyric.Lyric}</ul>
               </div>
                 <div class="card-footer">
+              
+                {lyric.VoterList.includes(this.state.currUserId) ?
+                  <button id={lyric.Id} onClick={() => this.downVote(lyric.Id)}
+                    className="btn btn-success">{lyric.VoteCount} <i class="fas fa-chevron-up"></i>
+                  </button>
+                  : <button id={lyric.Id} onClick={() => this.upVote(lyric.Id)}
+                    className="btn btn-outline-success">{lyric.VoteCount} <i class="fas fa-chevron-up"></i>
+                  </button>
+                }
 
-              <button id={lyric.Id} onClick={() => this.vote(lyric.Id)}disabled={lyric.VoterList.includes(this.state.currUserId) ? true : false} className={lyric.VoterList.includes(this.state.currUserId)?"btn btn-success":"btn btn-outline-success"}>
-                {lyric.VoteCount} 
-                <i class="fas fa-chevron-up"></i></button>
               {/* <button id={lyric.Id} onClick={() => this.vote(lyric.Id)} className="btn btn-outline-warning">{lyric.Votes} <i class="fas fa-chevron-down"></i></button> */}
 
               {
@@ -401,10 +416,14 @@ debugger
 
             </div>
             <div class="card-footer">
-              <button id={lyric.Id} onClick={() => this.vote(lyric.Id)} className={lyric.VoterList.includes(this.state.currUserId) ? "btn btn-warning" : "btn btn-outline-warning"} disabled={lyric.VoterList.includes(this.state.currUserId) ? true : false}>
-                {lyric.VoteCount}
-                <i class="fas fa-chevron-up"></i>
-              </button>
+            {lyric.VoterList.includes(this.state.currUserId) ?
+                  <button id={lyric.Id} onClick={() => this.downVote(lyric.Id)}
+                    className="btn btn-warning">{lyric.VoteCount} <i class="fas fa-chevron-up"></i>
+                  </button>
+                  : <button id={lyric.Id} onClick={() => this.upVote(lyric.Id)}
+                    className="btn btn-outline-warning">{lyric.VoteCount} <i class="fas fa-chevron-up"></i>
+                  </button>
+                }
               {
                 lyric.UserId === this.state.currUserId || this.state.isAdmin ?
                   <button id={lyric.Id} onClick={(e) => this.delete(e, lyric.Id)} className="btn btn-outline-secondary">Delete</button>

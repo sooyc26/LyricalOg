@@ -86,6 +86,19 @@ function vote(data) {
         .catch(responseError)
 }
 
+function deleteByVoteId(data) {
+    const url= 'http://localhost:49694/api/lyrics/vote/'
+    
+    const config={
+        method:'Delete',
+        data:data
+    }
+
+    return axios(url, config)
+        .then(responseSuccess)
+        .catch(responseError)
+}
+
 function deleteById(id) {
     const url= 'http://localhost:49694/api/lyrics/'+id
     
@@ -110,7 +123,7 @@ const responseError = error => {
     }
     return Promise.reject(error);
 }
-export {create, getAll,vote,getByBeatId, getById,update,uploadFile,deleteById}
+export {create, getAll,vote,getByBeatId, getById,update,uploadFile,deleteById,deleteByVoteId}
   
 /*
 split an array and add the splitted items at end of the array

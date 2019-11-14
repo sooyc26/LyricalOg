@@ -14,7 +14,8 @@ namespace LyricalOG.Interfaces
          List<Lyrics> ReadAll();
         Lyrics ReadById(int id);
         List<Lyrics> ReadByBeatId(int BeatId);
-        int UpdateVotes(VoteRequest vote);
+        int VoteUp(VoteRequest vote);
+        int DeleteVote(VoteRequest vote);
         int Delete(int id);
     }
 }
