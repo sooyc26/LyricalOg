@@ -14,7 +14,7 @@ function create(data) {
 }
 
 function uploadFile(responseUrl, uploadFile) {
-    debugger    
+        
     const header = {
         headers: {
             'Content-Type': uploadFile.type, 

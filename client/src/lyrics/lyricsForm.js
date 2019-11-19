@@ -10,6 +10,7 @@ import {connect} from 'react-redux'
 import {withRouter} from 'react-router-dom'
 import * as jwt_decode from "jwt-decode";
 import './lyrics.css'
+import defaultImg from '../cloudLightning.png'
 class LyricsForm extends Component {
 
   constructor(props) {
@@ -346,13 +347,12 @@ class LyricsForm extends Component {
     //   // beatPlayer =  <iframe src={this.state.url} title="s3Player"
     //   // width="500px" height="166" allow="" onPause={this.onPlayerStateChange}
     //   // onLoad={this.bindEvents} >
-
       beatPlayer = 
       <video  controls
       onPlay={this.state.s3Url ? () => this.playUrl(this.state.audioId) : (window.blobURL ? () => audio.play() : () => this.setState({ record: true }))}
       controlsList="nodownload"
       key={this.state.url}
-      poster={this.state.beatImg? this.state.beatImg:"http://1.bp.blogspot.com/-LFuGp7sblPY/VUXzECbIUkI/AAAAAAAABWU/JEj8qyNzuJU/s1600/1.jpg" }
+      poster={this.state.beatImg}
       ref={'s3Player'}  name="media" width="500px" height="166"
       onLoadedMetadata={this._onReady}
       // onPlaying={this.state.s3Url ? () => this.playUrl(this.state.audioId) : (window.blobURL ? () => audio.play() : () => this.setState({ record: true }))}

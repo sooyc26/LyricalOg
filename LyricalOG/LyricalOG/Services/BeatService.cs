@@ -51,7 +51,8 @@ namespace LyricalOG.Services
             var beatNoExpire = request.Title + "_" + request.Producer + "_beat_" + GetUniqueKey(16);
             var imgNoExpire = request.Title + "_" + request.Producer + "_img_"  + GetUniqueKey(16);
             var slicedUrl = SignedUrlWithNoExpire(null);
-            var sliceImgUrl = SignedUrlWithNoExpire(null);
+            var sliceImgUrl = "";
+            if(request.ImgFileType !=null) sliceImgUrl= SignedUrlWithNoExpire(null);
 
 
             using (SqlConnection conn = new SqlConnection(connString))
@@ -83,8 +84,11 @@ namespace LyricalOG.Services
             response.BeatId = id;
 
             response.BeatSignedUrl = GeneratePreSignedURL("B"+ id.ToString(), request.BeatFileType);  //get signedURL to update resumeUrl in S3
-            response.ImgSignedUrl = GeneratePreSignedURL("BI" + id.ToString(), request.ImgFileType);  //get signedURL to update resumeUrl in S3
 
+            if (request.ImgFileType != null)
+            {
+                response.ImgSignedUrl = GeneratePreSignedURL("BI" + id.ToString(), request.ImgFileType);  //get signedURL to update resumeUrl in S3
+            }
             return response;
         }
         public string SignedUrlWithNoExpire(string producerName)
@@ -172,7 +176,7 @@ namespace LyricalOG.Services
                             LyricsCount = (int)reader["LyricsCount"],
                             DateCreated = (DateTime)reader["DateCreated"],
                             Visible = (bool)reader["Visible"],
-                            ImgUrl = reader["ImageUrl"] == DBNull.Value ? "" : (string)reader["ImageUrl"],
+                            ImgUrl = reader["ImageUrl"] == DBNull.Value ? (string)"https://lyricalog.s3-us-west-1.amazonaws.com/cloudLightning.png" : (string)reader["ImageUrl"],
                         };
                         retModel = beat;
                     }
