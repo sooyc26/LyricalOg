@@ -14,13 +14,15 @@ namespace LyricalOG.Controllers
     public class BeatController : ApiController
     {
         private readonly IBeatProvider _beatProvider;
+        private readonly IS3RecordProvider _recordProvider;
 
         HttpRequestMessage req = new HttpRequestMessage();
         HttpConfiguration configuration = new HttpConfiguration();
 
-        public BeatController(IBeatProvider l)
+        public BeatController(IBeatProvider l, IS3RecordProvider s)
         {
             _beatProvider = l;
+            _recordProvider = s;
             req.Properties[System.Web.Http.Hosting.HttpPropertyKeys.HttpConfigurationKey] = configuration;
         }
 
@@ -56,9 +58,18 @@ namespace LyricalOG.Controllers
             return Request.CreateResponse(HttpStatusCode.OK, retId);
         }
 
+        [HttpPatch, Route("beat/{id:int}")]
+        public HttpResponseMessage ToggleVisiblity(int id)
+        {
+            var retId = _beatProvider.ToggleVisiblity(id);
+            return Request.CreateResponse(HttpStatusCode.OK, retId);
+        }
+
         [HttpDelete, Route("beat/{id:int}")]
         public HttpResponseMessage Delete(int id)
         {
+            _recordProvider.DeleteObjectNonVersionedBucketAsync("B"+id.ToString());
+            _recordProvider.DeleteObjectNonVersionedBucketAsync("BI"+id.ToString());
 
             var retId = _beatProvider.Delete(id);
             var message = "deleted Id: " + retId;

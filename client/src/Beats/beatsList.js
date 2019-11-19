@@ -16,7 +16,7 @@ export default class BeatsList extends React.Component{
             ,id:0
             ,title:''
             ,producer:''
-            ,beatUrl:''
+            ,description:''
             ,file:''
 
             ,show:false
@@ -63,13 +63,22 @@ export default class BeatsList extends React.Component{
                 id:response.Id,
                 producer:response.Producer,
                 title:response.Title,
-                beatUrl:response.BeatUrl,
+                description:response.Description,
                 vibe:response.Vibe,               
             })
         })
     }
+
+    toggleVisibility=id=>{
+        
+        beatService.toggleVisibility(id)
+        .then(() => this.getAll())
+
+    }
+
     submit= ()=>{
-        let file = this.uploadInput.files[0];
+        let beat = this.beatInput.files[0];
+        let img = this.imgInput.files[0];
 
         const data = {
             Id:this.state.id,
@@ -77,9 +86,11 @@ export default class BeatsList extends React.Component{
             UploaderId:this.state.currUserId,
             Title:this.state.title,
             LyricsCount:this.state.lyricsCount,
-            BeatUrl:this.state.beatUrl,
+            Description:this.state.description,
             Vibe:this.state.vibe,
-            ContentType:file ? file.type:''
+            BeatFileType:beat ? beat.type:'',
+            ImgFileType:img ? img.type:''
+
         }
         if(this.state.edit){//edit mode
             beatService.update(data)
@@ -93,8 +104,12 @@ export default class BeatsList extends React.Component{
             beatService.create(data)
             .then(response => {
                 
-                if(file) recordService.uploadFile(response, file)
-              })
+                if(beat) recordService.uploadFile(response.BeatSignedUrl, beat)
+                .then(()=>{
+                    if(img) recordService.uploadFile(response.ImgSignedUrl, img)
+                })
+
+               })
               .then(() => {
                   this.getAll()
                   this.handleClose()
@@ -120,14 +135,14 @@ export default class BeatsList extends React.Component{
             edit:false,
             producer:'',
             title:'',
-            beatUrl:'',
+            description:'',
             vibe:'',   
         })
     }
-    submitCheck = () => {
 
+    submitCheck = () => {
         if (this.state.producer !== '' && this.state.title !== '' && this.state.vibe &&
-            (this.state.beatUrl !== '' || this.uploadInput.files[0])) {
+            (this.state.description !== '' || this.beatInput.files[0])) {
             this.setState({ valid: false })
         }
         else {
@@ -144,10 +159,13 @@ export default class BeatsList extends React.Component{
                 /* map beats */
                 
         const displayBeats = this.state.beats.map((b, i) => {
+            if(this.state.isAdmin || b.Visible){
+          
             return (
-                <tr key={b.Id} className={i % 2 === 0 ? "text-primary" : "table-active text-primary"} >
+                
+                <tr key={b.Id} className={b.Visible ? "text-primary" : "text-grey"} >
                     <td>{b.Producer}</td>
-                    <td > <a href={"/lyricsForm/"+b.Id}>{b.Title}</a></td>
+                    <td > {b.Visible? <a href={"/lyricsForm/"+b.Id}>{b.Title}</a>:b.Title}</td>
                     <td>{b.Vibe}</td>
                     <td>{b.LyricsCount}</td>
                     <td>{moment(b.DateCreated).format('MM/DD/YYYY')}</td>
@@ -155,10 +173,18 @@ export default class BeatsList extends React.Component{
                         <td>
                             <span onClick={() => this.edit(b.Id)} className="fas fa-edit"></span>
                             <span onClick={() => this.delete(b.Id)} className="fas fa-trash-alt"></span>
-                        </td> : ''
+
+                        </td>: ''
+                    }
+
+                    {this.state.isAdmin || this.state.currUserId === b.UploaderId ?
+                        <td>
+                            <input type="checkbox" className="custom-checkbox " defaultChecked={b.Visible} onClick={() => this.toggleVisibility(b.Id)} ></input>
+                        </td>: ''
                     }
                 </tr>
             )
+        }
 
         })
         return (
@@ -180,23 +206,17 @@ export default class BeatsList extends React.Component{
                                 <th scope="col"># of Lyrics</th>
                                 <th scope="col">Upload Date</th>
                                 <th scope="col">Action</th>
-
+                                <th> Visibility</th>
                             </tr>
                         </thead>
                     <tbody>
                         
                         {displayBeats}
                         
-                        {/* <tr className="table-dark">
-                            <th scope="row">Dark</th>
-                            <td>Column content</td>
-                            <td>Column content</td>
-                            <td>Column content</td>
-                        </tr> */}
                     </tbody>
                 </table>
                 </div>
-                <Modal animation={false} backdropStyle={{ opacity: 0.5 }} style={{ backgroundColor: (0, 0, 0, 0.2), top: "25%" }} show={this.state.show} onHide={this.handleClose} >
+                <Modal animation={false} backdropStyle={{ opacity: 0.5 }} style={{ position:"fixed",backgroundColor: (0, 0, 0, 0.2), top: "10%" }} show={this.state.show} onHide={this.handleClose} >
             <Modal.Header >
               <Modal.Title id='ModalHeader'>Beat Upload </Modal.Title>
            
@@ -214,12 +234,15 @@ export default class BeatsList extends React.Component{
               <div>Vibe:
                   <input name="vibe"  className="form-control" value={this.state.vibe} onChange={this.handleChange}></input>
               </div> 
-              <div>Url:
-                  <input name="beatUrl" className="form-control" value={this.state.beatUrl} onChange={this.handleChange}></input>
+              <div>Description:
+                  <textarea name="description"style={{height: '80px',whiteSpace: 'pre-wrap'}}className="form-control" value={this.state.description} onChange={this.handleChange}></textarea>
               </div>
-              <div>Or</div>
-              <div>File Upload:
-                  <input type="file" name="file" className="form-control" ref={(ref) => { this.uploadInput = ref; }} onChange={this.handleChange}></input>
+              <div>Image Upload:
+              <input type="file" name="image"  className="form-control" ref={(ref) => { this.imgInput = ref; }} onChange={this.handleChange}></input>
+
+              </div>
+              <div>Beat Upload:
+                  <input type="file" name="audio"  className="form-control" ref={(ref) => { this.beatInput = ref; }} onChange={this.handleChange}></input>
               </div>
                   </div>
                   <div style={{ margin: 'auto' }}>

@@ -14,5 +14,6 @@ namespace LyricalOG.Interfaces
         BeatCreateResponse Create(Beat request);
         int Delete(int id);
         int Update(Beat request);
+        int ToggleVisiblity(int id);
     }
 }

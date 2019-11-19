@@ -47,6 +47,10 @@ class LyricsForm extends Component {
       ,currUserId:0
       ,title:''
       ,producer:''
+
+      ,playerMode:''
+      ,description:''
+      ,beatImg:null
     }
   }
 
@@ -60,14 +64,17 @@ class LyricsForm extends Component {
   }
 
   getAll() {
-    var id = this.props.match.params.id? this.props.match.params.id:1
+    var id = this.props.match.params.id? this.props.match.params.id:0
 
     beatService.getById(id)
     .then(response=>{  
+      debugger
       this.setState({
         url: response.BeatUrl,
         title:response.Title,
-        producer:response.Producer
+        producer:response.Producer,
+        description:response.Description,
+        beatImg:response.ImgUrl
       })
     })
     lyricService.getByBeatId(id)
@@ -90,7 +97,7 @@ class LyricsForm extends Component {
         lyrics : this.state.lyrics,
         BeatId:this.props.match.params.id,
         AudioFile: window.uploadFile,
-        ContentType: window.uploadFile.type
+        ContentType: window.uploadFile.type,
       }
 
       lyricService.create(lyricData)
@@ -165,10 +172,10 @@ class LyricsForm extends Component {
     this.setState({
       autoPlay: true,
     });
-    this.state.mediaEvent.target.seekTo(0).playVideo();
     debugger
-    // this.refs['s3Player'].currentTime = 0;
-    // this.refs['s3Player'].play()
+    //this.state.mediaEvent.target.seekTo(0).playVideo();
+    this.refs['s3Player'].currentTime = 0;
+    this.refs['s3Player'].play()
   }
 
   ////recording functions /////
@@ -177,8 +184,9 @@ class LyricsForm extends Component {
       autoPlay: false,
       record: false,
     });
-   this.state.mediaEvent.target.pauseVideo();
-   
+   //this.state.mediaEvent.target.pauseVideo();
+   this.refs['s3Player'].pause()
+
   }
 
   onData(recordedBlob) {
@@ -224,14 +232,19 @@ class LyricsForm extends Component {
   }
   
   playUrl = id => {
-debugger
+
     this.refs[id].currentTime = 0;
     this.refs[id].play()
 
   }
   
   pauseUrl =id=>{
-    this.state.mediaEvent.target.pauseVideo()
+    if(this.state.mediaEvent.target !=null){
+
+      this.state.mediaEvent.target.pauseVideo()
+    }else{
+      this.refs['s3Player'].pause()
+    }
 
     if (id) {
       this.refs[id].pause()
@@ -267,7 +280,7 @@ debugger
     }
   }
   bindEvents=()=> {
-    
+    debugger
     window.addEventListener("message", this.onMessageReceived, false);
   }
   onMessageReceived=event=> {
@@ -279,12 +292,11 @@ debugger
     this.render()
   }
   _onReady = event => {
-    //this.refs['s3Player'].currentTime = 20;
-    debugger
-    // this.refs['s3Player'].play()
+    event.target.currentTime = 0;
+    
     this.setState({ mediaEvent: event })
     //event.target.pauseVideo();
-    
+    // event.target.play()
     //console.log(this.refs['s3Player'].currentTime)
   }
   handleClose = e => {
@@ -307,25 +319,49 @@ debugger
     let audio = new Audio(window.blobURL);
 
     let youtube = ''
-
-
     let beatPlayer;
-    if(this.state.url.includes('sound')){//load soundcloud iframe
-      beatPlayer = <iframe title="soundcloud" width="500px" height="166" onChange={this.onPlayerStateChange} scrolling="no" frameborder="no"
-                src={"http://w.soundcloud.com/player/?url=" + this.state.url + "&amp;auto_play=" + 0 + "&enablejsapi=1"}>
-              </iframe>     
-    }else if(this.state.url.includes('youtube')){//load youtube iframe
-      youtube = this.state.url.split("=").pop();
-      beatPlayer = <Youtube width="500px" height="166" onReady={this._onReady} videoId={youtube} opts={opts}
-      onPlay={this.state.s3Url ? () => this.playUrl(this.state.audioId) : (window.blobURL ? () => audio.play() : () => this.setState({ record: true }))} />
-    }else{//load wp iframe
-      beatPlayer =  <iframe src={this.state.url} title="s3Player"
-      width="500px" height="166" allow="" onPause={this.onPlayerStateChange}
-      onLoad={this.bindEvents} >
-        <video ref={'s3Player'} autoPlay={false}
+    // if(this.state.url.includes('sound')){//load soundcloud iframe
+    //   beatPlayer = <iframe title="soundcloud" width="500px" height="166" onChange={this.onPlayerStateChange} scrolling="no" frameborder="no"
+    //             ready = {this._onReady}
+    //             src={"http://w.soundcloud.com/player/?url=" + this.state.url + "&amp;auto_play=" + 0 + "&enablejsapi=1"}>
+    //           </iframe>     
+    // }else if(this.state.url.includes('youtube')){//load youtube iframe
+
+    //   youtube = this.state.url.split("=").pop();
+    //   youtube = "https://www.youtube.com/embed/"+youtube+"?enablejsapi=1"
+    //   beatPlayer = 
+    //   // <Youtube width="500px" height="166" onReady={this._onReady} videoId={youtube} opts={opts}
+    //   // onPlay={this.state.s3Url ? () => this.playUrl(this.state.audioId) : (window.blobURL ? () => audio.play() : () => this.setState({ record: true }))} />
+    //   <iframe  controls
+    //   //controlsList="nodownload"
+    //   src={youtube}
+    //   // ref={'s3Player'}  
+    //   name="media" width="500px" height="166"
+    //   onReady={this._onReady}
+    //   // onPlaying={this.state.s3Url ? () => this.playUrl(this.state.audioId) : (window.blobURL ? () => audio.play() : () => this.setState({ record: true }))}
+    //   > 
+    //   {/* <source ref={'s3Player'}  src={this.state.url} type="audio/mp3"></source> */}
+    //   </iframe> 
+    // }else{//load wp iframe
+    //   // beatPlayer =  <iframe src={this.state.url} title="s3Player"
+    //   // width="500px" height="166" allow="" onPause={this.onPlayerStateChange}
+    //   // onLoad={this.bindEvents} >
+
+      beatPlayer = 
+      <video  controls
+      onPlay={this.state.s3Url ? () => this.playUrl(this.state.audioId) : (window.blobURL ? () => audio.play() : () => this.setState({ record: true }))}
+      controlsList="nodownload"
+      key={this.state.url}
+      poster={this.state.beatImg? this.state.beatImg:"http://1.bp.blogspot.com/-LFuGp7sblPY/VUXzECbIUkI/AAAAAAAABWU/JEj8qyNzuJU/s1600/1.jpg" }
+      ref={'s3Player'}  name="media" width="500px" height="166"
+      onLoadedMetadata={this._onReady}
       // onPlaying={this.state.s3Url ? () => this.playUrl(this.state.audioId) : (window.blobURL ? () => audio.play() : () => this.setState({ record: true }))}
-      ></video> </iframe>
-    }
+      > <source ref={'s3Player'}  src={this.state.url} type="audio/mp3"></source>
+      <image       src={this.state.beatImg? this.state.BeatImg:"http://1.bp.blogspot.com/-LFuGp7sblPY/VUXzECbIUkI/AAAAAAAABWU/JEj8qyNzuJU/s1600/1.jpg" }
+></image>
+      </video> 
+      // </iframe>
+
 
     //const { record } = this.state;
 
@@ -356,18 +392,16 @@ debugger
                 </div>
                 <ul className='' style={{ whiteSpace: 'pre-wrap', fontSize: '18px' }}>{lyric.Lyric}</ul>
               </div>
-                <div class="card-footer">
+                <div className="card-footer">
               
                 {lyric.VoterList.includes(this.state.currUserId) ?
                   <button id={lyric.Id} onClick={() => this.downVote(lyric.Id)}
-                    className="btn btn-success">{lyric.VoteCount} <i class="fas fa-chevron-up"></i>
+                    className="btn btn-success">{lyric.VoteCount} <i className="fas fa-chevron-up"></i>
                   </button>
                   : <button id={lyric.Id} onClick={() => this.upVote(lyric.Id)}
-                    className="btn btn-outline-success">{lyric.VoteCount} <i class="fas fa-chevron-up"></i>
+                    className="btn btn-outline-success">{lyric.VoteCount} <i className="fas fa-chevron-up"></i>
                   </button>
                 }
-
-              {/* <button id={lyric.Id} onClick={() => this.vote(lyric.Id)} className="btn btn-outline-warning">{lyric.Votes} <i class="fas fa-chevron-down"></i></button> */}
 
               {
                 lyric.UserId === this.state.currUserId || this.state.isAdmin ?
@@ -402,7 +436,7 @@ debugger
 
             <div className="card-header">
 
-              <span className="badge badge-pill badge-light" style={{ textAlign: "center",fontSize: '15px'  }}> by: {lyric.User.Name}</span>
+              <span className="badge badge-pill badge-light" style={{ textAlign: "center", fontSize: '15px' }}> by: {lyric.User.Name}</span>
 
             </div>
 
@@ -415,15 +449,15 @@ debugger
 
 
             </div>
-            <div class="card-footer">
-            {lyric.VoterList.includes(this.state.currUserId) ?
-                  <button id={lyric.Id} onClick={() => this.downVote(lyric.Id)}
-                    className="btn btn-warning">{lyric.VoteCount} <i class="fas fa-chevron-up"></i>
-                  </button>
-                  : <button id={lyric.Id} onClick={() => this.upVote(lyric.Id)}
-                    className="btn btn-outline-warning">{lyric.VoteCount} <i class="fas fa-chevron-up"></i>
-                  </button>
-                }
+            <div className="card-footer">
+              {lyric.VoterList.includes(this.state.currUserId) ?
+                <button id={lyric.Id} onClick={() => this.downVote(lyric.Id)}
+                  className="btn btn-warning">{lyric.VoteCount} <i className="fas fa-chevron-up"></i>
+                </button>
+                : <button id={lyric.Id} onClick={() => this.upVote(lyric.Id)}
+                  className="btn btn-outline-warning">{lyric.VoteCount} <i className="fas fa-chevron-up"></i>
+                </button>
+              }
               {
                 lyric.UserId === this.state.currUserId || this.state.isAdmin ?
                   <button id={lyric.Id} onClick={(e) => this.delete(e, lyric.Id)} className="btn btn-outline-secondary">Delete</button>
@@ -442,75 +476,70 @@ debugger
     return (
       <React.Fragment>
         {/* <h1 style={{ textAlign: 'center', fontSize: '55px', color: 'white' }}>LYRICAL OG</h1> */}
-        <div style= {{paddingTop:'5%'}}>
-        <h1 className="text-white" style={{ textAlign: 'center'}}>Lyrics</h1>
-        <div className="row" >
-          <div className="col-4 offset-1" >
+        <div style={{ paddingTop: '5%' }}>
+          <h1 className="text-white" style={{ textAlign: 'center' }}>Lyrics</h1>
+          <div className="row" >
+            <div className="col-4 offset-1" >
 
-            {/* <label className='text-white ' style={{ textAlign: 'center', fontSize: '20px' }}><div style={{ textAlign: 'center', fontSize: '20px' }}>Load Soundcloud or Youtube</div></label>
-            <div className='input-group' >
-              <input className="form-control" value={this.state.inputUrl} onChange={this.handleChange} style={{ backgroundColor: 'rgba(73,81,95,0.5)' }} name="inputUrl" />
-              <div className='input-group-append'>
-                <button className="btn btn-primary" onClick={() => this.setUrl()}>Load</button>
-              </div>
-            </div> */}
+              {/* MEDIA PLAYER */}
+              <h2 className="text-white" style={{ textAlign: 'left' }}>{this.state.title} - {this.state.producer}</h2>
 
-            {/* MEDIA PLAYER */}
-            <h2 className="text-white" style={{ textAlign: 'left'}}>{this.state.title} - {this.state.producer}</h2>
+              {beatPlayer}
 
-            {beatPlayer}
+              <label className="text-white" style={{ textAlign: 'left' }}> Description</label>
+              <div>{this.state.description}</div>
 
-            <label className='text-white' style={{ textAlign: 'center', fontSize: '20px' }}>Write your lyrics  </label>
-            <textarea className="form-control" onChange={this.handleChange} value={this.state.lyrics} name='lyrics' placeholder="lyrics here"
-              style={{
-                backgroundColor: 'rgba(73,81,95,0.5)', color: "white", borderColor: 'rgba(120,194,173,0.9)', whiteSpace: 'pre-wrap',
-                textAlign: 'center', width: '500px', height: '200px',
-                fontSize: '15px'
-              }}>
-            </textarea>
-            <div style={{ paddingTop: "15px" }}>
-              <label className='text-white' style={{ textAlign: 'center', fontSize: '20px' }}>Record </label>
-              <div className='container'>
+              <label className='text-white' style={{ textAlign: 'center', fontSize: '20px' }}>Write your lyrics  </label>
+              <textarea className="form-control" onChange={this.handleChange} value={this.state.lyrics} name='lyrics' placeholder="lyrics here"
+                style={{
+                  backgroundColor: 'rgba(73,81,95,0.5)', color: "white", borderColor: 'rgba(120,194,173,0.9)', whiteSpace: 'pre-wrap',
+                  textAlign: 'center', width: '500px', height: '200px',
+                  fontSize: '15px'
+                }}>
+              </textarea>
+              <div style={{ paddingTop: "15px" }}>
+                <label className='text-white' style={{ textAlign: 'center', fontSize: '20px' }}>Record </label>
+                <div className='container'>
 
-                {/* RECORD BUTTON */}
-                <div className="row">
-                  <button className="btn btn-outline-danger" onClick={this.state.record ? this.stopRecording : this.startRecording} type="button" >
-                    <i className={this.state.record ? "fas fa-square" : "fas fa-microphone"} style={{ color: "red" }} />
-                  </button>
+                  {/* RECORD BUTTON */}
+                  <div className="row">
+                    <button className="btn btn-outline-danger" onClick={this.state.record ? this.stopRecording : this.startRecording} type="button" >
+                      <i className={this.state.record ? "fas fa-square" : "fas fa-microphone"} style={{ color: "red" }} />
+                    </button>
 
-                  <ReactMic
-                    record={this.state.record}
-                    className="sound-wave"
-                    height={30}
-                    width={250}
-                    onStop={this.onStop}
-                    onData={this.onData}
-                    onSave={this.onSave}
-                    audioBitsPerSecond={192000}
-                    strokeColor="rgba(120,194,173,0.9)"
-                    visualSetting='sinewave'
-                    backgroundColor="#49515f" />
+                    <ReactMic
+                      record={this.state.record}
+                      className="sound-wave"
+                      height={30}
+                      width={250}
+                      onStop={this.onStop}
+                      onData={this.onData}
+                      onSave={this.onSave}
+                      audioBitsPerSecond={192000}
+                      strokeColor="rgba(120,194,173,0.9)"
+                      visualSetting='sinewave'
+                      backgroundColor="#49515f" />
 
-                  {/* PLAY BUTTON */}
-                  <button className="btn btn-outline-danger"  >
-                <span className="fas fa-play" onClick={e=>this.togglePlay(e)}></span>
-                  </button>
-                  <div style={{marginLeft:'15%'}}>
-                  <button className="btn btn-outline-primary text-grey" style={{ float:'right' }} onClick={this.submit}>Submit</button>
+                    {/* PLAY BUTTON */}
+                    <button className="btn btn-outline-danger"  >
+                      <span className="fas fa-play" onClick={e => this.togglePlay(e)}></span>
+                    </button>
+                    <div style={{ marginLeft: '15%' }}>
+                      <button className="btn btn-outline-primary text-grey" style={{ float: 'right' }} onClick={this.submit}>Submit</button>
+                    </div>
                   </div>
                 </div>
               </div>
+              <div>
+              </div>
             </div>
-            <div>
+            {/* Load Lyrics */}
+            <div className="col-4 offset-2" style={{ textAlign: 'center' }}>
+              <div>
+                {displayLyrics}
+              </div>
             </div>
           </div>
-          {/* Load Lyrics */}
-          <div className="col-4 offset-2" style={{ textAlign: 'center' }}>
-            <div>
-              {displayLyrics}
-            </div>
-          </div>
-        </div>
         </div>
       </React.Fragment>
     );

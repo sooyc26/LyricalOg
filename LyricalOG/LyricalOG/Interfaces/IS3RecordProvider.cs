@@ -8,6 +8,6 @@ namespace LyricalOG.Interfaces
 {
     public interface IS3RecordProvider
     {
-        int DeleteObjectNonVersionedBucketAsync(int objName);
+        int DeleteObjectNonVersionedBucketAsync(string objName);
     }
 }

@@ -74,7 +74,7 @@ class App extends Component {
               component={BeatsList} />
               <Route path="/Login" render={props => <Login {...props} />} />
               <Route path="/Register" render={props => <Register {...props} />} />
-              <Route path="/beatsList" render={props => <BeatsList {...props} />} />
+              {/* <Route exact path="/beatsList" render={props => <BeatsList {...props} />} /> */}
               <Route exact path="/lyricsForm/:id"render={props => <LyricsForm {...props} />}  />
               <Route path="/lyricalog-account-verification" render={props => <validateAccount {...props} />} />
 

@@ -17,5 +17,5 @@ namespace LyricalOG.Interfaces
         int VoteUp(VoteRequest vote);
         int DeleteVote(VoteRequest vote);
         int Delete(int id);
-    }
+    }   
 }

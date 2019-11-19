@@ -71,7 +71,7 @@ namespace LyricalOG.Controllers
         //}
 
         [HttpPost, Route("lyrics/vote")]
-        public HttpResponseMessage UpdateVotes(VoteRequest vote)
+        public HttpResponseMessage VoteUp(VoteRequest vote)
         {
             var retId = _lyricsProvider.VoteUp(vote);
             return Request.CreateResponse(HttpStatusCode.OK, retId);
@@ -86,7 +86,7 @@ namespace LyricalOG.Controllers
         [HttpDelete, Route("lyrics/{id:int}")]
         public HttpResponseMessage Delete(int id)
         {
-            _recordProvider.DeleteObjectNonVersionedBucketAsync(id);
+            _recordProvider.DeleteObjectNonVersionedBucketAsync(id.ToString());
 
             var retId =_lyricsProvider.Delete(id);
             var message = "deleted Id: " + retId;

@@ -13,9 +13,8 @@ function create(data) {
         .catch(responseError)
 }
 
-function uploadFile(responseData, uploadFile) {
-    const s3UploadURL = responseData.SignedUrl;
-    
+function uploadFile(responseUrl, uploadFile) {
+    debugger    
     const header = {
         headers: {
             'Content-Type': uploadFile.type, 
@@ -23,7 +22,7 @@ function uploadFile(responseData, uploadFile) {
         }
     }
 
-    const promise = axios.put(s3UploadURL, uploadFile, header)
+    const promise = axios.put(responseUrl, uploadFile, header)
         .then(response => {
             console.log(response);
             return response

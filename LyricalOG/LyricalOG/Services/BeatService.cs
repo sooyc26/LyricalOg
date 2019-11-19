@@ -9,6 +9,8 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 using System.Web;
 
 namespace LyricalOG.Services
@@ -23,11 +25,34 @@ namespace LyricalOG.Services
         private static readonly RegionEndpoint bucketRegion = RegionEndpoint.USWest1;                       //s3 region N California
         private static IAmazonS3 s3Client;
 
+        private string GetUniqueKey(int maxSize)
+        {
+            char[] chars = new char[62];
+            chars =
+            "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890".ToCharArray();
+            byte[] data = new byte[1];
+            using (RNGCryptoServiceProvider crypto = new RNGCryptoServiceProvider())
+            {
+                crypto.GetNonZeroBytes(data);
+                data = new byte[maxSize];
+                crypto.GetNonZeroBytes(data);
+            }
+            StringBuilder result = new StringBuilder(maxSize);
+            foreach (byte b in data)
+            {
+                result.Append(chars[b % (chars.Length)]);
+            }
+            return result.ToString();
+        }
         public BeatCreateResponse Create(Beat request)
         {
             var id = 0;
             var response = new BeatCreateResponse();
-            var slicedUrl = SignedUrlWithNoExpire(request.Title+"_"+request.Producer);
+            var beatNoExpire = request.Title + "_" + request.Producer + "_beat_" + GetUniqueKey(16);
+            var imgNoExpire = request.Title + "_" + request.Producer + "_img_"  + GetUniqueKey(16);
+            var slicedUrl = SignedUrlWithNoExpire(null);
+            var sliceImgUrl = SignedUrlWithNoExpire(null);
+
 
             using (SqlConnection conn = new SqlConnection(connString))
             {
@@ -41,8 +66,9 @@ namespace LyricalOG.Services
                 cmd.Parameters.AddWithValue("@Title", request.Title);
                 cmd.Parameters.AddWithValue("@UploaderId", request.UploaderId);
                 cmd.Parameters.AddWithValue("@Vibe", request.Vibe);
-                cmd.Parameters.AddWithValue("@IsUpload", request.BeatUrl != ""? false:true);
-                cmd.Parameters.AddWithValue("@SourceUrl", request.BeatUrl!=""? request.BeatUrl: slicedUrl);
+                cmd.Parameters.AddWithValue("@Description", request.Description);
+                cmd.Parameters.AddWithValue("@SourceUrl", slicedUrl);
+                cmd.Parameters.AddWithValue ("@ImageUrl", sliceImgUrl);
 
                 using (SqlDataReader reader = cmd.ExecuteReader())
                 {
@@ -55,7 +81,9 @@ namespace LyricalOG.Services
                 conn.Close();
             }
             response.BeatId = id;
-            if (request.BeatUrl =="")response.SignedUrl = GeneratePreSignedURL(request.Title + "_" + request.Producer, request.ContentType);  //get signedURL to update resumeUrl in S3
+
+            response.BeatSignedUrl = GeneratePreSignedURL("B"+ id.ToString(), request.BeatFileType);  //get signedURL to update resumeUrl in S3
+            response.ImgSignedUrl = GeneratePreSignedURL("BI" + id.ToString(), request.ImgFileType);  //get signedURL to update resumeUrl in S3
 
             return response;
         }
@@ -103,9 +131,11 @@ namespace LyricalOG.Services
                             Title = (string)reader["Title"],
                             Producer = (string)reader["Producer"],
                             BeatUrl = (string)reader["BeatUrl"],
+                            Description = reader["Description"]==DBNull.Value ? "":(string)reader["Description"],
                             Vibe = (string)reader["Vibe"],
                             LyricsCount = (int)reader["LyricsCount"],
-                            DateCreated = (DateTime)reader["DateCreated"]
+                            DateCreated = (DateTime)reader["DateCreated"],
+                            Visible = (bool)reader["Visible"]
                         };
                         retModel.Add(beat);
                     }
@@ -137,9 +167,12 @@ namespace LyricalOG.Services
                             Title = (string)reader["Title"],
                             Producer = (string)reader["Producer"],
                             BeatUrl = (string)reader["BeatUrl"],
+                            Description = reader["Description"] == DBNull.Value ? "" : (string)reader["Description"],
                             Vibe = (string)reader["Vibe"],
                             LyricsCount = (int)reader["LyricsCount"],
-                            DateCreated = (DateTime)reader["DateCreated"]
+                            DateCreated = (DateTime)reader["DateCreated"],
+                            Visible = (bool)reader["Visible"],
+                            ImgUrl = reader["ImageUrl"] == DBNull.Value ? "" : (string)reader["ImageUrl"],
                         };
                         retModel = beat;
                     }
@@ -164,7 +197,8 @@ namespace LyricalOG.Services
                 cmd.Parameters.AddWithValue("@Title", request.Title);
                 cmd.Parameters.AddWithValue("@Producer", request.Producer);
                 cmd.Parameters.AddWithValue("@Vibe", request.Vibe);
-                cmd.Parameters.AddWithValue("@BeatUrl", request.BeatUrl);
+                //cmd.Parameters.AddWithValue("@BeatUrl", request.BeatUrl);
+                cmd.Parameters.AddWithValue("@Description", request.Description);
 
                 using (SqlDataReader reader = cmd.ExecuteReader())
                 {
@@ -178,9 +212,26 @@ namespace LyricalOG.Services
             return retId;
         }
 
-        public int Delete(int id)
+        public int ToggleVisiblity(int id)
         {
 
+            using (SqlConnection conn = new SqlConnection(connString))
+            {
+                conn.Open();
+
+                SqlCommand cmd = conn.CreateCommand();
+                cmd.CommandText = "Beats_Toggle_Visibility";
+                cmd.CommandType = System.Data.CommandType.StoredProcedure;
+
+                cmd.Parameters.AddWithValue("@BeatId", id);
+                cmd.ExecuteNonQuery();
+
+                conn.Close();
+            }
+            return id;
+        }
+        public int Delete(int id)
+        {
             using (SqlConnection conn = new SqlConnection(connString))
             {
                 conn.Open();

@@ -53,6 +53,16 @@ function update(data) {
         .catch(responseError)
 }
 
+function toggleVisibility(id){
+    const url = 'http://localhost:49694/api/beat/' + id
+
+    const config={
+        method:'patch',
+    }
+    return axios(url,config)
+        .then(responseSuccess)
+        .catch(responseError)
+}
 
 function deleteById(id) {
     const url= 'http://localhost:49694/api/beat/'+id
@@ -78,5 +88,5 @@ const responseError = error => {
     }
     return Promise.reject(error);
 }
-export {create, getAll,getByBeatId, getById,update,deleteById}
+export {create, getAll,getByBeatId, getById,update,deleteById,toggleVisibility}
   

@@ -101,7 +101,7 @@ namespace LyricalOG.Services
             }
             return retId;
         }
-        public int DeleteObjectNonVersionedBucketAsync(int objName)
+        public int DeleteObjectNonVersionedBucketAsync(string objName)
         {
             AWSCredentials credentials = new BasicAWSCredentials(accessKey, secretKey);
             s3Client = new AmazonS3Client(credentials, bucketRegion);
@@ -110,7 +110,7 @@ namespace LyricalOG.Services
                 var deleteObjectRequest = new DeleteObjectRequest
                 {
                     BucketName = bucketName,
-                    Key = objName.ToString()
+                    Key = objName
                 };
 
                 Console.WriteLine("Deleting an object");

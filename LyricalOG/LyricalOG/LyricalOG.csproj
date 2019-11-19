@@ -520,6 +520,7 @@
     <Compile Include="Interfaces\ISendGridProvider.cs" />
     <Compile Include="Interfaces\IUsersProvider.cs" />
     <Compile Include="Models\Beat.cs" />
+    <Compile Include="Models\Enum\BeatSourceType.cs" />
     <Compile Include="Models\Lyrics.cs" />
     <Compile Include="Models\LyricsCreateRequest.cs" />
     <Compile Include="Models\LyricsCreateResponse.cs" />
