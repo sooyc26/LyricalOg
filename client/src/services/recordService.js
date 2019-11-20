@@ -13,7 +13,7 @@ function create(data) {
         .catch(responseError)
 }
 
-function uploadFile(responseUrl, uploadFile) {
+async function uploadFile(responseUrl, uploadFile) {
         
     const header = {
         headers: {
@@ -22,7 +22,7 @@ function uploadFile(responseUrl, uploadFile) {
         }
     }
 
-    const promise = axios.put(responseUrl, uploadFile, header)
+    const promise =await axios.put(responseUrl, uploadFile, header)
         .then(response => {
             console.log(response);
             return response

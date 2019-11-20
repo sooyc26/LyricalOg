@@ -4,13 +4,12 @@ import * as beatService from '../services/beatService'
 import * as userService from '../services/userService'
 import * as recordService from '../services/recordService'
 import { ReactMic } from 'react-mic';
-import Youtube from 'react-youtube'
 // import {store} from '../store'
 import {connect} from 'react-redux'
 import {withRouter} from 'react-router-dom'
 import * as jwt_decode from "jwt-decode";
 import './lyrics.css'
-import defaultImg from '../cloudLightning.png'
+
 class LyricsForm extends Component {
 
   constructor(props) {
@@ -30,7 +29,6 @@ class LyricsForm extends Component {
 
       , record: false
       ,play:false
-      , autoPlay: 0
       , mediaEvent: ''
 
       , name: ''
@@ -53,6 +51,7 @@ class LyricsForm extends Component {
       ,description:''
       ,beatImg:null
     }
+    this.submit = this.submit.bind(this)
   }
 
   componentDidMount() {
@@ -69,7 +68,7 @@ class LyricsForm extends Component {
 
     beatService.getById(id)
     .then(response=>{  
-      debugger
+      
       this.setState({
         url: response.BeatUrl,
         title:response.Title,
@@ -86,7 +85,7 @@ class LyricsForm extends Component {
       })
   }
 
-  submit = () => {
+   submit(){
 
     //const userData = store.getState().user; 
     //userData.UserId = store.getState().user? store.getState().user.UserId:4;
@@ -94,8 +93,8 @@ class LyricsForm extends Component {
     if (window.uploadFile) {
 
       const lyricData = {     //lyric insert data
-        userId: parseInt(userData.UserId, 10),
-        lyrics : this.state.lyrics,
+        UserId: parseInt(userData.UserId, 10),
+        Lyrics : this.state.lyrics,
         BeatId:this.props.match.params.id,
         AudioFile: window.uploadFile,
         ContentType: window.uploadFile.type,
@@ -103,21 +102,16 @@ class LyricsForm extends Component {
 
       lyricService.create(lyricData)
         .then(response => {
-
-          recordService.uploadFile(response, window.uploadFile)
+           recordService.uploadFile(response.SignedUrl, window.uploadFile)
+      
         })
-
         .then(() => this.getAll())
         .then(() => {
           this.setState({
             lyrics: '',
-            name: '',
-            password: '',
-            email: '',
             editMode: false
           })
         })
-
     } else window.alert('no recording')
   }
 
@@ -165,27 +159,19 @@ class LyricsForm extends Component {
     .then(() => this.getAll())
   }
 
-  setUrl = () => {
-    this.setState({ url: this.state.inputUrl })
-  }
+  // setUrl = () => {
+  //   this.setState({ url: this.state.inputUrl })
+  // }
 
   startRecording = () => {
-    this.setState({
-      autoPlay: true,
-    });
-    debugger
-    //this.state.mediaEvent.target.seekTo(0).playVideo();
     this.refs['s3Player'].currentTime = 0;
     this.refs['s3Player'].play()
+    this.setState({record:true})
   }
 
   ////recording functions /////
   stopRecording = () => {
-    this.setState({
-      autoPlay: false,
-      record: false,
-    });
-   //this.state.mediaEvent.target.pauseVideo();
+    this.setState({record: false})
    this.refs['s3Player'].pause()
 
   }
@@ -206,62 +192,52 @@ class LyricsForm extends Component {
     xhr.send();
   }
 
+  beatPlay = ()=>{
+    // onPlay={this.state.s3Url ? () => this.playUrl(this.state.audioId) : (window.blobURL ? () => audio.play() : () => this.setState({ record: true }))}
+
+    if(this.state.s3Url){
+      this.playUrl(this.state.audioId)
+    }else{
+      if(window.blobURL){
+        this.audio.play()
+      }else{
+        // this.setState({record:true})
+      }
+    }
+
+  }
 
   onStop = (recordedBlob) => {
     
     console.log('recordedBlob is: ', recordedBlob);
 
     window.blobURL = recordedBlob.blobURL
-    //window.blob = recordedBlob
+    // window.blob = recordedBlob
     this.convertBlobToMp3(recordedBlob)
   }
 
   playBack = id => {
-    //this.state.mediaEvent.target.seekTo(0).playVideo()
-    this.refs['s3Player'].currentTime = 0;
-    this.refs['s3Player'].play()
-    if (id) {
-      this.setState({
-        audioId: id,
-        s3Url: true
-      })
+    //this.refs['s3Player'].currentTime = 0;
+    if(id){
+      this.refs[id].currentTime = this.refs['s3Player'].currentTime
+      this.refs['s3Player'].play()
+      .then(this.refs[id].play())
     }
 
-    this.setState({ 
-      record: false,
-    })
-  }
-  
-  playUrl = id => {
-
-    this.refs[id].currentTime = 0;
-    this.refs[id].play()
-
-  }
-  
-  pauseUrl =id=>{
-    if(this.state.mediaEvent.target !=null){
-
-      this.state.mediaEvent.target.pauseVideo()
-    }else{
-      this.refs['s3Player'].pause()
-    }
-
-    if (id) {
-      this.refs[id].pause()
-    }else{
-      this.pauseAudio()
-    }
-  }
-
-  pauseAudio = () =>{
-    
-    if (window.blobURL) {
-      this.audio.pause();
-    }    
+    // if (!id && window.blobURL) {
+    //   this.refs['s3Player'].currentTime = 0;
+    //   this.refs['s3Player'].play()
+    //     .then(this.audio.play())
+    // }
   }
 
   togglePlay = e => {
+
+    //if end of record
+    if (this.refs[e.target.id].currentTime >= this.refs[e.target.id].duration) {
+      this.refs['s3Player'].currentTime = 0;
+      this.refs[e.target.id].currentTime = 0;
+    }
 
     if (e.target.className == "fas fa-stop") {
       e.target.className = "fas fa-play"
@@ -270,28 +246,52 @@ class LyricsForm extends Component {
       e.target.className = "fas fa-stop"
       this.playBack(e.target.id)
     }
-  }
+}
 
-  onPlayerStateChange = () => {
-    debugger
-    if (window.blobObject) {
-      this.audio.play();
-    } else {
-      this.setState({ record: true })
+  togglePlayRecord = e => {
+
+    if(window.blobURL){
+
+      const audio = new Audio(window.blobURL)
+      
+      if (e.target.className == "fas fa-stop") {
+        e.target.className = "fas fa-play"
+        this.refs['s3Player'].pause()
+        audio.pause()
+        
+      } else {
+        e.target.className = "fas fa-stop"
+        
+        this.refs["s3Player"].currentTime = 0;
+        this.refs['s3Player'].play()
+        .then(audio.play())
+        
+      }
+    }else{
+      window.alert("please record first before playing")
     }
   }
-  bindEvents=()=> {
-    debugger
-    window.addEventListener("message", this.onMessageReceived, false);
+
+  playUrl = id => {
+    this.refs[id].currentTime = 0;
+    this.refs[id].play()
   }
-  onMessageReceived=event=> {
-    debugger
-    // var data = JSON.parse(event.data);
-    // console.log(data);
-    event.target.currentTime=20
-    this.loading = false;
-    this.render()
+  
+  pauseUrl =id=>{
+    this.refs['s3Player'].pause()
+
+    if (id) {
+      this.refs[id].pause()
+    }
   }
+
+  // pauseAudio = () =>{
+    
+  //   if (window.blobURL) {
+  //     this.audio.pause();
+  //   }    
+  // }
+
   _onReady = event => {
     event.target.currentTime = 0;
     
@@ -310,55 +310,18 @@ class LyricsForm extends Component {
 
   render() {
 
-    const opts = {
-      height: '166',
-      width: '500',
-      playerVars: {
-        autoplay: this.state.autoPlay
-      }
-    }
-    let audio = new Audio(window.blobURL);
-
-    let youtube = ''
-    let beatPlayer;
-    // if(this.state.url.includes('sound')){//load soundcloud iframe
-    //   beatPlayer = <iframe title="soundcloud" width="500px" height="166" onChange={this.onPlayerStateChange} scrolling="no" frameborder="no"
-    //             ready = {this._onReady}
-    //             src={"http://w.soundcloud.com/player/?url=" + this.state.url + "&amp;auto_play=" + 0 + "&enablejsapi=1"}>
-    //           </iframe>     
-    // }else if(this.state.url.includes('youtube')){//load youtube iframe
-
-    //   youtube = this.state.url.split("=").pop();
-    //   youtube = "https://www.youtube.com/embed/"+youtube+"?enablejsapi=1"
-    //   beatPlayer = 
-    //   // <Youtube width="500px" height="166" onReady={this._onReady} videoId={youtube} opts={opts}
-    //   // onPlay={this.state.s3Url ? () => this.playUrl(this.state.audioId) : (window.blobURL ? () => audio.play() : () => this.setState({ record: true }))} />
-    //   <iframe  controls
-    //   //controlsList="nodownload"
-    //   src={youtube}
-    //   // ref={'s3Player'}  
-    //   name="media" width="500px" height="166"
-    //   onReady={this._onReady}
-    //   // onPlaying={this.state.s3Url ? () => this.playUrl(this.state.audioId) : (window.blobURL ? () => audio.play() : () => this.setState({ record: true }))}
-    //   > 
-    //   {/* <source ref={'s3Player'}  src={this.state.url} type="audio/mp3"></source> */}
-    //   </iframe> 
-    // }else{//load wp iframe
-    //   // beatPlayer =  <iframe src={this.state.url} title="s3Player"
-    //   // width="500px" height="166" allow="" onPause={this.onPlayerStateChange}
-    //   // onLoad={this.bindEvents} >
-      beatPlayer = 
-      <video  controls
-      onPlay={this.state.s3Url ? () => this.playUrl(this.state.audioId) : (window.blobURL ? () => audio.play() : () => this.setState({ record: true }))}
-      controlsList="nodownload"
-      key={this.state.url}
-      poster={this.state.beatImg}
-      ref={'s3Player'}  name="media" width="500px" height="166"
-      onLoadedMetadata={this._onReady}
+    let beatPlayer =
+      <video controls
+        //onPlay={this.beatPlay}
+        controlsList="nodownload"
+        key={this.state.url}
+        poster={this.state.beatImg}
+        ref={'s3Player'} name="media" width="500px" height="166"
+        onLoadedMetadata={this._onReady}
       // onPlaying={this.state.s3Url ? () => this.playUrl(this.state.audioId) : (window.blobURL ? () => audio.play() : () => this.setState({ record: true }))}
-      > <source ref={'s3Player'}  src={this.state.url} type="audio/mp3"></source>
-      <image       src={this.state.beatImg? this.state.BeatImg:"http://1.bp.blogspot.com/-LFuGp7sblPY/VUXzECbIUkI/AAAAAAAABWU/JEj8qyNzuJU/s1600/1.jpg" }
-></image>
+      > <source ref={'s3Player'} src={this.state.url} type="audio/mp3"></source>
+        <image src={this.state.beatImg ? this.state.BeatImg : "http://1.bp.blogspot.com/-LFuGp7sblPY/VUXzECbIUkI/AAAAAAAABWU/JEj8qyNzuJU/s1600/1.jpg"}
+        ></image>
       </video> 
       // </iframe>
 
@@ -388,7 +351,9 @@ class LyricsForm extends Component {
               <div className="card-body">
                 <div>
 
-                  <audio ref={`${lyric.Id}`} id={lyric.Id} onPlay={() => this.playBack()} controls="" style={{ height: '50px', width: '200px' }} src={lyric.S3SignedUrl}></audio>
+                  <audio ref={`${lyric.Id}`} id={lyric.Id} 
+                  // onPlay={() => this.playBack(lyric.Id)} 
+                  controls="" style={{ height: '50px', width: '200px' }} src={lyric.S3SignedUrl}></audio>
                 </div>
                 <ul className='' style={{ whiteSpace: 'pre-wrap', fontSize: '18px' }}>{lyric.Lyric}</ul>
               </div>
@@ -507,6 +472,12 @@ class LyricsForm extends Component {
                       <i className={this.state.record ? "fas fa-square" : "fas fa-microphone"} style={{ color: "red" }} />
                     </button>
 
+                    <audio ref={"recorded"} 
+                    //id={lyric.Id} 
+                  // onPlay={() => this.playBack(lyric.Id)} 
+                    src={window.blobURL} 
+                    type="audio/webm"></audio>
+
                     <ReactMic
                       record={this.state.record}
                       className="sound-wave"
@@ -522,7 +493,7 @@ class LyricsForm extends Component {
 
                     {/* PLAY BUTTON */}
                     <button className="btn btn-outline-danger"  >
-                      <span className="fas fa-play" onClick={e => this.togglePlay(e)}></span>
+                      <span className="fas fa-play" onClick={ (e)=> this.togglePlayRecord(e)}></span>
                     </button>
                     <div style={{ marginLeft: '15%' }}>
                       <button className="btn btn-outline-primary text-grey" style={{ float: 'right' }} onClick={this.submit}>Submit</button>

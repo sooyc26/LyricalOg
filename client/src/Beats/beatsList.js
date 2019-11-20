@@ -108,12 +108,12 @@ export default class BeatsList extends React.Component{
                 .then(()=>{
                     if(img) recordService.uploadFile(response.ImgSignedUrl, img)
                 })
+                .then(() => {
+                    this.getAll()
+                    this.handleClose()
+                  })
 
                })
-              .then(() => {
-                  this.getAll()
-                  this.handleClose()
-                })
         }
     }
 
