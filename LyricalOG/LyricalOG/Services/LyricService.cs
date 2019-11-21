@@ -183,10 +183,10 @@ namespace LyricalOG.Services
                         };
                         Users.Add(lyrics);
                     }
-
                     conn.Close();
                 }
             }
+
             var groupResult = Users.GroupBy(x => new
             {
                 x.Id,

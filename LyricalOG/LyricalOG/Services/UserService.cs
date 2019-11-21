@@ -23,6 +23,7 @@ using System.Web;
 using System.Web.Script.Serialization;
 using System.Security.Principal;
 using Newtonsoft.Json;
+using myCrudApp.Models.Users;
 
 namespace LyricalOG.Services
 {
@@ -305,7 +306,6 @@ namespace LyricalOG.Services
                             Votes = ConvertFromDBVal<int>(reader["Votes"]),
                             BeatUrl = ConvertFromDBVal<string>(reader["BeatUrl"]),
                             Password = (string)reader["Password"],
-                            S3SignedUrl = ConvertFromDBVal<string>(reader["S3SignedUrl"]),
 
                             DateCreated = (DateTime)reader["DateCreated"],
                             DateModified = ConvertFromDBVal<DateTime>(reader["DateModified"])
@@ -345,7 +345,6 @@ namespace LyricalOG.Services
                             Lyrics = (string)reader["Lyrics"],
                             Votes = (int)reader["Votes"],
                             BeatUrl = (string)reader["BeatUrl"],
-                            S3SignedUrl = (string)reader["S3SignedUrl"],
 
                             DateCreated = (DateTime)reader["DateCreated"],
                             DateModified = (DateTime)reader["DateModified"]
@@ -356,6 +355,129 @@ namespace LyricalOG.Services
                 conn.Close();
             }
             return Users;
+        }
+
+        public UserProfile GetUserProfile(int id)
+        {
+            var profileList = new List<UserProfileDB>();
+            var retModel = new UserProfile();
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connString))
+                {
+                    conn.Open();
+
+                    SqlCommand cmd = conn.CreateCommand();
+                    cmd.CommandText = "User_Profile";
+                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@UserId", id);
+
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            var user = new UserProfileDB
+                            {
+                                Id = (int)reader["UserId"],
+                                Name = (string)reader["Name"],
+                                Email = (string)reader["Email"],
+                                Password = (string)reader["Password"],
+                                DateCreated = (DateTime)reader["DateCreated"],
+                                DateModified = (DateTime)reader["DateModified"],
+                                EmailVerified = (bool)reader["EmailVerified"],
+                                IsAdmin = (bool)reader["IsAdmin"],
+                                //user lyrics info
+                                LyricsId = (int)reader["LyricsId"],
+                                LyricsBeatId = (int)reader["LyricsBeatId"],
+                                LyricsTitle = reader["LyricsTitle"] == DBNull.Value ? "" : (string)reader["LyricsTitle"],
+                                LyricsProducer = reader["LyricsProducer"] == DBNull.Value ? "" : (string)reader["LyricsProducer"],
+                                LyricsDateCreated = (DateTime)reader["LyricsDateCreated"],
+
+                                //user.UserLyricsList.Add(new UserLyrics
+                                //{
+
+                                //});
+
+                                BeatId = (int)reader["BeatId"],
+                                BeatTitle = (string)reader["BeatTitle"],
+                                BeatProducer = (string)reader["BeatProducer"],
+                                BeatUploadDate = (DateTime)reader["BeatUploadDate"],
+                                //user.UserBeatsList.Add(new UserBeats
+                                //{
+                                //    //user beats info
+                                //});
+
+                            };
+                            profileList.Add(user);
+                        }
+                    }
+                    conn.Close();
+                }
+                //group by user
+                var groupUser = profileList.GroupBy(x => new
+                {
+                    x.Id,
+                    x.Password,
+                    x.Name,
+                    x.Email,
+                    x.DateCreated,
+                    x.DateModified,
+                    x.EmailVerified,
+                    x.IsAdmin
+                }).Select(y => new UserProfile
+                {
+                    Id = y.Key.Id,
+                    Password = y.Key.Password,
+                    Name = y.Key.Name,
+                    Email = y.Key.Email,
+                    DateCreated = y.Key.DateCreated,
+                    DateModified = y.Key.DateModified,
+                    EmailVerified = y.Key.EmailVerified,
+                    IsAdmin = y.Key.IsAdmin
+                }).ToList();
+
+                retModel = groupUser.First();
+
+                //group by beats
+                retModel.UserBeatsList = profileList.GroupBy(x => new
+                {
+                    x.BeatId,
+                    x.BeatTitle,
+                    x.BeatProducer,
+                    x.BeatUploadDate,
+
+                })
+                   .Select(y => new UserBeats
+                   {
+                       Id = y.Key.BeatId,
+                       Title = y.Key.BeatTitle,
+                       Producer = y.Key.BeatProducer,
+                       UploadDate = y.Key.BeatUploadDate
+                   }).ToList();
+
+                //group by lyrics
+                retModel.UserLyricsList = profileList.GroupBy(x => new
+                {
+                    x.LyricsId,
+                    x.LyricsBeatId,
+                    x.LyricsTitle,
+                    x.LyricsProducer,
+                    x.LyricsDateCreated
+                })
+                    .Select(y => new UserLyrics
+                    {
+                        Id = y.Key.LyricsId,
+                        BeatId = y.Key.LyricsBeatId,
+                        Title = y.Key.LyricsTitle,
+                        Producer = y.Key.LyricsProducer,
+                        UploadDate = y.Key.LyricsDateCreated
+                    }).ToList();
+            }
+            catch (Exception e)
+            {
+               var check= e.InnerException.ToString();
+            }
+            return retModel;
         }
 
         public int UpdateUser(UsersUpdateRequest request, int id)

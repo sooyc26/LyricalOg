@@ -1,5 +1,6 @@
 ﻿using LyricalOG.Models;
 using LyricalOG.Models.Users;
+using myCrudApp.Models.Users;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,5 +21,6 @@ namespace LyricalOG.Interfaces
         Task EmailVerification(User request);
         bool ValidateToken(string token, out string username);
         Task<IPrincipal> AuthenticateJwtToken(string token);
+        UserProfile GetUserProfile(int id);
     }
 }

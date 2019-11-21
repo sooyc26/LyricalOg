@@ -15,7 +15,6 @@ namespace LyricalOG.Models
         public string Lyrics { get; set; }
         public int Votes { get; set; }
         public string BeatUrl { get; set; }
-        public string S3SignedUrl { get; set; }
         public string VerificationLink { get; set; }
         public string PasswordResetLink { get; set; }
 

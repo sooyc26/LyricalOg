@@ -16,6 +16,7 @@ class Navbar extends React.Component {
   render() {
 
     return (
+
       <React.Fragment>
 
         <div className="navbar fixed-top" style={{ backgroundColor: "#282c34", opacity: 0.8 }}>
@@ -39,9 +40,15 @@ class Navbar extends React.Component {
 
               {store.getState().authed ? 
                 <li className="nav-item">
+                  <a className="nav-link text-warning" href="/userProfile" >User Profile</a>
+                </li>:''
+              }
+              {store.getState().authed ? 
+                <li className="nav-item">
                   <a className="nav-link text-danger" href="" onClick={this.signOut.bind(this)}>Signout</a>
                 </li>:''
               }
+
             </ul>
           </div> 
         </div>

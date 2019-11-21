@@ -60,6 +60,14 @@ function getById(id) {
         .catch(responseError)
 }
 
+function getUserProfile(id) {
+    const url = 'http://localhost:49694/api/userProfile/' + id
+
+    return axios.get(url)
+        .then(responseSuccess)
+        .catch(responseError)
+}
+
 function update(id, data) {
     const url= 'http://localhost:49694/api/users/'+id
     const config={
@@ -95,5 +103,5 @@ const responseError = error => {
     }
     return Promise.reject(error);
 }
-export {create, getAll,validationRequest, getById,update,deleteById,login}
+export {create, getAll,validationRequest, getById,update,deleteById,login,getUserProfile}
   

@@ -90,6 +90,13 @@ namespace LyricalOG.Controllers
             return req.CreateResponse(HttpStatusCode.OK, lyric);
         }
 
+        [HttpGet, Route("userProfile/{id:int}")]
+        public HttpResponseMessage GetUserProfile(int id)
+        {
+            var lyric = _usersProvider.GetUserProfile(id);
+            return req.CreateResponse(HttpStatusCode.OK, lyric);
+        }
+
         [HttpPut, Route("users/{id:int}")]
         public HttpResponseMessage UpdateById(UsersUpdateRequest request, int id)
         {

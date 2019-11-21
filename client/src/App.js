@@ -14,6 +14,7 @@ import {connect} from 'react-redux'
 //import updateUser from './actions/userActions'
 //import {bindActionsCreators, bindActionCreators} from 'redux'
 import {store} from './store'
+import UserProfile from './Users/userProfile';
 
 class App extends Component {
   constructor(props) {
@@ -74,6 +75,8 @@ class App extends Component {
               component={BeatsList} />
               <Route path="/Login" render={props => <Login {...props} />} />
               <Route path="/Register" render={props => <Register {...props} />} />
+              <Route path="/userProfile" render={props => <UserProfile {...props} />} />
+
               {/* <Route exact path="/beatsList" render={props => <BeatsList {...props} />} /> */}
               <Route exact path="/lyricsForm/:id"render={props => <LyricsForm {...props} />}  />
               <Route path="/lyricalog-account-verification" render={props => <validateAccount {...props} />} />
