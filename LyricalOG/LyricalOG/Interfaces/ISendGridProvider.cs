@@ -13,6 +13,7 @@ namespace LyricalOG.Interfaces
     public interface ISendGridProvider
     {
         Task<Response> SendVerification(User request);
+        Task<Response> SendPasswordReset(User request);
         UserKeyExpireCheck CheckExpireDate(string check);
     }
 }

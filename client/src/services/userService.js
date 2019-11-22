@@ -52,6 +52,19 @@ function getAll() {
         .catch(responseError)
 }
 
+function checkExpireDate(key) {
+    const url= 'http://localhost:49694/api/expire-check/'+key
+    debugger
+    const config={
+        method:'GET',
+        //withCredentials: true
+
+    }
+    return axios(url, config)
+        .then(responseSuccess)
+        .catch(responseError)
+}
+
 function getById(id) {
     const url = 'http://localhost:49694/api/users/' + id
 
@@ -79,6 +92,30 @@ function update(id, data) {
         .catch(responseError)
 }
 
+function passwordResetRequest(data){
+    const url= 'http://localhost:49694/api/users/passwordResetRequest'
+    debugger
+    const config={
+        method:'PUT',
+        data:data
+    }
+    return axios(url, config)
+        .then(responseSuccess)
+        .catch(responseError) 
+}
+
+function updatePassword(data){
+    const url= 'http://localhost:49694/api/users/updatePassword'
+    debugger
+    const config={
+        method:'PUT',
+        data:data
+    }
+    return axios(url, config)
+        .then(responseSuccess)
+        .catch(responseError) 
+}
+
 function deleteById(id) {
     const url= 'http://localhost:49694/api/users/'+id
     
@@ -103,5 +140,5 @@ const responseError = error => {
     }
     return Promise.reject(error);
 }
-export {create, getAll,validationRequest, getById,update,deleteById,login,getUserProfile}
+export {create, getAll,validationRequest, getById,update,deleteById,login,getUserProfile,passwordResetRequest,checkExpireDate,updatePassword}
   

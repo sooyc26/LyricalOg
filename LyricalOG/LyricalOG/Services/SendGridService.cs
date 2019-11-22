@@ -83,9 +83,9 @@ namespace LyricalOG.Services
 
         public async Task<Response> SendPasswordReset(User request)
         {
-            //int expireTime = int.Parse(ConfigurationManager.AppSettings["PasswordResetExpirationDate"]);
+            int expireTime = int.Parse(ConfigurationManager.AppSettings["PasswordResetExpirationDate"]);
             //var domain = ConfigurationManager.AppSettings["AppDomainAddress"];
-            //DateTime expireDate = DateTime.UtcNow.AddHours(expireTime);
+            DateTime expireDate = DateTime.UtcNow.AddHours(expireTime);
             string SecretPasswordKey = GetUniqueKey(64);
 
             using (var conn = new SqlConnection(connString))
@@ -98,17 +98,20 @@ namespace LyricalOG.Services
 
                 cmd.Parameters.AddWithValue("@Email", request.Email);
                 cmd.Parameters.AddWithValue("@PasswordKey", SecretPasswordKey);
+                cmd.Parameters.AddWithValue("@ExpireDate", expireDate);
+
+                cmd.ExecuteNonQuery(); 
 
                 conn.Close();
             }
 
             var from = new EmailAddress("no-reply@lyrical.og", "Lyrical OG");
-            var subject = "Lyrical OG Verification Link";
-            var to = new EmailAddress(request.Email, request.Name);
+            var subject = "Lyrical OG Password Reset Link";
+            var to = new EmailAddress(request.Email, request.Email);
             var plainTextContent = "Please click on the link below to reset your account password!";
 
             var resetAddress = ConfigurationManager.AppSettings["PasswordResetUrl"];
-            string htmlContent = string.Format("<a href=\"{0}{1}\"> Click here to reset password</a>", resetAddress, SecretPasswordKey);
+            string htmlContent = string.Format("<a href=\"{0}{1}\"> \"{0}{1}\"</a>", resetAddress, SecretPasswordKey);
             var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
             Response response = await _sendGridClient.SendEmailAsync(msg).ConfigureAwait(false);
 
@@ -130,14 +133,14 @@ namespace LyricalOG.Services
                 cmd.CommandText = "Users_Select_ByPasswordKey";
                 cmd.CommandType = CommandType.StoredProcedure;
 
-                cmd.Parameters.AddWithValue("@Password", check);
+                cmd.Parameters.AddWithValue("@Key", check);
 
                 using (SqlDataReader reader = cmd.ExecuteReader())
                 {
                     while (reader.Read())
                     {
-                        key = (DateTime)reader["PasswordResetKeyExpirationDate"];
-                        user.Id = (int)reader["Id"];
+                        key = (DateTime)reader["PWResetExireDate"];
+                        user.Id = (int)reader["UserId"];
                     }
                     reader.Close();
                 }

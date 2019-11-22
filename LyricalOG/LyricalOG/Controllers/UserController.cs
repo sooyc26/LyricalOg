@@ -115,10 +115,18 @@ namespace LyricalOG.Controllers
             return Request.CreateResponse(HttpStatusCode.OK, message);
         }
 
-        [HttpPut, Route("resetPassword")]
+        [HttpPut, Route("users/passwordResetRequest")]
         public async Task<HttpResponseMessage> SendEmail(User request)
         {
-            var result = await _sendGridProvider.SendVerification(request);
+            var result = await _sendGridProvider.SendPasswordReset(request);
+
+            return Request.CreateResponse(HttpStatusCode.OK, result);
+        }
+
+        [HttpPut, Route("users/updatePassword")]
+        public HttpResponseMessage UpdatePassword(UsersUpdateRequest request)
+        {
+            var result = _usersProvider.UpdatePassword(request);
 
             return Request.CreateResponse(HttpStatusCode.OK, result);
         }

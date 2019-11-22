@@ -4,11 +4,25 @@ import {store} from '../store'
 //import {Route,BrowserRouter, Switch} from '../../node_modules/react-router-dom'
 //import Header from '../layout/Header'
 //import Login from '../login/Login'
+import * as jwt_decode from "jwt-decode";
 
 class Navbar extends React.Component {
+  constructor(props){
+    super(props);
 
+    this.state={
+      id:''
+    }
+  }
 
-  signOut() {
+  userProfile=()=>{
+    var userData = JSON.parse(jwt_decode(localStorage.getItem('loginToken')).currUser)
+    this.setState({id:userData.UserId})
+    //this.props.history.push("/userProfile/"+userData.UserId)
+  }
+
+  signOut=()=> {
+    //this.props.history.push("")
     localStorage.removeItem("loginToken");
     
   }
@@ -40,12 +54,12 @@ class Navbar extends React.Component {
 
               {store.getState().authed ? 
                 <li className="nav-item">
-                  <a className="nav-link text-warning" href="/userProfile" >User Profile</a>
+                  <a className="nav-link text-warning" onClick={this.userProfile}>User Profile</a>
                 </li>:''
               }
               {store.getState().authed ? 
                 <li className="nav-item">
-                  <a className="nav-link text-danger" href="" onClick={this.signOut.bind(this)}>Signout</a>
+                  <a className="nav-link text-danger" href="" onClick={this.signOut}>Signout</a>
                 </li>:''
               }
 
@@ -64,6 +78,7 @@ class Navbar extends React.Component {
   }
 }
 const mapStateToProps = (state,props)=> {
+  console.log(state)
   return{
     authed:state.authed
   }

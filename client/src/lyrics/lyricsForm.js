@@ -323,7 +323,7 @@ class LyricsForm extends Component {
                 fontSize: '15px'
               }}
             >
-              <div className="card-header badge badge-dark" style={{ whiteSpace: 'pre-wrap', textAlign: "center", fontSize: '18px' }}>By: {lyric.User.Name}</div>
+              <div className="card-header badge badge-dark" style={{ whiteSpace: 'pre-wrap', textAlign: "center", fontSize: '18px' }}><a href={"/userProfile/"+lyric.UserId}>By: {lyric.User.Name}</a> </div>
               <div className="card-body">
                 <div>
 
@@ -377,7 +377,7 @@ class LyricsForm extends Component {
 
             <div className="card-header">
 
-              <span className="badge badge-pill badge-light" style={{ textAlign: "center", fontSize: '15px' }}> by: {lyric.User.Name}</span>
+              <span className="badge badge-pill badge-light" style={{ textAlign: "center", fontSize: '15px' }}> <a href={"/userProfile/"+lyric.UserId}>By: {lyric.User.Name}</a> </span>
 
             </div>
 

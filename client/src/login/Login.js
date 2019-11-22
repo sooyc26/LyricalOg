@@ -98,7 +98,7 @@ class Login extends React.Component {
 
                             <button onClick={(e) => this.submit(e)} className="btn btn-primary">Login</button>
                             <button type="button" onClick={() => this.props.history.push("/Register")} className="btn btn-outline-primary">Register</button>
-                            <button onClick={() => this.password()} className="btn btn-outline-secondary">forgot password?</button>
+                            <a href="/passwordResetRequest" className="btn btn-outline-secondary">forgot password?</a>
                         </form>
                     
                 </header>

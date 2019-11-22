@@ -2,8 +2,9 @@ import React from 'react'
 import * as userService from '../services/userService'
 import * as jwt_decode from "jwt-decode";
 import moment from '../../node_modules/moment'
+import { withRouter } from 'react-router-dom';
 
-export default class UserProfile extends React.Component{
+class UserProfile extends React.Component{
 
     constructor(props){
         super(props)
@@ -29,7 +30,9 @@ export default class UserProfile extends React.Component{
     getUserProfile=()=>{
         var userData = JSON.parse(jwt_decode(localStorage.getItem('loginToken')).currUser)
         
-        userService.getUserProfile(userData.UserId)
+        var id = this.props.match.params.id ? this.props.match.params.id : 0
+
+        userService.getUserProfile(id)
         .then(r=>{
             
             this.setState({
@@ -49,6 +52,8 @@ export default class UserProfile extends React.Component{
     }    
 
     render(){
+        const { match, location, history } = this.props
+
         const mapLyrics = this.state.lyricsList.map((l,i)=>{
             return(
                 <tr key={l.Id} className="text-warning" >
@@ -89,12 +94,15 @@ export default class UserProfile extends React.Component{
                             <div className="container">
 
                                 <div class="jumbotron" style={{ width: '90%' }}>
-                                    <h1 class="display-3">{this.state.name}</h1>
-                                    <p class="lead">{this.state.email}</p>
+                                    <h1 class="display-6">Name: {this.state.name}</h1>
+                                    <p class="lead">Email: {this.state.email}</p>
+                                    <div>Uploaded Lyrics Count: {(this.state.lyricsList).length}</div>
+                                    <div>Uploaded Beats Count: {(this.state.beatList).length}</div>
+
                                     <hr class="my-4" />
-                                    <p>It uses utility classes for typography and spacing to space content out within the larger container.</p>
+                                    <p>Member Since: {moment(this.state.dateCreated).format('MM/DD/YYYY')}</p>                                    
                                     <p class="lead">
-                                        <a class="btn btn-primary btn-lg" href="#" role="button">Learn more</a>
+                                        <a class="btn btn-primary btn-lg" href="#" role="button">Edit</a>
                                     </p>
                                 </div>
                             </div>
@@ -146,3 +154,4 @@ export default class UserProfile extends React.Component{
         )
     }
 }
+export default withRouter(UserProfile)

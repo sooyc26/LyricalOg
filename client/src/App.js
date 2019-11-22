@@ -15,6 +15,8 @@ import {connect} from 'react-redux'
 //import {bindActionsCreators, bindActionCreators} from 'redux'
 import {store} from './store'
 import UserProfile from './Users/userProfile';
+import PasswordResetRequest from './Users/passwordResetRequest';
+import ResetPassword from './Users/resetPassword'
 
 class App extends Component {
   constructor(props) {
@@ -75,7 +77,9 @@ class App extends Component {
               component={BeatsList} />
               <Route path="/Login" render={props => <Login {...props} />} />
               <Route path="/Register" render={props => <Register {...props} />} />
-              <Route path="/userProfile" render={props => <UserProfile {...props} />} />
+              <Route path="/passwordResetRequest" render={props => <PasswordResetRequest {...props} />} />
+              <Route path="/userProfile/:id" render={props => <UserProfile {...props} />} />
+              <Route path="/lyricalog-password-reset/:key" render={props => <ResetPassword {...props} />} />
 
               {/* <Route exact path="/beatsList" render={props => <BeatsList {...props} />} /> */}
               <Route exact path="/lyricsForm/:id"render={props => <LyricsForm {...props} />}  />

@@ -386,26 +386,17 @@ namespace LyricalOG.Services
                                 DateModified = (DateTime)reader["DateModified"],
                                 EmailVerified = (bool)reader["EmailVerified"],
                                 IsAdmin = (bool)reader["IsAdmin"],
-                                //user lyrics info
-                                LyricsId = (int)reader["LyricsId"],
-                                LyricsBeatId = (int)reader["LyricsBeatId"],
+
+                                LyricsId = reader["LyricsId"] == DBNull.Value ? 0 : (int)reader["LyricsId"],
+                                LyricsBeatId = reader["LyricsBeatId"] == DBNull.Value ? 0 :  (int)reader["LyricsBeatId"],
                                 LyricsTitle = reader["LyricsTitle"] == DBNull.Value ? "" : (string)reader["LyricsTitle"],
                                 LyricsProducer = reader["LyricsProducer"] == DBNull.Value ? "" : (string)reader["LyricsProducer"],
-                                LyricsDateCreated = (DateTime)reader["LyricsDateCreated"],
+                                LyricsDateCreated = reader["LyricsDateCreated"] == DBNull.Value ?  DateTime.MinValue :  (DateTime)reader["LyricsDateCreated"],
 
-                                //user.UserLyricsList.Add(new UserLyrics
-                                //{
-
-                                //});
-
-                                BeatId = (int)reader["BeatId"],
-                                BeatTitle = (string)reader["BeatTitle"],
-                                BeatProducer = (string)reader["BeatProducer"],
-                                BeatUploadDate = (DateTime)reader["BeatUploadDate"],
-                                //user.UserBeatsList.Add(new UserBeats
-                                //{
-                                //    //user beats info
-                                //});
+                                BeatId = reader["BeatId"] == DBNull.Value ? 0 : (int)reader["BeatId"],
+                                BeatTitle = reader["BeatTitle"] == DBNull.Value ? "" : (string)reader["BeatTitle"],
+                                BeatProducer = reader["BeatProducer"] == DBNull.Value ? "" : (string)reader["BeatProducer"],
+                                BeatUploadDate = reader["BeatUploadDate"] == DBNull.Value ? DateTime.MinValue : (DateTime)reader["BeatUploadDate"],
 
                             };
                             profileList.Add(user);
@@ -494,7 +485,33 @@ namespace LyricalOG.Services
                 cmd.Parameters.AddWithValue("@UserId", id);
                 cmd.Parameters.AddWithValue("@Name", request.Name);
                 cmd.Parameters.AddWithValue("@Email", request.Email);
-                cmd.Parameters.AddWithValue("@Paswword", request.Paswword);
+                cmd.Parameters.AddWithValue("@Paswword", request.Password);
+
+                using (SqlDataReader reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        retId = (int)reader["Id"];
+                    }
+                }
+                conn.Close();
+            }
+            return retId;
+        }
+
+        public int UpdatePassword(UsersUpdateRequest request)
+        {
+            int retId = 0;
+            using (SqlConnection conn = new SqlConnection(connString))
+            {
+                conn.Open();
+
+                SqlCommand cmd = conn.CreateCommand();
+                cmd.CommandText = "User_Update_Password";
+                cmd.CommandType = System.Data.CommandType.StoredProcedure;
+
+                cmd.Parameters.AddWithValue("@UserId", request.Id);
+                cmd.Parameters.AddWithValue("@Password", request.Password);
 
                 using (SqlDataReader reader = cmd.ExecuteReader())
                 {
