@@ -1,9 +1,10 @@
 import React, { Component } from "react";
+import withRouter from "react-router-dom/withRouter";
 //import { Route, NavLink } from "react-router-dom";
 // import logo from './logo.svg';
 // import LyricsForm from "../forms/lyricsForm";
 
-export default class Header extends Component {
+class Header extends Component {
   constructor(props) {
     super(props);
 
@@ -59,3 +60,4 @@ export default class Header extends Component {
     );
   }
 }
+export default (Header)

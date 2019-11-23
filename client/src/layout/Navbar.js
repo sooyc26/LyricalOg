@@ -1,7 +1,6 @@
 import React from 'react'
 import {connect} from 'react-redux'
 import {store} from '../store'
-//import {Route,BrowserRouter, Switch} from '../../node_modules/react-router-dom'
 //import Header from '../layout/Header'
 //import Login from '../login/Login'
 import * as jwt_decode from "jwt-decode";
@@ -18,7 +17,7 @@ class Navbar extends React.Component {
   userProfile=()=>{
     var userData = JSON.parse(jwt_decode(localStorage.getItem('loginToken')).currUser)
     this.setState({id:userData.UserId})
-    //this.props.history.push("/userProfile/"+userData.UserId)
+    // this.props.history.push('/userProfile/'+userData.UserId)
   }
 
   signOut=()=> {
@@ -28,7 +27,12 @@ class Navbar extends React.Component {
   }
 
   render() {
+    var uid=0;
+    if(this.state.id){
+      var userData = JSON.parse(jwt_decode(localStorage.getItem('loginToken')).currUser)
 
+      uid = this.state.id
+    }
     return (
 
       <React.Fragment>
@@ -54,7 +58,7 @@ class Navbar extends React.Component {
 
               {store.getState().authed ? 
                 <li className="nav-item">
-                  <a className="nav-link text-warning" onClick={this.userProfile}>User Profile</a>
+                  <a className="nav-link text-warning" href={"/userProfile/"+uid} onClick={this.userProfile}>User Profile</a>
                 </li>:''
               }
               {store.getState().authed ? 
@@ -84,4 +88,4 @@ const mapStateToProps = (state,props)=> {
   }
   
 }
-export default connect(mapStateToProps)(Navbar);
+export default (connect(mapStateToProps)(Navbar));

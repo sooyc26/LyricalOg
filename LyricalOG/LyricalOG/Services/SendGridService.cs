@@ -84,6 +84,7 @@ namespace LyricalOG.Services
         public async Task<Response> SendPasswordReset(User request)
         {
             int expireTime = int.Parse(ConfigurationManager.AppSettings["PasswordResetExpirationDate"]);
+            string resetAddress = ConfigurationManager.AppSettings["PasswordResetUrl"];
             //var domain = ConfigurationManager.AppSettings["AppDomainAddress"];
             DateTime expireDate = DateTime.UtcNow.AddHours(expireTime);
             string SecretPasswordKey = GetUniqueKey(64);
@@ -105,15 +106,17 @@ namespace LyricalOG.Services
                 conn.Close();
             }
 
-            var from = new EmailAddress("no-reply@lyrical.og", "Lyrical OG");
-            var subject = "Lyrical OG Password Reset Link";
-            var to = new EmailAddress(request.Email, request.Email);
-            var plainTextContent = "Please click on the link below to reset your account password!";
+            var href = resetAddress+ SecretPasswordKey;
+            var msg = new SendGridMessage
+            {
+                From = new EmailAddress("no-reply@lyrical.og", "Lyrical OG"),
+                Subject = "Lyrical OG Password Reset Link",
+                PlainTextContent  = "Please click on the link below",
+                HtmlContent = string.Format("<a href=\"{0}\"> click here to reset password.{1}</a>", href, SecretPasswordKey)        
+            };
 
-            var resetAddress = ConfigurationManager.AppSettings["PasswordResetUrl"];
-            string htmlContent = string.Format("<a href=\"{0}{1}\"> \"{0}{1}\"</a>", resetAddress, SecretPasswordKey);
-            var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
-            Response response = await _sendGridClient.SendEmailAsync(msg).ConfigureAwait(false);
+            msg.AddTo(new EmailAddress(request.Email, "recepient"));
+            Response response = await _sendGridClient.SendEmailAsync(msg);
 
             return response;
 

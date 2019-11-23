@@ -7,7 +7,7 @@ import BeatsList from './Beats/beatsList'
 import Navbar from './layout/Navbar';
 import Login from './login/Login';
 import Register from './login/Register';
-import { Route, BrowserRouter,Redirect,Switch } from 'react-router-dom';
+import { Route,Router, BrowserRouter,Redirect,Switch,withRouter } from 'react-router-dom';
 import Header from './layout/Header'
 
 import {connect} from 'react-redux'
@@ -65,8 +65,9 @@ class App extends Component {
 
     return (
       <div>
-        <BrowserRouter>
+        <BrowserRouter history={this.history}>
           <div>
+              <Navbar />
             <Switch>
 
               <Route exact path="/" render={props => <Header {...props} />} >
@@ -81,14 +82,15 @@ class App extends Component {
               <Route path="/userProfile/:id" render={props => <UserProfile {...props} />} />
               <Route path="/lyricalog-password-reset/:key" render={props => <ResetPassword {...props} />} />
 
-              {/* <Route exact path="/beatsList" render={props => <BeatsList {...props} />} /> */}
+              <Route exact path="/beatsList" render={props => <BeatsList {...props} />} />
               <Route exact path="/lyricsForm/:id"render={props => <LyricsForm {...props} />}  />
               <Route path="/lyricalog-account-verification" render={props => <validateAccount {...props} />} />
 
             </Switch>
           </div>
         </BrowserRouter>
-        <Navbar />
+
+        
 
       </div>
 
@@ -106,4 +108,4 @@ const mapStateToProps = (state,props)=> {
 }
 
 
-export default connect(mapStateToProps)(App);
+export default (connect(mapStateToProps)(App));

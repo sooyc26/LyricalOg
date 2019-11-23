@@ -2,7 +2,7 @@ import React from 'react'
 import * as userService from '../services/userService'
 import * as jwt_decode from "jwt-decode";
 import moment from '../../node_modules/moment'
-import { withRouter } from 'react-router-dom';
+import { withRouter } from 'react-router';
 
 class UserProfile extends React.Component{
 
@@ -31,7 +31,7 @@ class UserProfile extends React.Component{
         var userData = JSON.parse(jwt_decode(localStorage.getItem('loginToken')).currUser)
         
         var id = this.props.match.params.id ? this.props.match.params.id : 0
-
+debugger
         userService.getUserProfile(id)
         .then(r=>{
             

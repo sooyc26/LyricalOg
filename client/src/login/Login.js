@@ -3,6 +3,7 @@ import * as userService from '../services/userService'
 import {connect } from 'react-redux'
 import {updateUser, authUser} from '../actions/userActions'
 import * as jwt_decode from "jwt-decode";
+import withRouter from 'react-router-dom/withRouter';
 
 class Login extends React.Component {
     constructor(props) {
@@ -116,4 +117,4 @@ const mapActionsToProps = {
     onUpdateUser:updateUser,
     onAuthUser: authUser
 }
-export default connect(mapStateToProps,mapActionsToProps)(Login);
+export default (connect(mapStateToProps,mapActionsToProps)(Login));
