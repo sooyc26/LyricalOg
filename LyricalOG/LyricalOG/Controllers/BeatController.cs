@@ -26,6 +26,7 @@ namespace LyricalOG.Controllers
             req.Properties[System.Web.Http.Hosting.HttpPropertyKeys.HttpConfigurationKey] = configuration;
         }
 
+
         [HttpGet, Route("beats")]
         public HttpResponseMessage ReadAll()
         {

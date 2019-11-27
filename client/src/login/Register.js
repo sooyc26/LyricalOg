@@ -1,7 +1,7 @@
 import React from 'react';
 import * as userService from '../services/userService'
 import {connect } from 'react-redux'
-import {updateUser, authUser} from '../actions/userActions'
+import {updateUser, authUser} from '../actions/user-actions'
 
 class Register extends React.Component {
     constructor(props) {

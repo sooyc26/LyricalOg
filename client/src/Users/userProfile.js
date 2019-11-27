@@ -20,6 +20,9 @@ class UserProfile extends React.Component{
             lyricsList:[],
             beatList:[],
 
+            emailEdit:'',
+            nameEdit:'',
+            isEdit:false
         }
     }
 
@@ -27,17 +30,22 @@ class UserProfile extends React.Component{
         this.getUserProfile()
     }
 
+    handleChange =e=>{
+        this.setState({[e.target.name]:[e.target.value]})
+    }
     getUserProfile=()=>{
-        var userData = JSON.parse(jwt_decode(localStorage.getItem('loginToken')).currUser)
+       // var userData = JSON.parse(jwt_decode(localStorage.getItem('loginToken')).currUser)
         
         var id = this.props.match.params.id ? this.props.match.params.id : 0
-debugger
+
         userService.getUserProfile(id)
         .then(r=>{
             
             this.setState({
                 id:r.Id,
                 name : r.Name,
+                nameEdit:r.Name,
+                emailEdit:r.Email,
                 email:r.Email,
                 password:r.Password,
                 dateCreated:r.DateCreated,
@@ -51,8 +59,27 @@ debugger
 
     }    
 
+    toggleEdit =()=>{
+        this.setState({isEdit:true})
+    }
+    submit =()=>{
+        //reset password
+        const data = {
+            Name:this.state.nameEdit,
+            Email:this.state.emailEdit
+        }
+        userService.update(this.state.id,data)
+        .then(resp=>{
+            if(resp){
+                this.setState({isEdit:false})
+                this.getUserProfile()
+            }else{
+                window.alert("email already exists, try different email")
+            }
+        })
+
+    }
     render(){
-        const { match, location, history } = this.props
 
         const mapLyrics = this.state.lyricsList.map((l,i)=>{
             return(
@@ -85,6 +112,20 @@ debugger
             </tr>
             )
         })
+
+        const displayMode =
+            <div className="jumbotron" style={{ width: '85%' }}>
+                <h1 className="display-6">Name: {this.state.name}</h1>
+                <p className="lead">Email: {this.state.email}</p>
+                <div>Uploaded Lyrics Count: {(this.state.lyricsList).length}</div>
+                <div>Uploaded Beats Count: {(this.state.beatList).length}</div>
+
+                <hr className="my-4" />
+                <p>Member Since: {moment(this.state.dateCreated).format('MM/DD/YYYY')}</p>
+                <p className="lead">
+                    <button className="btn btn-primary" onClick={this.toggleEdit}>Edit</button>
+                </p>
+            </div>
         return (
             <React.Fragment>
                 <div style={{ paddingTop: '5%' }}>
@@ -92,19 +133,24 @@ debugger
                     <div className="row">
                         <div className="col-6 ">
                             <div className="container">
+                                {this.state.isEdit ?
+                                    <div className="jumbotron " style={{ width: '85%' }}>
 
-                                <div class="jumbotron" style={{ width: '90%' }}>
-                                    <h1 class="display-6">Name: {this.state.name}</h1>
-                                    <p class="lead">Email: {this.state.email}</p>
-                                    <div>Uploaded Lyrics Count: {(this.state.lyricsList).length}</div>
-                                    <div>Uploaded Beats Count: {(this.state.beatList).length}</div>
+                                        <h1 className="display-6">Name: </h1>
+                                        <input type="text" className="form-control" name="nameEdit" onChange={this.handleChange} value={this.state.nameEdit}/>
 
-                                    <hr class="my-4" />
-                                    <p>Member Since: {moment(this.state.dateCreated).format('MM/DD/YYYY')}</p>                                    
-                                    <p class="lead">
-                                        <a class="btn btn-primary btn-lg" href="#" role="button">Edit</a>
-                                    </p>
-                                </div>
+                                        <p className="lead">Email: </p>
+                                        <input type="text"className="form-control" name="emailEdit" onChange={this.handleChange} value={this.state.emailEdit}/>
+
+                                        <div>Uploaded Lyrics Count: {(this.state.lyricsList).length}</div>
+                                        <div>Uploaded Beats Count: {(this.state.beatList).length}</div>
+
+                                        <hr className="my-4" />
+                                        <p>Member Since: {moment(this.state.dateCreated).format('MM/DD/YYYY')}</p>
+                                        <p className="lead">
+                                            <button className="btn btn-primary" onClick={this.submit}>Save</button>
+                                        </p>
+                                    </div> : displayMode}
                             </div>
                         </div>
                         <div className="col-6 ">

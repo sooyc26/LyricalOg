@@ -22,9 +22,7 @@ class App extends Component {
   constructor(props) {
     super(props)
 
-    this.state = {
-      
-      
+    this.state = {     
       authed: false
     }
     this.authenticate = this.authenticate.bind(this)
@@ -36,11 +34,14 @@ class App extends Component {
 
   }
   componentDidMount() {
-    if(this.props.user||localStorage.getItem('loginToken') !=null){
+    
+    if(this.props.authed||localStorage.getItem('loginToken') !=null){
+      
      this.setState({
        authed:true
      }) 
     }
+
   }
   authenticate(){
     this.setState({
@@ -103,9 +104,9 @@ const mapStateToProps = (state,props)=> {
   return{
     user:state.user,
     authed:state.authed
-  }
-  
+  }  
 }
+
 
 
 export default (connect(mapStateToProps)(App));

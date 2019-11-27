@@ -1,7 +1,7 @@
 import React from 'react';
 import * as userService from '../services/userService'
 import {connect } from 'react-redux'
-import {updateUser, authUser} from '../actions/userActions'
+import {updateUser, authUser} from '../actions/user-actions'
 import * as jwt_decode from "jwt-decode";
 import withRouter from 'react-router-dom/withRouter';
 
@@ -59,7 +59,7 @@ class Login extends React.Component {
                     if (response !== null) {
                         //if not authenticated, resend validation email page
 
-                        localStorage.setItem('loginToken', JSON.stringify(response))
+                        localStorage.setItem('loginToken', response)
                         this.props.onUpdateUser(jwt_decode(response).currUser)
                         this.props.onAuthUser()
                         this.props.history.push("/beatsList");

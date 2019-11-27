@@ -1,4 +1,4 @@
-import {UPDATE_USER,AUTH_USER} from '../actions/userActions'
+import {UPDATE_USER,AUTH_USER} from '../actions/user-actions'
 
 export function userReducer(state = '', { type, payload }) {
     
@@ -15,7 +15,7 @@ export function userReducer(state = '', { type, payload }) {
     }
 }
 
-export function authReducer(state = '', { type, payload }) {
+export function authReducer(state = false, { type, payload }) {
     
     switch (type) {
         case AUTH_USER:

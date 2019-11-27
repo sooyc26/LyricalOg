@@ -36,7 +36,8 @@ namespace LyricalOG
             //dependency resolver register
             var container = new UnityContainer();
 
-            container.RegisterType<IUsersProvider, UserService>(new HierarchicalLifetimeManager());
+           // container.RegisterType<IUsersProvider, UserService>(new HierarchicalLifetimeManager());
+
             container.RegisterType<IUsersProvider>(
                 new InjectionFactory(c => new UserService()));
 
@@ -48,10 +49,10 @@ namespace LyricalOG
 
             container.RegisterType<IBeatProvider>(
                 new InjectionFactory(c => new BeatService()));
-            config.DependencyResolver = new UnityResolver(container);
+            //config.DependencyResolver = new UnityResolver(container);
 
             container.RegisterType<ISendGridProvider>(
-    new InjectionFactory(c => new SendGridService()));
+                new InjectionFactory(c => new SendGridService()));
             config.DependencyResolver = new UnityResolver(container);
         }
     }

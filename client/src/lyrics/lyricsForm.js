@@ -111,21 +111,6 @@ class LyricsForm extends Component {
     }
   }
 
-  // edit = id => {
-  //   userService.getById(id)
-  //     .then(response => {
-
-  //       this.setState({
-  //         editData: response,
-
-  //         lyricModal: response.Lyrics,
-  //         editMode: true,
-  //         submitButton: 'edit'
-  //       })
-  //     })
-  //   this.handleShow();
-  // }
-
   upVote = lyricId => {
     const data = {
       VoterId: this.state.currUserId,
