@@ -3,8 +3,13 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
-import {store} from './store'
+import {store, saveState} from './store'
 import {Provider} from 'react-redux'
+import {throttle} from 'lodash/throttle'
+
+// store.subscribe(throttle(()=>{
+//     saveState(store.getState())
+// },1000));
 
 ReactDOM.render(
     <Provider store={store}>

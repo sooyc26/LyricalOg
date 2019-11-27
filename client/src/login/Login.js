@@ -60,7 +60,7 @@ class Login extends React.Component {
                         //if not authenticated, resend validation email page
 
                         localStorage.setItem('loginToken', response)
-                        this.props.onUpdateUser(jwt_decode(response).currUser)
+                        this.props.onUpdateUser(JSON.parse(jwt_decode(response).currUser))
                         this.props.onAuthUser()
                         this.props.history.push("/beatsList");
                     } else {

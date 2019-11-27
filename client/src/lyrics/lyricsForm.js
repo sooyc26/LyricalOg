@@ -40,7 +40,7 @@ class LyricsForm extends Component {
   }
 
   componentDidMount() {
-    var userData = JSON.parse(jwt_decode(localStorage.getItem('loginToken')).currUser)
+    var userData = this.props.user
     this.setState({
       isAdmin: userData.IsAdmin,
       currUserId: userData.UserId

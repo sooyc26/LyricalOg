@@ -1,7 +1,6 @@
 import {UPDATE_USER,AUTH_USER} from '../actions/user-actions'
 
 export function userReducer(state = '', { type, payload }) {
-    
     switch (type) {
 
         case UPDATE_USER:

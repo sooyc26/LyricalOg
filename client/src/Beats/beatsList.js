@@ -4,8 +4,9 @@ import * as recordService from '../services/recordService'
 import moment from '../../node_modules/moment'
 import { Modal } from 'react-bootstrap'
 import * as jwt_decode from "jwt-decode";
+import {connect } from 'react-redux'
 
-export default class BeatsList extends React.Component {
+class BeatsList extends React.Component {
 
     constructor(props) {
         super(props)
@@ -30,7 +31,7 @@ export default class BeatsList extends React.Component {
         this.edit = this.edit.bind(this)
     }
     componentDidMount() {
-        var userData = JSON.parse(jwt_decode(localStorage.getItem('loginToken')).currUser)
+        var userData = this.props.user
 
         this.setState({
             isAdmin: userData.IsAdmin,
@@ -259,3 +260,8 @@ export default class BeatsList extends React.Component {
         )
     }
 }
+
+const mapStateToProps = state=> ({
+    user:state.user,
+});
+export default (connect(mapStateToProps)(BeatsList));

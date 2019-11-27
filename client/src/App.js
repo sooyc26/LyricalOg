@@ -35,7 +35,7 @@ class App extends Component {
   }
   componentDidMount() {
     
-    if(this.props.authed||localStorage.getItem('loginToken') !=null){
+    if(this.props.authed !=null){
       
      this.setState({
        authed:true
@@ -44,10 +44,10 @@ class App extends Component {
 
   }
   authenticate(){
-    this.setState({
-      authed: true
-    })
-    this.props.history.push("/beatsList");
+    // this.setState({
+    //   authed: true
+    // })
+    // this.props.history.push("/beatsList");
 
   }
 

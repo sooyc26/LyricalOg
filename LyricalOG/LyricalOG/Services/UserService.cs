@@ -58,19 +58,16 @@ namespace LyricalOG.Services
                     if (reader.Read())//returns read if password matches in sproc
                     {
                         request.UserId = (int)reader["UserId"];
-                        //request.Identity.Authentication = (bool)reader["Authentication"];
                         request.Name = (string)reader["Name"];
                         request.DateCreated = (DateTime)reader["DateCreated"];
                         request.IsAdmin = (bool)reader["IsAdmin"];
-                        request.SessionToken = GenerateJSONWebToken(request);
-
-                        //SignIn(request);
+                        request.EmailVerified = (bool)reader["EmailVerified"];
                     }
                     reader.Close();
                 }
                 con.Close();
             }
-            return request.SessionToken;
+            return GenerateJSONWebToken(request);
         }
 
         protected void SignIn(UserLogin loginUser)

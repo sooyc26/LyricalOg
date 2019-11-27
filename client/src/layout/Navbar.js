@@ -58,7 +58,7 @@ class Navbar extends React.Component {
 
               {store.getState().authed ? 
                 <li className="nav-item">
-                  <a className="nav-link text-warning" href={"/userProfile/"+uid} onClick={this.userProfile}>User Profile</a>
+                  <a className="nav-link text-warning" href={"/userProfile/"+this.props.user.UserId} onClick={this.userProfile}>User Profile</a>
                 </li>:''
               }
               {store.getState().authed ? 
@@ -82,8 +82,8 @@ class Navbar extends React.Component {
   }
 }
 const mapStateToProps = (state,props)=> {
-  console.log(state)
   return{
+    user:state.user,
     authed:state.authed
   }
   
