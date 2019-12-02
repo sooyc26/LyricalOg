@@ -1,13 +1,10 @@
 import React, { Component } from 'react';
 import * as lyricService from '../services/lyricService'
 import * as beatService from '../services/beatService'
-import * as userService from '../services/userService'
 import * as recordService from '../services/recordService'
 import { ReactMic } from 'react-mic';
-// import {store} from '../store'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
-import * as jwt_decode from "jwt-decode";
 import './lyrics.css'
 
 class LyricsForm extends Component {
@@ -74,11 +71,10 @@ class LyricsForm extends Component {
 
     //const userData = store.getState().user; 
     //userData.UserId = store.getState().user? store.getState().user.UserId:4;
-    var userData = JSON.parse(jwt_decode(localStorage.getItem('loginToken')).currUser)
     if (window.uploadFile) {
 
       const lyricData = {     //lyric insert data
-        UserId: parseInt(userData.UserId, 10),
+        UserId: this.state.currUserId,
         Lyrics: this.state.lyrics,
         BeatId: this.props.match.params.id,
         AudioFile: window.uploadFile,

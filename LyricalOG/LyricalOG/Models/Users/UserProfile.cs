@@ -34,7 +34,9 @@ namespace myCrudApp.Models.Users
         public string Title { get; set; }
         public string Producer { get; set; }
         public DateTime UploadDate { get; set; }
+
     }
+
     public class UserBeats
     {
         public int Id { get; set; }

@@ -1,6 +1,5 @@
 import React from 'react'
 import * as userService from '../services/userService'
-import * as jwt_decode from "jwt-decode";
 import moment from '../../node_modules/moment'
 import { withRouter } from 'react-router';
 
@@ -33,14 +32,11 @@ class UserProfile extends React.Component{
     handleChange =e=>{
         this.setState({[e.target.name]:[e.target.value]})
     }
-    getUserProfile=()=>{
-       // var userData = JSON.parse(jwt_decode(localStorage.getItem('loginToken')).currUser)
-        
+    getUserProfile=()=>{        
         var id = this.props.match.params.id ? this.props.match.params.id : 0
 
         userService.getUserProfile(id)
         .then(r=>{
-            
             this.setState({
                 id:r.Id,
                 name : r.Name,
@@ -59,13 +55,16 @@ class UserProfile extends React.Component{
 
     }    
 
-    toggleEdit =()=>{
-        this.setState({isEdit:true})
+    toggleEdit = () => {
+        if (this.state.isEdit) this.setState({ isEdit: false })
+        else this.setState({ isEdit: true })
     }
+
     submit =()=>{
         //reset password
+        console.log(this.state.nameEdit)
         const data = {
-            Name:this.state.nameEdit,
+            Name:this.state.nameEdit[0],// idk why it set as array, 
             Email:this.state.emailEdit
         }
         userService.update(this.state.id,data)
@@ -136,11 +135,11 @@ class UserProfile extends React.Component{
                                 {this.state.isEdit ?
                                     <div className="jumbotron " style={{ width: '85%' }}>
 
-                                        <h1 className="display-6">Name: </h1>
-                                        <input type="text" className="form-control" name="nameEdit" onChange={this.handleChange} value={this.state.nameEdit}/>
+                                        <p className="lead">Name: </p>
+                                        <input className="form-control" name="nameEdit" onChange={this.handleChange} value={this.state.nameEdit}/>
 
                                         <p className="lead">Email: </p>
-                                        <input type="text"className="form-control" name="emailEdit" onChange={this.handleChange} value={this.state.emailEdit}/>
+                                        <input className="form-control" name="emailEdit" onChange={this.handleChange} value={this.state.emailEdit}/>
 
                                         <div>Uploaded Lyrics Count: {(this.state.lyricsList).length}</div>
                                         <div>Uploaded Beats Count: {(this.state.beatList).length}</div>
@@ -148,6 +147,8 @@ class UserProfile extends React.Component{
                                         <hr className="my-4" />
                                         <p>Member Since: {moment(this.state.dateCreated).format('MM/DD/YYYY')}</p>
                                         <p className="lead">
+                                        <button className="btn btn-warning" onClick={this.toggleEdit}>Cancel</button>
+
                                             <button className="btn btn-primary" onClick={this.submit}>Save</button>
                                         </p>
                                     </div> : displayMode}

@@ -82,6 +82,7 @@ function getUserProfile(id) {
 }
 
 function update(id, data) {
+    debugger
     const url= 'http://localhost:49694/api/users/'+id
     const config={
         method:'PUT',

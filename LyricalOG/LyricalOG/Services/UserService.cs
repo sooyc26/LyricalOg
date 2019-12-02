@@ -427,7 +427,8 @@ namespace LyricalOG.Services
                 retModel = groupUser.First();
 
                 //group by beats
-                retModel.UserBeatsList = profileList.GroupBy(x => new
+                retModel.UserBeatsList = profileList.Exists(x => x.BeatId==0) ? new List<UserBeats>() :
+                    profileList.GroupBy(x => new
                 {
                     x.BeatId,
                     x.BeatTitle,
@@ -444,7 +445,8 @@ namespace LyricalOG.Services
                    }).ToList();
 
                 //group by lyrics
-                retModel.UserLyricsList = profileList.GroupBy(x => new
+                retModel.UserLyricsList = profileList.Exists(x => x.LyricsId==0) ? new List<UserLyrics>() :                    
+                    profileList.GroupBy(x => new
                 {
                     x.LyricsId,
                     x.LyricsBeatId,
@@ -465,35 +467,30 @@ namespace LyricalOG.Services
             {
                var check= e.InnerException.ToString();
             }
+
             return retModel;
         }
 
         public int UpdateUser(UsersUpdateRequest request, int id)
         {
-            int retId = 0;
             using (SqlConnection conn = new SqlConnection(connString))
             {
                 conn.Open();
 
                 SqlCommand cmd = conn.CreateCommand();
-                cmd.CommandText = "User_Update";
+                cmd.CommandText = "Users_Update";
                 cmd.CommandType = System.Data.CommandType.StoredProcedure;
 
                 cmd.Parameters.AddWithValue("@UserId", id);
                 cmd.Parameters.AddWithValue("@Name", request.Name);
                 cmd.Parameters.AddWithValue("@Email", request.Email);
-                cmd.Parameters.AddWithValue("@Paswword", request.Password);
+                //cmd.Parameters.AddWithValue("@Paswword", request.Password);
 
-                using (SqlDataReader reader = cmd.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        retId = (int)reader["Id"];
-                    }
-                }
+                cmd.ExecuteNonQuery();
+
                 conn.Close();
             }
-            return retId;
+            return id;
         }
 
         public int UpdatePassword(UsersUpdateRequest request)

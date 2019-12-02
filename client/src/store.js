@@ -34,11 +34,9 @@ const initialState = {
     authed:localStorage.getItem('loginToken') !==null?true: false
   };
 
-  const persistedState = loadState();
 //store
 export const store = createStore(
-    allReducers,
-    
+    allReducers,    
     initialState,
     window.devToolsExtension && window.devToolsExtension()
 );

@@ -89,8 +89,8 @@ class BeatsList extends React.Component {
             LyricsCount: this.state.lyricsCount,
             Description: this.state.description,
             Vibe: this.state.vibe,
-            BeatFileType: beat ? beat.type : '',
-            ImgFileType: img ? img.type : ''
+            BeatFileType: beat ? beat.type : null,
+            ImgFileType: img ? img.type : null
 
         }
         if (this.state.edit) {//edit mode
