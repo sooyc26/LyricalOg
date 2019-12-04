@@ -127,7 +127,10 @@ namespace LyricalOG.Controllers
         public HttpResponseMessage UpdatePassword(UsersUpdateRequest request)
         {
             var result = _usersProvider.UpdatePassword(request);
-
+            if (!result)
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "User or Password does not match current data.");
+            }
             return Request.CreateResponse(HttpStatusCode.OK, result);
         }
 

@@ -495,7 +495,7 @@ namespace LyricalOG.Services
 
         public int UpdatePassword(UsersUpdateRequest request)
         {
-            int retId = 0;
+            bool ret = false;
             using (SqlConnection conn = new SqlConnection(connString))
             {
                 conn.Open();
@@ -506,6 +506,7 @@ namespace LyricalOG.Services
 
                 cmd.Parameters.AddWithValue("@UserId", request.Id);
                 cmd.Parameters.AddWithValue("@Password", request.Password);
+                cmd.Parameters.AddWithValue("@NewPassword", request.NewPassword);
 
                 using (SqlDataReader reader = cmd.ExecuteReader())
                 {

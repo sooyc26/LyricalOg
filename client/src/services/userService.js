@@ -82,7 +82,7 @@ function getUserProfile(id) {
 }
 
 function update(id, data) {
-    debugger
+    
     const url= 'http://localhost:49694/api/users/'+id
     const config={
         method:'PUT',
@@ -95,7 +95,7 @@ function update(id, data) {
 
 function passwordResetRequest(data){
     const url= 'http://localhost:49694/api/users/passwordResetRequest'
-    debugger
+    
     const config={
         method:'PUT',
         data:data

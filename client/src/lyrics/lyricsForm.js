@@ -69,8 +69,6 @@ class LyricsForm extends Component {
 
   submit() {
 
-    //const userData = store.getState().user; 
-    //userData.UserId = store.getState().user? store.getState().user.UserId:4;
     if (window.uploadFile) {
 
       const lyricData = {     //lyric insert data
