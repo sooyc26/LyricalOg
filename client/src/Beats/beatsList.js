@@ -3,7 +3,6 @@ import * as beatService from '../services/beatService'
 import * as recordService from '../services/recordService'
 import moment from '../../node_modules/moment'
 import { Modal } from 'react-bootstrap'
-import * as jwt_decode from "jwt-decode";
 import {connect } from 'react-redux'
 
 class BeatsList extends React.Component {
@@ -161,7 +160,6 @@ class BeatsList extends React.Component {
 
         const displayBeats = this.state.beats.map((b, i) => {
             if (this.state.isAdmin || b.Visible) {
-
                 return (
 
                     <tr key={b.Id} className={b.Visible ? "text-primary" : "text-grey"} >
@@ -194,7 +192,10 @@ class BeatsList extends React.Component {
                 <div style={{ paddingTop: '5%' }}>
                     <h1 className="text-white" style={{ textAlign: 'center' }}>Beats</h1>
                     <div style={{ float: 'right', paddingRight: '2%' }} >
-                        <button type="button" className="btn btn-outline-warning" onClick={this.uploadModal}>upload</button>
+                        {this.props.user.IsVerified ?
+                            <button type="button" className="btn btn-outline-warning" onClick={this.uploadModal}>upload</button>
+                            : null
+                        }
 
                     </div>
 

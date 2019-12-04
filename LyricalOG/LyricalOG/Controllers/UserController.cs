@@ -44,9 +44,13 @@ namespace LyricalOG.Controllers
         {
             if (request == null)
             {
-                return this.Request.CreateResponse(HttpStatusCode.BadRequest, "please enter valid input");
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "please enter valid input");
             }
             var userLogin = _usersProvider.Login(request);
+            if (userLogin == "")
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "Email or password could not be found.");
+            }
 
             return req.CreateResponse(HttpStatusCode.OK, userLogin);
         }
@@ -61,19 +65,23 @@ namespace LyricalOG.Controllers
         {
             if (request == null)
             {
-                return this.Request.CreateResponse(HttpStatusCode.BadRequest, "please enter valid input");
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "please enter valid input");
             }
-            int id = _usersProvider.Create(request);
-            SendVerificationEmail(id);
+            User user = _usersProvider.Create(request);
 
-            return req.CreateResponse(HttpStatusCode.OK, id);
+            if(user.Id == 0)
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "The provided email is already being used.");
+            }
+           var resp= SendVerificationEmail(user);
+
+            return req.CreateResponse(HttpStatusCode.OK, resp);
         }
 
-        [HttpGet, Route("users/validate/{id:int}")]
-        public HttpResponseMessage SendVerificationEmail(int id)
+        [HttpPost, Route("users/validate")]
+        public HttpResponseMessage SendVerificationEmail(User user)
         {
-            var userInfo = _usersProvider.ReadById(id);
-            var response =  _sendGridProvider.SendVerification(userInfo);
+            var response =  _sendGridProvider.SendVerification(user);
             return req.CreateResponse(HttpStatusCode.OK, response);
         }
         [HttpGet, Route("users")]

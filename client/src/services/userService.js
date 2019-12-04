@@ -134,6 +134,7 @@ const responseSuccess = response => {
 }
 
 const responseError = error => {
+    
     if (error && error.response && error.response.data && error.response.data.errors) {
         console.log(error.response.data.errors)
     } else {

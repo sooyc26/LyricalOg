@@ -15,7 +15,7 @@ class Register extends React.Component {
             confirmPassword: ''
 
             , RegisterModal: false
-            ,wrongInput:false
+            ,registerAlert:''
         }
         this.handleChange = this.handleChange.bind(this)
         this.submit = this.submit.bind(this)
@@ -30,7 +30,7 @@ class Register extends React.Component {
       }
 
     handleChange(e) {
-        this.setState({ [e.target.id]: e.target.value,wrongInput:false })
+        this.setState({ [e.target.id]: e.target.value })
     }
 
     toggleLoginRegis(e) {
@@ -38,42 +38,49 @@ class Register extends React.Component {
         this.setState({ RegisterModal: !this.state.RegisterModal })
     }
 
+    registerValidate =()=>{
+        if(this.state.name===''){
+            this.setState({registerAlert:"Please enter a name."})
+            return false
+        }else if(this.state.regisEmail===''){
+            this.setState({registerAlert:"Please enter an email."})
+            return false
+        }else if(this.state.password===''){
+            this.setState({registerAlert:"Please enter a valid password."})
+            return false
+        }else if(this.state.password.length<8){
+            this.setState({registerAlert:"Password has to be at least 8 characters."})
+            return false
+        }else if(this.state.password !==this.state.confirmPassword){
+            this.setState({registerAlert:"The password does not match."})
+            return false
+        }
+        return true
+
+    }
+
     submit(e) {
-        e.preventDefault();        
+        e.preventDefault();
+        if(this.registerValidate()){
+
             var data = {
                 Name: this.state.name,
                 Email: this.state.regisEmail,
-                Password: this.state.regisPassword
+                Password: this.state.password
             }
             userService.create(data)
             .then(response=>{
                 localStorage.setItem('loginToken', JSON.stringify(response))
-
+                
                 if (window.confirm('Verification email sent! Please check your email.')) {
                     this.props.history.push('/')
-                  }
+                }
             })
-        // } else {//login
-        //     var data = {
-        //         Email: this.state.email,
-        //         Password: this.state.password
-        //     }
-        //     userService.login(data)
-        //         .then(response => {
-        //             if (response.SessionToken !== null) {
-        //                 //if not authenticated, resend validation email page
-                        
-        //                 localStorage.setItem('loginToken', JSON.stringify(response))
-        //                 this.props.onUpdateUser(response)
-        //                 this.props.onAuthUser()
-        //                 this.props.history.push("/beatsList");
-        //             } else {
-        //                 this.setState({ wrongInput: true })
-        //             }
-        //         })
-        // }
-
-    }
+            .catch(r =>{
+                this.setState({registerAlert:r.response.data})
+            })
+        }
+    }        
 
     render() {
         return (
@@ -82,8 +89,8 @@ class Register extends React.Component {
                     <div style={{ lineHeight: '200px' }}>
                         <h1 className="text-primary" style={{ paddingTop: "40px", fontSize: "30px" }}>Lyrical OG</h1>
                     </div>
-                    <form>
-                        <header>Register</header>
+                    <h3 className="text-warning">Register</h3>
+                    <form style={{width:'25%'}}>
                         <div className="form-group">
                             <label>Name</label>
                             <input value={this.state.name} onChange={this.handleChange} className="form-control" id="name" aria-describedby="emailHelp" placeholder="Enter name" />
@@ -94,13 +101,20 @@ class Register extends React.Component {
                         </div>
                         <div className="form-group">
                             <label >Password</label>
-                            <input type="password" value={this.state.regisPassword} onChange={this.handleChange} className="form-control" id="regisPassword" placeholder="Password" />
+                            <input type="password" value={this.state.password} onChange={this.handleChange} className="form-control" id="password" placeholder="Password" />
                         </div>
                         <div className="form-group">
                             <label >Confirm Password</label>
                             <input type="password" value={this.state.confirmPassword} onChange={this.handleChange} className="form-control" id="confirmPassword" placeholder="Password" />
                         </div>
-                        <button onClick={(e) => this.submit(e)} className="btn btn-primary">Register</button>
+                        {this.state.registerAlert == '' ? 
+                        "" :
+                         <div className="alert alert-dismissible alert-danger lead">
+                                {this.state.registerAlert}
+                                <button type="button" className="close" data-dismiss="alert" onClick={() => this.setState({ registerAlert: '' })}>&times;</button>
+                            </div>
+                        }
+                        <button onClick={(e) => this.submit(e)} className="btn btn-outline-primary">Register</button>
                         <button onClick={() => this.props.history.push("/Login")} className="btn btn-outline-secondary">Login?</button>
                     </form>
                 </header>

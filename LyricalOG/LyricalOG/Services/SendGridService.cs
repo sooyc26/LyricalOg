@@ -23,6 +23,9 @@ namespace LyricalOG.Services
 
         readonly string sendgridKey = ConfigurationManager.AppSettings["SendGridKey"];
         readonly string connString = ConfigurationManager.ConnectionStrings["Default"].ConnectionString;
+        readonly int expireTime = int.Parse(ConfigurationManager.AppSettings["PasswordResetExpirationDate"]);
+        readonly string resetAddress = ConfigurationManager.AppSettings["PasswordResetUrl"];
+        readonly string verifyAddress = ConfigurationManager.AppSettings["VerificationUrl"];
         SendGridClient _sendGridClient; 
 
         public SendGridService()
@@ -63,19 +66,30 @@ namespace LyricalOG.Services
 
                 cmd.Parameters.AddWithValue("@Email", request.Email);
                 cmd.Parameters.AddWithValue("@VerificationKey", SecretKey);
+                cmd.ExecuteNonQuery();
 
                 conn.Close();
             }
 
-            var from = new EmailAddress("no-reply@lyrical.og", "Lyrical OG");
-            var subject = "Lyrical OG Verification Link";
-            var to = new EmailAddress(request.Email, request.Name);
-            var plainTextContent = "Please click on the link below to verify your account.";
+            var href = verifyAddress + SecretKey;
+            var msg = new SendGridMessage
+            {
+                From = new EmailAddress("no-reply@lyrical.og", "Lyrical OG"),
+                Subject = "Lyrical OG Email Verification",
+                PlainTextContent = "Please click on the link below",
+                HtmlContent = string.Format("<a href=\"{0}\"> click here to verify your account.{1}</a>", href, SecretKey)
+            };
 
-            var verificationUrl = ConfigurationManager.AppSettings["VerificationUrl"];
-            string htmlContent = string.Format("<a href=\"{0}{1}\"> Click here to verify your account</a>", verificationUrl, SecretKey);
-            var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
-            Response response = await _sendGridClient.SendEmailAsync(msg).ConfigureAwait(false);
+            //var from = new EmailAddress("no-reply@lyrical.og", "Lyrical OG");
+            //var subject = "Lyrical OG Verification Link";
+            //var to = new EmailAddress(request.Email, request.Name);
+            //var plainTextContent = "Please click on the link below to verify your account.";
+
+            //var verificationUrl = ConfigurationManager.AppSettings["VerificationUrl"];
+            //string htmlContent = string.Format("<a href=\"{0}{1}\"> Click here to verify your account</a>", verificationUrl, SecretKey);
+            //var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
+
+            Response response = await _sendGridClient.SendEmailAsync(msg);
 
             return response;
 
@@ -83,8 +97,6 @@ namespace LyricalOG.Services
 
         public async Task<Response> SendPasswordReset(User request)
         {
-            int expireTime = int.Parse(ConfigurationManager.AppSettings["PasswordResetExpirationDate"]);
-            string resetAddress = ConfigurationManager.AppSettings["PasswordResetUrl"];
             //var domain = ConfigurationManager.AppSettings["AppDomainAddress"];
             DateTime expireDate = DateTime.UtcNow.AddHours(expireTime);
             string SecretPasswordKey = GetUniqueKey(64);

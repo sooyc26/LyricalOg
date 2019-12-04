@@ -61,7 +61,7 @@ namespace LyricalOG.Services
                         request.Name = (string)reader["Name"];
                         request.DateCreated = (DateTime)reader["DateCreated"];
                         request.IsAdmin = (bool)reader["IsAdmin"];
-                        request.EmailVerified = (bool)reader["EmailVerified"];
+                        request.IsVerified = (bool)reader["EmailVerified"];
                     }
                     reader.Close();
                 }
@@ -147,6 +147,8 @@ namespace LyricalOG.Services
             var symmetricKey =Convert.FromBase64String(jwtStr);
             var tokenHandler = new JwtSecurityTokenHandler();
             var now = DateTime.UtcNow;
+
+            if (userInfo.UserId == 0) return "";
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {
@@ -246,9 +248,9 @@ namespace LyricalOG.Services
             }
         }
 
-        public int Create(UsersCreateRequest request)
+        public User Create(UsersCreateRequest request)
         {
-            int retId = 0;
+            var retUser = new User();
 
             using (SqlConnection conn = new SqlConnection(connString))
             {
@@ -267,13 +269,17 @@ namespace LyricalOG.Services
                 {
                     while (reader.Read())
                     {
-                       retId = (int)reader["UserId"];
+                        retUser.Id = (int)reader["UserId"];
                     }
                     reader.Close();
                 }
                 conn.Close();
+
+                retUser.Name = request.Name;
+                retUser.Email = request.Email;
+
             }
-            return retId;
+            return retUser;
         }
 
         public List<User> ReadAll()
@@ -493,7 +499,7 @@ namespace LyricalOG.Services
             return id;
         }
 
-        public int UpdatePassword(UsersUpdateRequest request)
+        public bool UpdatePassword(UsersUpdateRequest request)
         {
             bool ret = false;
             using (SqlConnection conn = new SqlConnection(connString))
@@ -512,12 +518,12 @@ namespace LyricalOG.Services
                 {
                     while (reader.Read())
                     {
-                        retId = (int)reader["Id"];
+                        ret = (bool)reader["Updated"];
                     }
                 }
                 conn.Close();
             }
-            return retId;
+            return ret;
         }
 
         public int Delete(int id)

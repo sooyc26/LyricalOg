@@ -57,9 +57,9 @@ class App extends Component {
       return (
         <Route
           {...rest}
-          render={props => authed ===true
-            ? <Component {...props} />
-            : <Redirect to={{pathname: '/Login', state: {from: props.location}}} />}
+          render={props => authed ===true ? 
+          <Component {...props} />: 
+            <Redirect to={{pathname: '/Login', state: {from: props.location}}} />}
         />
       )
     }
@@ -71,21 +71,17 @@ class App extends Component {
               <Navbar />
             <Switch>
 
-              <Route exact path="/" render={props => <Header {...props} />} >
-              </Route>
-              <PrivateRoute path="/beatsList" 
-              //authed={store.getState().authed} 
-              authed={localStorage.getItem('loginToken') !=null? true:false} 
-              component={BeatsList} />
+              <Route exact path="/" render={props => <Header {...props} />} />
+              <PrivateRoute path="/beatsList" authed={this.props.authed} component={BeatsList} />
               <Route path="/Login" render={props => <Login {...props} />} />
               <Route path="/Register" render={props => <Register {...props} />} />
               <Route path="/passwordResetRequest" render={props => <PasswordResetRequest {...props} />} />
               <Route path="/userProfile/:id" render={props => <UserProfile {...props} />} />
-              <Route path="/lyricalog-password-reset/:key" render={props => <ResetPassword {...props} />} />
+              <Route path="/password-reset/:key" render={props => <ResetPassword {...props} />} />
+              <Route path="/account-verification?:key" render={props => <validateAccount {...props} />} />
 
               <Route exact path="/beatsList" render={props => <BeatsList {...props} />} />
               <Route exact path="/lyricsForm/:id"render={props => <LyricsForm {...props} />}  />
-              <Route path="/lyricalog-account-verification" render={props => <validateAccount {...props} />} />
 
             </Switch>
           </div>
