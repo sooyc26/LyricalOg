@@ -32,6 +32,9 @@ class BeatsList extends React.Component {
     componentDidMount() {
         var userData = this.props.user
 
+        if(!userData.IsVerified){
+            window.alert("Your account is not yet validated. Please validate your account in User Profile Page to have write access.")
+        }
         this.setState({
             isAdmin: userData.IsAdmin,
             currUserId: userData.UserId

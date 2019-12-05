@@ -25,12 +25,12 @@ function create(data) {
         .then(responseSuccess)
         .catch(responseError)
 }
-function validationRequest(id) {
-    const url= 'http://localhost:49694/api/users/validate/'+id
+function validationRequest(data) {
+    const url= 'http://localhost:49694/api/users/sendValidation'
     
     const config={
-        method:'GET',
-        //data:data,
+        method:'POST',
+        data:data,
         //withCredentials: true
 
     }
@@ -39,6 +39,17 @@ function validationRequest(id) {
         .catch(responseError)
 }
 
+function verifyAccount(key) {
+    const url= 'http://localhost:49694/api/users/validate/'+key
+    
+    const config={
+        method:'GET',
+
+    }
+    return axios(url, config)
+        .then(responseSuccess)
+        .catch(responseError)
+}
 function getAll() {
     const url= 'http://localhost:49694/api/users'
     
@@ -105,6 +116,18 @@ function passwordResetRequest(data){
         .catch(responseError) 
 }
 
+function passwordReset(data){
+    const url= 'http://localhost:49694/api/users/passwordReset'
+    debugger
+    const config={
+        method:'PUT',
+        data:data
+    }
+    return axios(url, config)
+        .then(responseSuccess)
+        .catch(responseError) 
+}
+
 function updatePassword(data){
     const url= 'http://localhost:49694/api/users/updatePassword'
     debugger
@@ -142,5 +165,5 @@ const responseError = error => {
     }
     return Promise.reject(error);
 }
-export {create, getAll,validationRequest, getById,update,deleteById,login,getUserProfile,passwordResetRequest,checkExpireDate,updatePassword}
+export {verifyAccount,create, getAll,validationRequest, getById,update,deleteById,login,getUserProfile,passwordResetRequest,checkExpireDate,updatePassword,passwordReset}
   

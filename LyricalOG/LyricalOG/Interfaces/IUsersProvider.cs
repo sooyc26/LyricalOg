@@ -23,5 +23,7 @@ namespace LyricalOG.Interfaces
         Task<IPrincipal> AuthenticateJwtToken(string token);
         UserProfile GetUserProfile(int id);
         bool UpdatePassword(UsersUpdateRequest request);
+        bool PasswordReset(UsersUpdateRequest request);
+        bool ValidateAccount(string key);
     }
 }

@@ -79,16 +79,7 @@ namespace LyricalOG.Services
                 PlainTextContent = "Please click on the link below",
                 HtmlContent = string.Format("<a href=\"{0}\"> click here to verify your account.{1}</a>", href, SecretKey)
             };
-
-            //var from = new EmailAddress("no-reply@lyrical.og", "Lyrical OG");
-            //var subject = "Lyrical OG Verification Link";
-            //var to = new EmailAddress(request.Email, request.Name);
-            //var plainTextContent = "Please click on the link below to verify your account.";
-
-            //var verificationUrl = ConfigurationManager.AppSettings["VerificationUrl"];
-            //string htmlContent = string.Format("<a href=\"{0}{1}\"> Click here to verify your account</a>", verificationUrl, SecretKey);
-            //var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
-
+            msg.AddTo(new EmailAddress(request.Email, request.Name));
             Response response = await _sendGridClient.SendEmailAsync(msg);
 
             return response;

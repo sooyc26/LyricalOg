@@ -17,6 +17,7 @@ import {store} from './store'
 import UserProfile from './Users/userProfile';
 import PasswordResetRequest from './Users/passwordResetRequest';
 import ResetPassword from './Users/resetPassword'
+import ValidateAccount from './login/validateAccount'
 
 class App extends Component {
   constructor(props) {
@@ -78,7 +79,7 @@ class App extends Component {
               <Route path="/passwordResetRequest" render={props => <PasswordResetRequest {...props} />} />
               <Route path="/userProfile/:id" render={props => <UserProfile {...props} />} />
               <Route path="/password-reset/:key" render={props => <ResetPassword {...props} />} />
-              <Route path="/account-verification?:key" render={props => <validateAccount {...props} />} />
+              <Route path="/account-verification/:key" render={props => <ValidateAccount {...props} />} />
 
               <Route exact path="/beatsList" render={props => <BeatsList {...props} />} />
               <Route exact path="/lyricsForm/:id"render={props => <LyricsForm {...props} />}  />

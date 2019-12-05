@@ -315,10 +315,10 @@ class LyricsForm extends Component {
               <div className="card-footer">
 
                 {lyric.VoterList.includes(this.state.currUserId) ?
-                  <button id={lyric.Id} onClick={() => this.downVote(lyric.Id)}
+                  <button id={lyric.Id} onClick={() => this.downVote(lyric.Id)} disabled={!this.props.user.IsVerified}
                     className="btn btn-success">{lyric.VoteCount} <i className="fas fa-chevron-up"></i>
                   </button>
-                  : <button id={lyric.Id} onClick={() => this.upVote(lyric.Id)}
+                  : <button id={lyric.Id} onClick={() => this.upVote(lyric.Id)} disabled={!this.props.user.IsVerified}
                     className="btn btn-outline-success">{lyric.VoteCount} <i className="fas fa-chevron-up"></i>
                   </button>
                 }
@@ -371,10 +371,10 @@ class LyricsForm extends Component {
             </div>
             <div className="card-footer">
               {lyric.VoterList.includes(this.state.currUserId) ?
-                <button id={lyric.Id} onClick={() => this.downVote(lyric.Id)}
+                <button id={lyric.Id} onClick={() => this.downVote(lyric.Id)} disabled={!this.props.user.IsVerified}
                   className="btn btn-warning">{lyric.VoteCount} <i className="fas fa-chevron-up"></i>
                 </button>
-                : <button id={lyric.Id} onClick={() => this.upVote(lyric.Id)}
+                : <button id={lyric.Id} onClick={() => this.upVote(lyric.Id)} disabled={!this.props.user.IsVerified}
                   className="btn btn-outline-warning">{lyric.VoteCount} <i className="fas fa-chevron-up"></i>
                 </button>
               }
@@ -422,7 +422,7 @@ class LyricsForm extends Component {
 
                   {/* RECORD BUTTON */}
                   <div className="row">
-                    <button className="btn btn-outline-danger" onClick={this.state.record ? this.stopRecording : this.startRecording} type="button" >
+                    <button className="btn btn-outline-danger" disabled={!this.props.user.IsVerified} onClick={this.state.record ? this.stopRecording : this.startRecording} type="button" >
                       <i className={this.state.record ? "fas fa-square" : "fas fa-microphone"} style={{ color: "red" }} />
                     </button>
 
@@ -446,11 +446,11 @@ class LyricsForm extends Component {
                       backgroundColor="#49515f" />
 
                     {/* PLAY BUTTON */}
-                    <button className="btn btn-outline-danger"  >
-                      <span className="fas fa-play" onClick={(e) => this.togglePlayRecord(e)}></span>
+                    <button className="btn btn-outline-danger"  disabled={!this.props.user.IsVerified}>
+                      <span className="fas fa-play"  onClick={(e) => this.togglePlayRecord(e)}></span>
                     </button>
                     <div style={{ marginLeft: '15%' }}>
-                      <button className="btn btn-outline-primary text-grey" style={{ float: 'right' }} onClick={this.submit}>Submit</button>
+                      <button className="btn btn-outline-primary text-grey" style={{ float: 'right' }}disabled={!this.props.user.IsVerified} onClick={this.submit}>Submit</button>
                     </div>
                   </div>
                 </div>

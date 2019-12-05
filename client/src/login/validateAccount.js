@@ -1,6 +1,7 @@
-import {Component} from 'react'
+import React,{Component} from 'react'
 import * as userService from '../services/userService'
-export default class validateAccount extends Component{
+
+export default class ValidateAccount extends Component{
 
     constructor(props){
         super(props)
@@ -9,41 +10,38 @@ export default class validateAccount extends Component{
         }
     }
 
-    sendValidation=()=>{
-        let data = {
-            Name:this.state.name,
-            Eamil:this.state.email,
-            Id:this.state.currUserId
-        }
-        userService.validationRequest(data)
+    componentDidMount = () => {
+        var key = this.props.match.params.key ? this.props.match.params.key : ''
+
+        this.validateAccount(key)
+
+    }
+    validateAccount=(key)=>{
+        userService.verifyAccount(key)
+        .then(res =>{
+            if(res)
+            //this.setState({validationAlert:"Your account has been sucessfully verifed."})
+            window.alert("Your account has been sucessfully verifed.")
+        })
+        .catch(res =>{
+            //this.setState.bind({validationAlert:"Validation Unsuccessful. Please try again."})
+            window.alert("Validation Unsuccessful. Please try again.")
+
+        })
     }
 
     render(){
         return(
             <React.Fragment>
-                <form>
-                            <header>Send Validation Email</header>
-                            {/* <div className="form-group">
-                                <label >Email Address</label>
-                                <input type="email" value={this.state.email} onChange={this.handleChange} className="form-control" id="email" placeholder="Enter email" />
-                            </div>
-                            <div className="form-group">
-                                <label >Password</label>
-                                <input type="password" value={this.state.password} onChange={this.handleChange} className="form-control" id="password" placeholder="Password" />
-                            </div>
-                            <div>
+                <header className="App-header" style={{ opacity: 0.8 }}>
 
-                                {this.state.wrongInput ?
-                                    <div className="alert alert-dismissible alert-danger">
-                                        <button type="button" className="close" data-dismiss="alert" onClick={()=>this.setState({wrongInput:false})}>&times;</button>
-                                         <a href="#" className="alert-link"></a> Wrong email or password.
-                            </div> : ''}
-                            </div> */}
+                    <h1 className="text-primary" style={{ paddingTop: "40px", fontSize: "30px" }}>Lyrical OG</h1>
 
-                            {/* <button onClick={(e) => this.submit(e)} className="btn btn-primary">Login</button>
-                            <button onClick={(e) => this.toggleLoginRegis(e)} className="btn btn-secondary">Register</button> */}
-                            <button onClick={() => this.sendValidation()} className="btn btn-outline-secondary">Validate Account</button>
-                        </form>
+                    <header>Account Validated</header>
+
+                    <p> If you are logged in, logout and login again.</p>
+                    <a href="/Login" className="btn btn-outline-secondary">Login?</a>
+                </header>
             </React.Fragment>
         )
     }

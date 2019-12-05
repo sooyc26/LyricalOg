@@ -21,9 +21,9 @@ class Navbar extends React.Component {
   }
 
   signOut=()=> {
-    //this.props.history.push("")
     localStorage.removeItem("loginToken");
     
+    //this.props.history.push("/")
   }
 
   render() {
@@ -63,7 +63,7 @@ class Navbar extends React.Component {
               }
               {store.getState().authed ? 
                 <li className="nav-item">
-                  <a className="nav-link text-danger" href="" onClick={this.signOut}>Signout</a>
+                  <a className="nav-link text-danger" href="/" onClick={this.signOut}>Signout</a>
                 </li>:''
               }
 

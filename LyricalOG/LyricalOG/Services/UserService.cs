@@ -526,6 +526,58 @@ namespace LyricalOG.Services
             return ret;
         }
 
+        public bool ValidateAccount(string key)
+        {
+            bool ret = false;
+            using (SqlConnection conn = new SqlConnection(connString))
+            {
+                conn.Open();
+
+                SqlCommand cmd = conn.CreateCommand();
+                cmd.CommandText = "User_Update_EmailVerified";
+                cmd.CommandType = System.Data.CommandType.StoredProcedure;
+
+                cmd.Parameters.AddWithValue("@EmailVerified", true);
+                cmd.Parameters.AddWithValue("@VerificationKey", key);
+
+                using (SqlDataReader reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        ret = reader["Updated"] == DBNull.Value ? false :true;
+                    }
+                }
+                conn.Close();
+            }
+            return ret;
+        }
+
+        public bool PasswordReset(UsersUpdateRequest request)
+        {
+            bool ret = false;
+            using (SqlConnection conn = new SqlConnection(connString))
+            {
+                conn.Open();
+
+                SqlCommand cmd = conn.CreateCommand();
+                cmd.CommandText = "Users_PasswordReset";
+                cmd.CommandType = System.Data.CommandType.StoredProcedure;
+
+                cmd.Parameters.AddWithValue("@UserId", request.Id);
+                cmd.Parameters.AddWithValue("@Password", request.Password);
+
+                using (SqlDataReader reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        ret = (bool)reader["Updated"];
+                    }
+                }
+                conn.Close();
+            }
+            return ret;
+        }
+
         public int Delete(int id)
         {
             using (SqlConnection conn = new SqlConnection(connString))

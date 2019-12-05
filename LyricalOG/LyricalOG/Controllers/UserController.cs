@@ -55,13 +55,8 @@ namespace LyricalOG.Controllers
             return req.CreateResponse(HttpStatusCode.OK, userLogin);
         }
 
-        //[HttpGet,Route("users/validate")]
-        //public HttpResponseMessage Validate(UsersCreateRequest request)
-        //{
-        //    var exists = new UserRepository().GetUser(request.Name) != null;
-        //}
         [HttpPost, Route("users")]
-        public HttpResponseMessage Create(UsersCreateRequest request)
+        public async Task<HttpResponseMessage> Create(UsersCreateRequest request)
         {
             if (request == null)
             {
@@ -73,15 +68,26 @@ namespace LyricalOG.Controllers
             {
                 return Request.CreateResponse(HttpStatusCode.BadRequest, "The provided email is already being used.");
             }
-           var resp= SendVerificationEmail(user);
+           var resp= await _sendGridProvider.SendVerification(user);
 
             return req.CreateResponse(HttpStatusCode.OK, resp);
         }
 
-        [HttpPost, Route("users/validate")]
-        public HttpResponseMessage SendVerificationEmail(User user)
+        [HttpGet,Route("users/validate/{key}")]
+        public  HttpResponseMessage AccountValidation(string key)
         {
-            var response =  _sendGridProvider.SendVerification(user);
+            var response =  _usersProvider.ValidateAccount(key);
+            if (!response)
+            {
+                return Request.CreateResponse(HttpStatusCode.Forbidden, "Provided Key does not match, please try again.");
+            }
+            return req.CreateResponse(HttpStatusCode.OK, response);
+        }
+
+        [HttpPost, Route("users/sendValidation")]
+        public async Task<HttpResponseMessage> SendVerificationEmail(User user)
+        {
+            var response =await _sendGridProvider.SendVerification(user);
             return req.CreateResponse(HttpStatusCode.OK, response);
         }
         [HttpGet, Route("users")]
@@ -124,7 +130,7 @@ namespace LyricalOG.Controllers
         }
 
         [HttpPut, Route("users/passwordResetRequest")]
-        public async Task<HttpResponseMessage> SendEmail(User request)
+        public async Task<HttpResponseMessage> SendPasswordResetEmail(User request)
         {
             var result = await _sendGridProvider.SendPasswordReset(request);
 
@@ -138,6 +144,17 @@ namespace LyricalOG.Controllers
             if (!result)
             {
                 return Request.CreateResponse(HttpStatusCode.BadRequest, "User or Password does not match current data.");
+            }
+            return Request.CreateResponse(HttpStatusCode.OK, result);
+        }
+
+        [HttpPut, Route("users/passwordReset")]
+        public HttpResponseMessage PasswordReset(UsersUpdateRequest request)
+        {
+            var result = _usersProvider.PasswordReset(request);
+            if (!result)
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "User Not found, please log out and try again.");
             }
             return Request.CreateResponse(HttpStatusCode.OK, result);
         }

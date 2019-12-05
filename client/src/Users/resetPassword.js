@@ -40,7 +40,7 @@ export default class ResetPassword extends React.Component{
                 Id:this.state.id,
                 Password:this.state.password
             }
-            userService.updatePassword(data)
+            userService.passwordReset(data)
             .then(resp=>{
                 if(window.confirm("password reset!")){
                     this .props.history.push("/login")

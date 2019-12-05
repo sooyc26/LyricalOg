@@ -2,6 +2,7 @@ import React from 'react'
 import * as userService from '../services/userService'
 import moment from '../../node_modules/moment'
 import { withRouter } from 'react-router';
+import { connect } from 'react-redux'
 
 class UserProfile extends React.Component{
 
@@ -27,17 +28,24 @@ class UserProfile extends React.Component{
             newPassword:'',
             currentPassword:'',
             confirmPassword:'',
-            passwordAlert:''
+            passwordAlert:'',
+
+            currUserId:0
         }
     }
 
     componentDidMount=()=>{
         this.getUserProfile()
+
+        this.setState({
+            currUserId:this.props.user.UserId          
+        })
     }
 
     handleChange =e=>{
         this.setState({[e.target.name]:[e.target.value]})
     }
+
     getUserProfile=()=>{        
         var id = this.props.match.params.id ? this.props.match.params.id : 0
 
@@ -60,6 +68,21 @@ class UserProfile extends React.Component{
         })
 
     }    
+
+    sendVerificationEmail=()=>{
+        const data = {
+            Name :this.state.Name,
+            Email:this.state.Email
+        }
+        userService.validationRequest(data)
+        .then(res=>{
+            window.alert("Validation email sent. Please check your email.")
+        })
+        .catch (res=>{
+            window.alert("Validation email could not be sent.")
+
+        })
+    }
 
     changePassword=()=>{
        
@@ -168,9 +191,12 @@ class UserProfile extends React.Component{
                 <hr className="my-4" />
                 <p>Member Since: {moment(this.state.dateCreated).format('MM/DD/YYYY')}</p>
                 <p className="lead">
-                    <button className="btn btn-primary" onClick={this.toggleEdit}>Edit</button>
-                    <button className="btn btn-danger" onClick={this.togglePassword}>Change Password</button>
-
+                    {this.state.currUserId == this.state.id ?
+                        <span>
+                            <button className="btn btn-primary" onClick={this.toggleEdit}>Edit</button>
+                            <button className="btn btn-danger" onClick={this.togglePassword}>Change Password</button>
+                            {this.state.emailVerified ? "" : <button className="btn btn-warning" onClick={this.sendVerificationEmail}>Send Verification Email</button>}
+                        </span> : null}
                 </p>
                 {this.state.resetPassword ?
                     <div>
@@ -271,4 +297,10 @@ class UserProfile extends React.Component{
         )
     }
 }
-export default withRouter(UserProfile)
+const mapStateToProps = (state, props) => {
+    return {
+      user: state.user
+    }
+  
+  }
+export default withRouter(connect(mapStateToProps)(UserProfile))
