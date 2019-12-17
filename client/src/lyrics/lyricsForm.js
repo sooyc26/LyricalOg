@@ -188,7 +188,7 @@ class LyricsForm extends Component {
       this.refs[e.target.id].currentTime = 0;
     }
 
-    if (e.target.className == "fas fa-stop") {
+    if (e.target.className === "fas fa-stop") {
       e.target.className = "fas fa-play"
       this.pauseUrl(e.target.id)
     } else {
@@ -203,7 +203,7 @@ class LyricsForm extends Component {
 
       const audio = new Audio(window.blobURL)
 
-      if (e.target.className == "fas fa-stop") {
+      if (e.target.className === "fas fa-stop") {
         e.target.className = "fas fa-play"
         this.refs['s3Player'].pause()
         audio.pause()
@@ -263,7 +263,7 @@ class LyricsForm extends Component {
     <div style={{verticalAlign:"middle"}}>
     <h2 className="text-primary" >{this.state.title} <span className="text-white">(prod.{this.state.producer})</span></h2>
         <div className="row" style={{margin:'auto'}}>
-        <img  src={this.state.beatImg} width="160" height="160"></img>
+        <img  src={this.state.beatImg} width="160" height="160" alt=""> </img>
           <video controls
             //onPlay={this.beatPlay}
             controlsList="nodownload"
@@ -331,8 +331,8 @@ class LyricsForm extends Component {
                 <button className="btn btn-outline-danger"  >
                   <span id={lyric.Id} className="fas fa-play" onClick={e => this.togglePlay(e)}></span>
                 </button>
+              {/* <button className="btn btn-outline-danger"  > <i class="fas fa-flag"></i></button> */}
               </div>
-
             </div>
 
             {/* sorted high -> low */}

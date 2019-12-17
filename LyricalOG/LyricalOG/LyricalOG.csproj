@@ -540,6 +540,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Models\BeatCreateResponse.cs" />
     <Compile Include="Services\BeatService.cs" />
+    <Compile Include="Services\SqlService.cs" />
     <Compile Include="UnityResolver.cs" />
     <Compile Include="Services\LyricService.cs" />
     <Compile Include="Services\RecordService.cs" />

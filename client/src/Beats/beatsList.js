@@ -130,6 +130,7 @@ class BeatsList extends React.Component {
     }
 
     handleShow = e => {
+        this.submitCheck()
         this.setState({ show: true });
     }
 
@@ -178,7 +179,7 @@ class BeatsList extends React.Component {
 
                             </td> : ''
                         }
-
+                        
                         {this.state.isAdmin || this.state.currUserId === b.UploaderId ?
                             <td>
                                 <input type="checkbox" className="custom-checkbox " defaultChecked={b.Visible} onClick={() => this.toggleVisibility(b.Id)} ></input>
@@ -187,7 +188,7 @@ class BeatsList extends React.Component {
                     </tr>
                 )
             }
-
+            return null
         })
         return (
             <React.Fragment>
@@ -257,7 +258,7 @@ class BeatsList extends React.Component {
                     </Modal.Body>
                     <Modal.Footer >
                         <button className='btn btn-primary' disabled={this.state.valid} onClick={e => this.submit(e)}> {this.state.edit ? "Update" : "Upload"} </button>
-                        <button className='btn btn-default' onClick={() => this.handleClose()}> Close </button>
+                        <button className='btn btn-secondary' onClick={() => this.handleClose()}> Close </button>
                     </Modal.Footer >
                 </Modal>
             </React.Fragment>

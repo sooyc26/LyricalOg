@@ -27,12 +27,6 @@ class Navbar extends React.Component {
   }
 
   render() {
-    var uid=0;
-    if(this.state.id){
-      var userData = JSON.parse(jwt_decode(localStorage.getItem('loginToken')).currUser)
-
-      uid = this.state.id
-    }
     return (
 
       <React.Fragment>

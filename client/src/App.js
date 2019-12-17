@@ -1,19 +1,14 @@
-import React, { Component } from 'react';
 import './App.css';
-import LyricsForm from './lyrics/lyricsForm'
+import React, { Component } from 'react';
+import { Route, BrowserRouter,Redirect,Switch } from 'react-router-dom';
+import {connect} from 'react-redux'
+
 import BeatsList from './Beats/beatsList'
-// import LyricsList from './lyrics/lyricsList';
-// import Background from './cloudLightning.png';
 import Navbar from './layout/Navbar';
 import Login from './login/Login';
 import Register from './login/Register';
-import { Route,Router, BrowserRouter,Redirect,Switch,withRouter } from 'react-router-dom';
 import Header from './layout/Header'
-
-import {connect} from 'react-redux'
-//import updateUser from './actions/userActions'
-//import {bindActionsCreators, bindActionCreators} from 'redux'
-import {store} from './store'
+import LyricsForm from './lyrics/lyricsForm'
 import UserProfile from './Users/userProfile';
 import PasswordResetRequest from './Users/passwordResetRequest';
 import ResetPassword from './Users/resetPassword'

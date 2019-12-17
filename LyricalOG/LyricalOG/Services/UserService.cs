@@ -24,6 +24,7 @@ using System.Web.Script.Serialization;
 using System.Security.Principal;
 using Newtonsoft.Json;
 using myCrudApp.Models.Users;
+using myCrudApp.Services;
 
 namespace LyricalOG.Services
 {
@@ -479,49 +480,38 @@ namespace LyricalOG.Services
 
         public int UpdateUser(UsersUpdateRequest request, int id)
         {
-            using (SqlConnection conn = new SqlConnection(connString))
-            {
-                conn.Open();
+            var sqlProvider = new SqlService();
 
-                SqlCommand cmd = conn.CreateCommand();
-                cmd.CommandText = "Users_Update";
-                cmd.CommandType = System.Data.CommandType.StoredProcedure;
+            sqlProvider.AddParameter("@UserId", id);
+            sqlProvider.AddParameter("@Name", request.Name);
+            sqlProvider.AddParameter("@Email", request.Email);
 
-                cmd.Parameters.AddWithValue("@UserId", id);
-                cmd.Parameters.AddWithValue("@Name", request.Name);
-                cmd.Parameters.AddWithValue("@Email", request.Email);
-                //cmd.Parameters.AddWithValue("@Paswword", request.Password);
+            sqlProvider.ExecuteNonQuery("Users_Update");
 
-                cmd.ExecuteNonQuery();
-
-                conn.Close();
-            }
             return id;
         }
 
         public bool UpdatePassword(UsersUpdateRequest request)
         {
             bool ret = false;
-            using (SqlConnection conn = new SqlConnection(connString))
+            var sqlProvider = new SqlService();
+
+            sqlProvider.AddParameter("@UserId", request.Id);
+            sqlProvider.AddParameter("@Password", request.Password);
+            sqlProvider.AddParameter("@NewPassword", request.NewPassword);
+
+            using (sqlProvider.connection)
             {
-                conn.Open();
+                sqlProvider.connection.Open();
 
-                SqlCommand cmd = conn.CreateCommand();
-                cmd.CommandText = "User_Update_Password";
-                cmd.CommandType = System.Data.CommandType.StoredProcedure;
-
-                cmd.Parameters.AddWithValue("@UserId", request.Id);
-                cmd.Parameters.AddWithValue("@Password", request.Password);
-                cmd.Parameters.AddWithValue("@NewPassword", request.NewPassword);
-
-                using (SqlDataReader reader = cmd.ExecuteReader())
+                using (SqlDataReader reader = sqlProvider.ExecuteReader("User_Update_Password"))
                 {
                     while (reader.Read())
                     {
                         ret = (bool)reader["Updated"];
                     }
                 }
-                conn.Close();
+                sqlProvider.connection.Close();
             }
             return ret;
         }

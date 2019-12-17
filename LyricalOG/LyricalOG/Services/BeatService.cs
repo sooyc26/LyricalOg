@@ -144,8 +144,9 @@ namespace LyricalOG.Services
                         };
                         retModel.Add(beat);
                     }
-                    conn.Close();
+                    reader.Close();
                 }
+                conn.Close();
             }
             return retModel;
         }

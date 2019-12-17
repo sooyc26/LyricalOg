@@ -1,8 +1,10 @@
-import React from 'react'
+import React,{userCallBack} from 'react'
 import * as userService from '../services/userService'
 import moment from '../../node_modules/moment'
 import { withRouter } from 'react-router';
 import { connect } from 'react-redux'
+import ImageUpload from '../Users/ImageUpload'
+import Dropzone from 'react-dropzone'
 
 class UserProfile extends React.Component{
 
@@ -43,7 +45,7 @@ class UserProfile extends React.Component{
     }
 
     handleChange =e=>{
-        this.setState({[e.target.name]:[e.target.value]})
+        this.setState({ [e.target.name]: e.target.value })
     }
 
     getUserProfile=()=>{        
@@ -93,6 +95,13 @@ class UserProfile extends React.Component{
         }
         if(this.changePasswordVerify()){
             userService.updatePassword(data)
+            .then(res=>{
+                if (res) window.alert("Your password has been changed.")
+                this.getUserProfile()
+            })
+            .catch(err=>{
+                this.setState({passwordAlert:"Your password could not be changed."})
+            })
         }
     }
     
@@ -108,34 +117,34 @@ class UserProfile extends React.Component{
         else this.setState({ isEdit: true })
     }
 
-    changePasswordVerify = () =>{
-        if(this.state.currentPassword==null ||this.state.newPassword==null||this.state.confirmPassword==null){
-            this.setState({passwordAlert:"Please type current and new password"})
+    changePasswordVerify = () => {
+        if (this.state.currentPassword == null || this.state.newPassword == null || this.state.confirmPassword == null) {
+            this.setState({ passwordAlert: "Please type current and new password" })
             return false
         }
-        else if(this.state.password !==this.state.currentPassword ){//"Please enter current password"
-        this.setState({passwordAlert:"Current Password does not match"})
+        else if (this.state.password !== this.state.currentPassword) {//"Please enter current password"
+            this.setState({ passwordAlert: "Current Password does not match" })
             return false
         }
-        else if(this.state.newPassword.length <8){
-            this.setState({passwordAlert:"Password has to be at least 8 characters"})
-            return false  
+        else if (this.state.newPassword.length < 8) {
+            this.setState({ passwordAlert: "Password has to be at least 8 characters" })
+            return false
         }
-        else if(this.state.newPassword !==this.state.confirmPassword){//"new password does not match"
+        else if (this.state.newPassword !== this.state.confirmPassword) {//"new password does not match"
             this.setState({ passwordAlert: "new and confirm password does not match" })
             return false
         }
-
         return true;
     }
 
     submit =()=>{
         //reset password
-        console.log(this.state.nameEdit)
         const data = {
-            Name:this.state.nameEdit[0],// idk why it set as array, 
-            Email:this.state.emailEdit
+            Name:this.state.nameEdit,
+            Email:this.state.email
         }
+        let img = this.imgInput.files[0];
+
         userService.update(this.state.id,data)
         .then(resp=>{
             if(resp){
@@ -147,6 +156,7 @@ class UserProfile extends React.Component{
         })
 
     }
+
     render(){
 
         const mapLyrics = this.state.lyricsList.map((l,i)=>{
@@ -181,7 +191,8 @@ class UserProfile extends React.Component{
             )
         })
 
-        const displayMode =
+
+        const displayMode =   
             <div className="jumbotron" style={{ width: '85%' }}>
                 <h1 className="display-6">Name: {this.state.name}</h1>
                 <p className="lead">Email: {this.state.email}</p>
@@ -191,7 +202,7 @@ class UserProfile extends React.Component{
                 <hr className="my-4" />
                 <p>Member Since: {moment(this.state.dateCreated).format('MM/DD/YYYY')}</p>
                 <p className="lead">
-                    {this.state.currUserId == this.state.id ?
+                    {this.state.currUserId === this.state.id ?
                         <span>
                             <button className="btn btn-primary" onClick={this.toggleEdit}>Edit</button>
                             <button className="btn btn-danger" onClick={this.togglePassword}>Change Password</button>
@@ -201,7 +212,7 @@ class UserProfile extends React.Component{
                 {this.state.resetPassword ?
                     <div>
                         <hr className="my-4" />
-                        <p className="">Current Password: </p>
+                        <p className="lead">Current Password: </p>
                         <input type="password" className="form-control" name="currentPassword" onChange={this.handleChange} value={this.state.currentPassword} />
 
                         <p className="lead">New Password </p>
@@ -210,7 +221,7 @@ class UserProfile extends React.Component{
                         <p className="lead">Confirm Password </p>
                         <input type="password" className="form-control" name="confirmPassword" onChange={this.handleChange} value={this.state.confirmPassword} />
                         <p className="lead"></p>
-                        {this.state.passwordAlert == '' ? 
+                        {this.state.passwordAlert === '' ? 
                         "" :
                          <div className="alert alert-dismissible alert-danger">
                                 <button type="button" className="close" data-dismiss="alert" onClick={() => this.setState({ passwordAlert: '' })}>&times;</button>
@@ -230,23 +241,30 @@ class UserProfile extends React.Component{
                                 {this.state.isEdit ?
                                     <div className="jumbotron " style={{ width: '85%' }}>
 
-                                        <p className="">Name: </p>
-                                        <input className="form-control" name="nameEdit" onChange={this.handleChange} value={this.state.nameEdit}/>
+                                        <div className="row">
+                                            <div className="col-6">
+                                                <p className="">Name: </p>
+                                                <input className="form-control" name="nameEdit" onChange={this.handleChange} value={this.state.nameEdit} />
 
-                                        <p className="lead">Email: </p>
-                                        <input className="form-control" name="emailEdit" onChange={this.handleChange} value={this.state.emailEdit}/>
+                                                <p className="lead">Email: {this.state.email} </p>
+                                                {/* <input className="form-control" name="emailEdit" onChange={this.handleChange} value={this.state.emailEdit}/> */}
 
-                                        <div>Uploaded Lyrics Count: {(this.state.lyricsList).length}</div>
-                                        <div>Uploaded Beats Count: {(this.state.beatList).length}</div>
+                                                <div>Uploaded Lyrics Count: {(this.state.lyricsList).length}</div>
+                                                <div>Uploaded Beats Count: {(this.state.beatList).length}</div>
 
-                                        <hr className="my-4" />
-                                        <p>Member Since: {moment(this.state.dateCreated).format('MM/DD/YYYY')}</p>
+                                                <hr className="my-4" />
+                                                <p>Member Since: {moment(this.state.dateCreated).format('MM/DD/YYYY')}</p>
+                                            </div>
+                                            <div className="col-6">
+                                                <p className="">Image Upload </p>
+                                                <input type="file" name="image" className="form-control" ref={(ref) => { this.imgInput = ref; }} onChange={this.handleChange}></input>
+                                                </div>
+                                        </div>
+
                                         <p className="lead">
                                             <button className="btn btn-primary" onClick={this.submit}>Save</button>
                                             <button className="btn btn-warning" onClick={this.toggleEdit}>Cancel</button>
-
                                         </p>
-
                                     </div> : displayMode}
                             </div>
                         </div>

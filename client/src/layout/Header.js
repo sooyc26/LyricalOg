@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import withRouter from "react-router-dom/withRouter";
 //import { Route, NavLink } from "react-router-dom";
 // import logo from './logo.svg';
 // import LyricsForm from "../forms/lyricsForm";
@@ -16,28 +15,6 @@ class Header extends Component {
   }
   render() {
     return (
-      // <div>
-      //   <nav className="navbar navbar-inverse navbar-fixed-top">
-      //     <div className="container">
-      //       <div className="navbar-header">
-
-      //       </div>
-      //       <div id="navbar" className="collapse navbar-collapse">
-      //         <ul className="nav navbar-nav">
-      //           <li>
-      //             <NavLink to="/lyrics-form">lyrics</NavLink>
-      //           </li>
-      //         </ul>
-      //       </div>
-      //     </div>
-      //   </nav>
-      //   <div style={{ marginTop: "60px" }}>
-      //     <div>
-      //       {/* <Route path="/lyrics-form" component={LyricsForm} /> */}
-      //     </div>
-      //   </div>
-
-      // </div>
       <React.Fragment>
         <header className="App-header" style={{ opacity: 0.8 }}>
           <form>

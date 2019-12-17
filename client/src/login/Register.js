@@ -108,7 +108,7 @@ class Register extends React.Component {
                             <label >Confirm Password</label>
                             <input type="password" value={this.state.confirmPassword} onChange={this.handleChange} className="form-control" id="confirmPassword" placeholder="Password" />
                         </div>
-                        {this.state.registerAlert == '' ? 
+                        {this.state.registerAlert === '' ? 
                         "" :
                          <div className="alert alert-dismissible alert-danger lead">
                                 {this.state.registerAlert}
