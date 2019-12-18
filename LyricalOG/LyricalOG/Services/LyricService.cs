@@ -5,6 +5,7 @@ using Amazon.S3.Model;
 using LyricalOG.Interfaces;
 using LyricalOG.Models;
 using myCrudApp.Models;
+using myCrudApp.Services;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -26,44 +27,29 @@ namespace LyricalOG.Services
 
         public LyricsCreateResponse Create(LyricsCreateRequest request)
         {
-            int id = 0;
             var response = new LyricsCreateResponse();
             var slicedUrl = SignedUrlWithNoExpire(request.File);
 
-            using (SqlConnection conn = new SqlConnection(connString))
-            {
-                conn.Open();
+            var sqlService = new SqlService();
 
-                SqlCommand cmd = conn.CreateCommand();
-                cmd.CommandText = "Lyrics_Insert";
-                cmd.CommandType = System.Data.CommandType.StoredProcedure;
+            sqlService.AddParameter("@Lyrics", request.Lyrics);
+            sqlService.AddParameter("@Votes", 0);
+            sqlService.AddParameter("@UserId", request.UserId);
+            sqlService.AddParameter("@S3SignedUrl", slicedUrl);
+            sqlService.AddParameter("@BeatId", request.BeatId);
 
-                cmd.Parameters.AddWithValue("@Lyrics", request.Lyrics);
-                cmd.Parameters.AddWithValue("@Votes", 0);
-                cmd.Parameters.AddWithValue("@UserId", request.UserId);
-                cmd.Parameters.AddWithValue("@S3SignedUrl", slicedUrl);
-                cmd.Parameters.AddWithValue("@BeatId", request.BeatId);
+            int id = Convert.ToInt32(sqlService.ExecuteScalar("Lyrics_Insert"));
 
-                using (SqlDataReader reader = cmd.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        id = Convert.ToInt32(reader["LyricsId"]);
-                    }
-                    reader.Close();
-                }
-                conn.Close();
-            }
             var signedURL = GeneratePreSignedURL(id.ToString(), request.ContentType);  //get signedURL to update resumeUrl in S3
             response.LyricId = id;
             response.SignedUrl = signedURL;
             return response;
         }
-        public string SignedUrlWithNoExpire(string fileName)
+        private string SignedUrlWithNoExpire(string fileName)
         {
             return "https://lyricalog.s3.us-west-1.amazonaws.com/" + fileName + "?AWSAccessKeyId="+ accessKey;
         }
-        public string GeneratePreSignedURL(string fileName, string contentType)
+        private string GeneratePreSignedURL(string fileName, string contentType)
         {
             AWSCredentials credentials = new BasicAWSCredentials(accessKey, secretKey);
             s3Client = new AmazonS3Client(credentials, bucketRegion);
@@ -257,72 +243,31 @@ namespace LyricalOG.Services
 
         public int VoteUp(VoteRequest vote)
         {
-            int retId = 0;
-            using (SqlConnection conn = new SqlConnection(connString))
-            {
-                conn.Open();
+            var sqlService = new SqlService();
+            sqlService.AddParameter("@LyricsId", vote.LyricsId);
+            sqlService.AddParameter("@UserId", vote.VoterId);
 
-                SqlCommand cmd = conn.CreateCommand();
-                cmd.CommandText = "Votes_Insert";
-                cmd.CommandType = System.Data.CommandType.StoredProcedure;
+            var retId= (int)sqlService.ExecuteScalar("Votes_Insert");
 
-                cmd.Parameters.AddWithValue("@LyricsId", vote.LyricsId);
-                cmd.Parameters.AddWithValue("@UserId", vote.VoterId);
-
-                using (SqlDataReader reader = cmd.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        retId = (int)reader["VoteId"];
-                    }
-                }
-                conn.Close();
-            }
             return retId;
         }
 
         public int DeleteVote(VoteRequest vote)
         {
-            int retId = 0;
-            using (SqlConnection conn = new SqlConnection(connString))
-            {
-                conn.Open();
+            var sqlService = new SqlService();
+            sqlService.AddParameter("@LyricsId", vote.LyricsId);
+            sqlService.AddParameter("@UserId", vote.VoterId);
+            int retId = (int)sqlService.ExecuteScalar("Votes_Delete_ByVoterId");
 
-                SqlCommand cmd = conn.CreateCommand();
-                cmd.CommandText = "Votes_Delete_ByVoterId";
-                cmd.CommandType = System.Data.CommandType.StoredProcedure;
-
-                cmd.Parameters.AddWithValue("@LyricsId", vote.LyricsId);
-                cmd.Parameters.AddWithValue("@UserId", vote.VoterId);
-
-                using (SqlDataReader reader = cmd.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        retId = (int)reader["VoteId"];
-                    }
-                }
-                conn.Close();
-            }
             return retId;
         }
 
         public int Delete(int id)
         {
+            var sqlService = new SqlService();
+            sqlService.AddParameter("@LyricsId", id);
+            sqlService.ExecuteNonQuery("Lyrics_Delete");
 
-            using (SqlConnection conn = new SqlConnection(connString))
-            {
-                conn.Open();
-
-                SqlCommand cmd = conn.CreateCommand();
-                cmd.CommandText = "Lyrics_Delete";
-                cmd.CommandType = System.Data.CommandType.StoredProcedure;
-
-                cmd.Parameters.AddWithValue("@LyricsId", id);
-                cmd.ExecuteNonQuery();
-
-                conn.Close();
-            }
             return id;
         }
 

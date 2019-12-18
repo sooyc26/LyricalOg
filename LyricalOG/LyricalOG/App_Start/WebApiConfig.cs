@@ -29,14 +29,12 @@ namespace LyricalOG
 
             config.Routes.MapHttpRoute(
                 name: "DefaultApi",
-                routeTemplate: "api/{controller}/{id}",
+                routeTemplate: "{controller}/{id}",
                 defaults: new { id = RouteParameter.Optional }
             );
 
             //dependency resolver register
             var container = new UnityContainer();
-
-           // container.RegisterType<IUsersProvider, UserService>(new HierarchicalLifetimeManager());
 
             container.RegisterType<IUsersProvider>(
                 new InjectionFactory(c => new UserService()));
@@ -49,7 +47,6 @@ namespace LyricalOG
 
             container.RegisterType<IBeatProvider>(
                 new InjectionFactory(c => new BeatService()));
-            //config.DependencyResolver = new UnityResolver(container);
 
             container.RegisterType<ISendGridProvider>(
                 new InjectionFactory(c => new SendGridService()));

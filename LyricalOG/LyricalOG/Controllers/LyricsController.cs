@@ -14,25 +14,22 @@ using System.Web.Http.Cors;
 namespace LyricalOG.Controllers
 {
     [AllowAnonymous]
-    [RoutePrefix("api")]
-    //[EnableCors(origins: "*", headers: "*", methods: "*")]
+    [RoutePrefix("lyrics")]
     public class LyricsController : ApiController
     {
         private readonly ILyricsProvider _lyricsProvider;
         private readonly IS3RecordProvider _recordProvider;
-        private readonly IUsersProvider _userProvider;
 
         HttpRequestMessage req = new HttpRequestMessage();
         HttpConfiguration configuration = new HttpConfiguration();
-        public LyricsController(ILyricsProvider l,IS3RecordProvider r,IUsersProvider u)
+        public LyricsController(ILyricsProvider l,IS3RecordProvider r)
         {
             _lyricsProvider = l;
             _recordProvider = r;
-            _userProvider = u;
             req.Properties[System.Web.Http.Hosting.HttpPropertyKeys.HttpConfigurationKey] = configuration;
         }
 
-        [HttpPost, Route("lyrics")]
+        [HttpPost]
         public HttpResponseMessage Create(LyricsCreateRequest request)
         {
             if (request == null)
@@ -44,20 +41,31 @@ namespace LyricalOG.Controllers
             return req.CreateResponse(HttpStatusCode.OK, response);
         }
 
-        [HttpGet, Route("lyrics")]
+        [HttpDelete, Route("{id:int}")]
+        public HttpResponseMessage Delete(int id)
+        {
+            _recordProvider.DeleteObjectNonVersionedBucketAsync(id.ToString());
+
+            var retId = _lyricsProvider.Delete(id);
+            var message = "deleted Id: " + retId;
+            return Request.CreateResponse(HttpStatusCode.OK, message);
+        }
+
+        [HttpGet]
         public HttpResponseMessage ReadAll()
         {
             var lyrics = _lyricsProvider.ReadAll();
             return req.CreateResponse(HttpStatusCode.OK, lyrics);
         }
 
-        [HttpGet, Route("lyrics/{id:int}")]
+        [HttpGet, Route("{id:int}")]
         public HttpResponseMessage ReadById(int id)
         {
             var lyric = _lyricsProvider.ReadById(id);
             return req.CreateResponse(HttpStatusCode.OK, lyric);
         }
-        [HttpGet, Route("lyrics/beat/{id:int}")]
+
+        [HttpGet, Route("beat/{id:int}")]
         public HttpResponseMessage ReadByBeatId(int id)
         {
             var lyrics = _lyricsProvider.ReadByBeatId(id);
@@ -70,27 +78,19 @@ namespace LyricalOG.Controllers
         //    return Request.CreateResponse(HttpStatusCode.OK, retId);
         //}
 
-        [HttpPost, Route("lyrics/vote")]
+        [HttpPost, Route("vote")]
         public HttpResponseMessage VoteUp(VoteRequest vote)
         {
             var retId = _lyricsProvider.VoteUp(vote);
             return Request.CreateResponse(HttpStatusCode.OK, retId);
         }
 
-        [HttpDelete, Route("lyrics/vote")]
+        [HttpDelete, Route("vote")]
         public HttpResponseMessage VoteDown(VoteRequest vote)
         {
             var retId = _lyricsProvider.DeleteVote(vote);
             return Request.CreateResponse(HttpStatusCode.OK, retId);
         }
-        [HttpDelete, Route("lyrics/{id:int}")]
-        public HttpResponseMessage Delete(int id)
-        {
-            _recordProvider.DeleteObjectNonVersionedBucketAsync(id.ToString());
 
-            var retId =_lyricsProvider.Delete(id);
-            var message = "deleted Id: " + retId;
-            return Request.CreateResponse(HttpStatusCode.OK, message);
-        }
     }
 }

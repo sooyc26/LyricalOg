@@ -9,11 +9,11 @@ namespace LyricalOG.Interfaces
 {
     public interface IBeatProvider
     {
-        List<Beat> ReadAll();
-        Beat ReadById(int id );
         BeatCreateResponse Create(Beat request);
         int Delete(int id);
-        int Update(Beat request);
+        List<Beat> ReadAll();
+        Beat ReadById(int id );
         int ToggleVisiblity(int id);
+        int Update(Beat request);
     }
 }

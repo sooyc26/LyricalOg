@@ -18,7 +18,6 @@ namespace LyricalOG.Interfaces
         User ReadById(int id);
         int UpdateUser(UsersUpdateRequest request, int id);
         int Delete(int id);
-        Task EmailVerification(User request);
         bool ValidateToken(string token, out string username);
         Task<IPrincipal> AuthenticateJwtToken(string token);
         UserProfile GetUserProfile(int id);

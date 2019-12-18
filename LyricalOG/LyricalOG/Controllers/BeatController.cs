@@ -10,7 +10,7 @@ using System.Web.Http;
 namespace LyricalOG.Controllers
 {
     [AllowAnonymous]
-    [RoutePrefix("api")]
+    [RoutePrefix("beats")]
     public class BeatController : ApiController
     {
         private readonly IBeatProvider _beatProvider;
@@ -26,21 +26,7 @@ namespace LyricalOG.Controllers
             req.Properties[System.Web.Http.Hosting.HttpPropertyKeys.HttpConfigurationKey] = configuration;
         }
 
-
-        [HttpGet, Route("beats")]
-        public HttpResponseMessage ReadAll()
-        {
-            var lyrics = _beatProvider.ReadAll();
-            return req.CreateResponse(HttpStatusCode.OK, lyrics);
-        }
-        [HttpGet, Route("beat/{id:int}")]
-        public HttpResponseMessage ReadById(int id)
-        {
-            var lyrics = _beatProvider.ReadById(id);
-            return req.CreateResponse(HttpStatusCode.OK, lyrics);
-        }
-
-        [HttpPost, Route("beat")]
+        [HttpPost]
         public HttpResponseMessage Create(Beat request)
         {
             if (request == null)
@@ -52,29 +38,43 @@ namespace LyricalOG.Controllers
             return req.CreateResponse(HttpStatusCode.OK, response);
         }
 
-        [HttpPut, Route("beat")]
-        public HttpResponseMessage UpdateById(Beat request)
+        [HttpDelete, Route("{id:int}")]
+        public HttpResponseMessage Delete(int id)
         {
-            var retId = _beatProvider.Update(request);
-            return Request.CreateResponse(HttpStatusCode.OK, retId);
+            _recordProvider.DeleteObjectNonVersionedBucketAsync("B" + id.ToString());
+            _recordProvider.DeleteObjectNonVersionedBucketAsync("BI" + id.ToString());
+
+            var retId = _beatProvider.Delete(id);
+            var message = "deleted Id: " + retId;
+            return Request.CreateResponse(HttpStatusCode.OK, message);
         }
 
-        [HttpPatch, Route("beat/{id:int}")]
+        [HttpGet,Route("")]
+        public HttpResponseMessage ReadAll()
+        {
+            var lyrics = _beatProvider.ReadAll();
+            return req.CreateResponse(HttpStatusCode.OK, lyrics);
+        }
+
+        [HttpGet, Route("{id:int}")]
+        public HttpResponseMessage ReadById(int id)
+        {
+            var lyrics = _beatProvider.ReadById(id);
+            return req.CreateResponse(HttpStatusCode.OK, lyrics);
+        }
+
+        [HttpPatch, Route("{id:int}")]
         public HttpResponseMessage ToggleVisiblity(int id)
         {
             var retId = _beatProvider.ToggleVisiblity(id);
             return Request.CreateResponse(HttpStatusCode.OK, retId);
         }
 
-        [HttpDelete, Route("beat/{id:int}")]
-        public HttpResponseMessage Delete(int id)
+        [HttpPut]
+        public HttpResponseMessage UpdateById(Beat request)
         {
-            _recordProvider.DeleteObjectNonVersionedBucketAsync("B"+id.ToString());
-            _recordProvider.DeleteObjectNonVersionedBucketAsync("BI"+id.ToString());
-
-            var retId = _beatProvider.Delete(id);
-            var message = "deleted Id: " + retId;
-            return Request.CreateResponse(HttpStatusCode.OK, message);
+            var retId = _beatProvider.Update(request);
+            return Request.CreateResponse(HttpStatusCode.OK, retId);
         }
     }
 }

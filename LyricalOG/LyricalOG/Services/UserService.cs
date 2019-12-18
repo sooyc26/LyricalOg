@@ -1,14 +1,11 @@
 ﻿
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
-using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Owin.Security;
 using LyricalOG.Interfaces;
 using LyricalOG.Models;
 using LyricalOG.Models.Users;
-using SendGrid;
-using SendGrid.Helpers.Mail;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -17,10 +14,8 @@ using System.Data.SqlClient;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
-using System.Text;
 using System.Threading.Tasks;
 using System.Web;
-using System.Web.Script.Serialization;
 using System.Security.Principal;
 using Newtonsoft.Json;
 using myCrudApp.Models.Users;
@@ -30,14 +25,6 @@ namespace LyricalOG.Services
 {
     public class UserService : IUsersProvider
     {
-        //readonly LyricService _lyricService;
-        //readonly RecordService _recordService;
-
-        //public UserService(LyricService lyricService)
-        //{
-        //    _lyricService = lyricService;
-        //    _recordService = new RecordService();
-        //}
 
         readonly string connString = ConfigurationManager.ConnectionStrings["Default"].ConnectionString;
         readonly string jwtStr = ConfigurationManager.AppSettings["Jwt"];
@@ -56,7 +43,7 @@ namespace LyricalOG.Services
 
                 using (SqlDataReader reader = cmd.ExecuteReader())
                 {
-                    if (reader.Read())//returns read if password matches in sproc
+                    if (reader.Read())//returns read if password matches in db
                     {
                         request.UserId = (int)reader["UserId"];
                         request.Name = (string)reader["Name"];
@@ -253,33 +240,15 @@ namespace LyricalOG.Services
         {
             var retUser = new User();
 
-            using (SqlConnection conn = new SqlConnection(connString))
-            {
-                conn.Open();
+            var sql = new SqlService();
+            sql.AddParameter("@Name", request.Name);
+            sql.AddParameter("@Email", request.Email);
+            sql.AddParameter("@Password", request.Password);
 
-                SqlCommand cmd = conn.CreateCommand();
-                cmd.CommandText = "Users_Insert";
-                cmd.CommandType = CommandType.StoredProcedure;
+            retUser.Id = (int)sql.ExecuteScalar("Users_Insert");
+            retUser.Name = request.Name;
+            retUser.Email = request.Email;
 
-                cmd.Parameters.AddWithValue("@Name", request.Name);
-                cmd.Parameters.AddWithValue("@Email", request.Email);
-                cmd.Parameters.AddWithValue("@Password", request.Password);
-                //cmd.Parameters.AddWithValue("@UserId", SqlDbType.Int).Direction = ParameterDirection.Output;
-
-                using (SqlDataReader reader = cmd.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        retUser.Id = (int)reader["UserId"];
-                    }
-                    reader.Close();
-                }
-                conn.Close();
-
-                retUser.Name = request.Name;
-                retUser.Email = request.Email;
-
-            }
             return retUser;
         }
 
@@ -294,8 +263,6 @@ namespace LyricalOG.Services
                 SqlCommand cmd = conn.CreateCommand();
                 cmd.CommandText = "Lyrics_Select_BeatId";
                 cmd.CommandType = System.Data.CommandType.StoredProcedure;
-
-               // cmd.Parameters.AddWithValue("@BeatId", request.BeatUrl);
 
                 using (SqlDataReader reader = cmd.ExecuteReader())
                 {
@@ -493,114 +460,45 @@ namespace LyricalOG.Services
 
         public bool UpdatePassword(UsersUpdateRequest request)
         {
-            bool ret = false;
             var sqlProvider = new SqlService();
 
             sqlProvider.AddParameter("@UserId", request.Id);
             sqlProvider.AddParameter("@Password", request.Password);
             sqlProvider.AddParameter("@NewPassword", request.NewPassword);
 
-            using (sqlProvider.connection)
-            {
-                sqlProvider.connection.Open();
-
-                using (SqlDataReader reader = sqlProvider.ExecuteReader("User_Update_Password"))
-                {
-                    while (reader.Read())
-                    {
-                        ret = (bool)reader["Updated"];
-                    }
-                }
-                sqlProvider.connection.Close();
-            }
-            return ret;
+            return (bool)sqlProvider.ExecuteScalar("User_Update_Password");
         }
 
         public bool ValidateAccount(string key)
         {
-            bool ret = false;
-            using (SqlConnection conn = new SqlConnection(connString))
-            {
-                conn.Open();
+            var sql = new SqlService();
+            sql.AddParameter("@EmailVerified", true);
+            sql.AddParameter("@VerificationKey", key);
 
-                SqlCommand cmd = conn.CreateCommand();
-                cmd.CommandText = "User_Update_EmailVerified";
-                cmd.CommandType = System.Data.CommandType.StoredProcedure;
-
-                cmd.Parameters.AddWithValue("@EmailVerified", true);
-                cmd.Parameters.AddWithValue("@VerificationKey", key);
-
-                using (SqlDataReader reader = cmd.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        ret = reader["Updated"] == DBNull.Value ? false :true;
-                    }
-                }
-                conn.Close();
-            }
+            bool ret = sql.ExecuteScalar("User_Update_EmailVerified") == DBNull.Value ? false : true;
             return ret;
         }
 
         public bool PasswordReset(UsersUpdateRequest request)
         {
-            bool ret = false;
-            using (SqlConnection conn = new SqlConnection(connString))
-            {
-                conn.Open();
-
-                SqlCommand cmd = conn.CreateCommand();
-                cmd.CommandText = "Users_PasswordReset";
-                cmd.CommandType = System.Data.CommandType.StoredProcedure;
-
-                cmd.Parameters.AddWithValue("@UserId", request.Id);
-                cmd.Parameters.AddWithValue("@Password", request.Password);
-
-                using (SqlDataReader reader = cmd.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        ret = (bool)reader["Updated"];
-                    }
-                }
-                conn.Close();
-            }
+            var sql = new SqlService();
+            sql.AddParameter("@UserId", request.Id);
+            sql.AddParameter("@Password", request.Password);
+            bool ret = sql.ExecuteScalar("Users_ResetPassword") == DBNull.Value ? false : true;
+            
             return ret;
         }
 
         public int Delete(int id)
         {
-            using (SqlConnection conn = new SqlConnection(connString))
-            {
-                conn.Open();
+            var sql = new SqlService();
+            sql.AddParameter("@UserId", id);
+            sql.ExecuteNonQuery("Users_Delete");
 
-                SqlCommand cmd = conn.CreateCommand();
-                cmd.CommandText = "Users_Delete";
-                cmd.CommandType = System.Data.CommandType.StoredProcedure;
-
-                cmd.Parameters.AddWithValue("@UserId", id);
-                cmd.ExecuteNonQuery();
-
-                conn.Close();
-            }
             return id;
         }
 
-        public async Task EmailVerification(User request)
-        {
-            //var apiKey = Environment.GetEnvironmentVariable("NAME_OF_THE_ENVIRONMENT_VARIABLE_FOR_YOUR_SENDGRID_KEY");
-            //var client = new SendGridClient(apiKey);
-            //var from = new EmailAddress("noreply@lyrical.og", "Administrator");
-            //var subject = "Email Validation for LyricalOG";
-            //var to = new EmailAddress(request.Email, request.Name);
-            //var plainTextContent = "Click Here to Validate your account";
-            //string htmlContent = string.Format("<a href=\"{0}{1}\"> Click here to reset password</a>", request.VerificationLink, SecretPasswordKey);
-            //var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
-            //var response = await client.SendEmailAsync(msg);
-        }
-
-
-        public static T ConvertFromDBVal<T>(object obj)
+        private static T ConvertFromDBVal<T>(object obj)
         {
             if (obj == null || obj == DBNull.Value)
             {

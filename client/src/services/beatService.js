@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 function create(data) {
-    const url= 'http://localhost:49694/api/beat'
+    const url= 'http://localhost:49694/beats'
     
     const config={
         method:'POST',
@@ -16,7 +16,7 @@ function create(data) {
 
 
 function getAll() {
-    const url= 'http://localhost:49694/api/beats'
+    const url= 'http://localhost:49694/beats'
     
     const config={
         method:'GET',
@@ -29,7 +29,7 @@ function getAll() {
 }
 
 function getById(id) {
-    const url = 'http://localhost:49694/api/beat/' + id
+    const url = 'http://localhost:49694/beats/' + id
 
     return axios.get(url)
         .then(responseSuccess)
@@ -43,7 +43,7 @@ function getByBeatId(id) {
         .catch(responseError)
 }
 function update(data) {
-    const url= 'http://localhost:49694/api/beat'
+    const url= 'http://localhost:49694/beats'
     const config={
         method:'PUT',
         data:data
@@ -54,7 +54,7 @@ function update(data) {
 }
 
 function toggleVisibility(id){
-    const url = 'http://localhost:49694/api/beat/' + id
+    const url = 'http://localhost:49694/beats/' + id
 
     const config={
         method:'patch',
@@ -65,7 +65,7 @@ function toggleVisibility(id){
 }
 
 function deleteById(id) {
-    const url= 'http://localhost:49694/api/beat/'+id
+    const url= 'http://localhost:49694/beats/'+id
     
     const config={
         method:'DELETE',

@@ -56,5 +56,27 @@ namespace myCrudApp.Services
             }
             return cmd.ExecuteReader();
         }
+
+        public object ExecuteScalar(string commandText)
+        {
+            object retObj = null;
+            using (connection)
+            {
+                connection.Open();
+
+                var cmd = connection.CreateCommand();
+                cmd.CommandText = commandText;
+                cmd.CommandType = System.Data.CommandType.StoredProcedure;
+
+                foreach (var x in Parameters)
+                {
+                    cmd.Parameters.AddWithValue(x.Key, x.Value);
+                }
+                retObj = cmd.ExecuteScalar();
+
+                connection.Close();
+            }
+            return retObj;
+        }
     }
 }

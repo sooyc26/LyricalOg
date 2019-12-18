@@ -263,7 +263,7 @@ class LyricsForm extends Component {
     <div style={{verticalAlign:"middle"}}>
     <h2 className="text-primary" >{this.state.title} <span className="text-white">(prod.{this.state.producer})</span></h2>
         <div className="row" style={{margin:'auto'}}>
-        <img  src={this.state.beatImg} width="160" height="160" alt=""> </img>
+        {/* <img  src={this.state.beatImg} width="160" height="160" alt=""> </img> */}
           <video controls
             //onPlay={this.beatPlay}
             controlsList="nodownload"

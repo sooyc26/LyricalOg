@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 function login(data){
-    const url= 'http://localhost:49694/api/users/login'
+    const url= 'http://localhost:49694/users/login'
 
     const config={
         method:'POST',
@@ -13,7 +13,7 @@ function login(data){
 }
 
 function create(data) {
-    const url= 'http://localhost:49694/api/users'
+    const url= 'http://localhost:49694/users'
     
     const config={
         method:'POST',
@@ -26,7 +26,7 @@ function create(data) {
         .catch(responseError)
 }
 function validationRequest(data) {
-    const url= 'http://localhost:49694/api/users/sendValidation'
+    const url= 'http://localhost:49694/users/sendValidation'
     
     const config={
         method:'POST',
@@ -40,7 +40,7 @@ function validationRequest(data) {
 }
 
 function verifyAccount(key) {
-    const url= 'http://localhost:49694/api/users/validate/'+key
+    const url= 'http://localhost:49694/users/validate/'+key
     
     const config={
         method:'GET',
@@ -51,7 +51,7 @@ function verifyAccount(key) {
         .catch(responseError)
 }
 function getAll() {
-    const url= 'http://localhost:49694/api/users'
+    const url= 'http://localhost:49694/users'
     
     const config={
         method:'GET',
@@ -64,7 +64,7 @@ function getAll() {
 }
 
 function checkExpireDate(key) {
-    const url= 'http://localhost:49694/api/expire-check/'+key
+    const url= 'http://localhost:49694/expire-check/'+key
     debugger
     const config={
         method:'GET',
@@ -77,7 +77,7 @@ function checkExpireDate(key) {
 }
 
 function getById(id) {
-    const url = 'http://localhost:49694/api/users/' + id
+    const url = 'http://localhost:49694/users/' + id
 
     return axios.get(url)
         .then(responseSuccess)
@@ -85,7 +85,7 @@ function getById(id) {
 }
 
 function getUserProfile(id) {
-    const url = 'http://localhost:49694/api/userProfile/' + id
+    const url = 'http://localhost:49694/users/profile/' + id
 
     return axios.get(url)
         .then(responseSuccess)
@@ -94,7 +94,7 @@ function getUserProfile(id) {
 
 function update(id, data) {
     
-    const url= 'http://localhost:49694/api/users/'+id
+    const url= 'http://localhost:49694/users/'+id
     const config={
         method:'PUT',
         data:data
@@ -105,7 +105,7 @@ function update(id, data) {
 }
 
 function passwordResetRequest(data){
-    const url= 'http://localhost:49694/api/users/passwordResetRequest'
+    const url= 'http://localhost:49694/users/passwordResetRequest'
     
     const config={
         method:'PUT',
@@ -117,7 +117,7 @@ function passwordResetRequest(data){
 }
 
 function passwordReset(data){
-    const url= 'http://localhost:49694/api/users/passwordReset'
+    const url= 'http://localhost:49694/users/passwordReset'
     debugger
     const config={
         method:'PUT',
@@ -129,7 +129,7 @@ function passwordReset(data){
 }
 
 function updatePassword(data){
-    const url= 'http://localhost:49694/api/users/updatePassword'
+    const url= 'http://localhost:49694/users/updatePassword'
     debugger
     const config={
         method:'PUT',
@@ -141,7 +141,7 @@ function updatePassword(data){
 }
 
 function deleteById(id) {
-    const url= 'http://localhost:49694/api/users/'+id
+    const url= 'http://localhost:49694/users/'+id
     
     const config={
         method:'DELETE',

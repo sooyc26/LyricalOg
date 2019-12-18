@@ -16,30 +16,87 @@ namespace LyricalOG.Controllers
 {
 
     [AllowAnonymous]
-    [RoutePrefix("api")]
-    //[EnableCors(origins: "*", headers: "*", methods: "*")]
+    [RoutePrefix("users")]
     public class UserController : ApiController
     {
         private readonly IUsersProvider _usersProvider;
-        private readonly ILyricsProvider _lyricProvider;
-        private readonly IS3RecordProvider _S3Provider;
         private readonly ISendGridProvider _sendGridProvider;
 
         HttpRequestMessage req = new HttpRequestMessage();
         HttpConfiguration configuration = new HttpConfiguration();
 
-        public UserController(ILyricsProvider l, IUsersProvider u, IS3RecordProvider s, ISendGridProvider sg)
+        public UserController(IUsersProvider u, ISendGridProvider sg)
         {
-            _lyricProvider = l;
-            _S3Provider = s;
             _usersProvider = u;
             _sendGridProvider = sg;
 
             req.Properties[System.Web.Http.Hosting.HttpPropertyKeys.HttpConfigurationKey] = configuration;
         }
 
+        [HttpGet, Route("validate/{key}")]
+        public HttpResponseMessage AccountValidation(string key)
+        {
+            var response = _usersProvider.ValidateAccount(key);
+            if (!response)
+            {
+                return Request.CreateResponse(HttpStatusCode.Forbidden, "Provided Key does not match, please try again.");
+            }
+            return req.CreateResponse(HttpStatusCode.OK, response);
+        }
+
+        [HttpGet, Route("expire-check/{key}")]
+        public HttpResponseMessage CheckExpireDate(string key)
+        {
+            UserKeyExpireCheck result = _sendGridProvider.CheckExpireDate(key);
+
+            if (result.ExpireBoolean == false)
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, result);
+            }
+            else
+
+                return Request.CreateResponse(HttpStatusCode.OK, result);
+        }
+
+        [HttpPost]
+        public async Task<HttpResponseMessage> Create(UsersCreateRequest request)
+        {
+            if (request == null)
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "please enter valid input");
+            }
+            User user = _usersProvider.Create(request);
+
+            if (user.Id == 0)
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "The provided email is already being used.");
+            }
+            var resp = await _sendGridProvider.SendVerification(user);
+
+            return req.CreateResponse(HttpStatusCode.OK, resp);
+        }
+
+
+        [HttpDelete, Route("{id:int}")]
+        public HttpResponseMessage Delete(int id)
+        {
+            var retId = _usersProvider.Delete(id);
+            //_lyricService.Delete(id);
+            _usersProvider.Delete(id);
+
+            var message = "deleted Id: " + retId;
+            return Request.CreateResponse(HttpStatusCode.OK, message);
+        }
+
+        [HttpGet, Route("profile/{id:int}")]
+        public HttpResponseMessage GetUserProfile(int id)
+        {
+            var lyric = _usersProvider.GetUserProfile(id);
+            return req.CreateResponse(HttpStatusCode.OK, lyric);
+        }
+
         //[JwtAuthentication]
-        [HttpPost, Route("users/login")]
+        [HttpPost, Route("login")]
         public HttpResponseMessage Login(UserLogin request)
         {
             if (request == null)
@@ -55,100 +112,8 @@ namespace LyricalOG.Controllers
             return req.CreateResponse(HttpStatusCode.OK, userLogin);
         }
 
-        [HttpPost, Route("users")]
-        public async Task<HttpResponseMessage> Create(UsersCreateRequest request)
-        {
-            if (request == null)
-            {
-                return Request.CreateResponse(HttpStatusCode.BadRequest, "please enter valid input");
-            }
-            User user = _usersProvider.Create(request);
 
-            if(user.Id == 0)
-            {
-                return Request.CreateResponse(HttpStatusCode.BadRequest, "The provided email is already being used.");
-            }
-           var resp= await _sendGridProvider.SendVerification(user);
-
-            return req.CreateResponse(HttpStatusCode.OK, resp);
-        }
-
-        [HttpGet,Route("users/validate/{key}")]
-        public  HttpResponseMessage AccountValidation(string key)
-        {
-            var response =  _usersProvider.ValidateAccount(key);
-            if (!response)
-            {
-                return Request.CreateResponse(HttpStatusCode.Forbidden, "Provided Key does not match, please try again.");
-            }
-            return req.CreateResponse(HttpStatusCode.OK, response);
-        }
-
-        [HttpPost, Route("users/sendValidation")]
-        public async Task<HttpResponseMessage> SendVerificationEmail(User user)
-        {
-            var response =await _sendGridProvider.SendVerification(user);
-            return req.CreateResponse(HttpStatusCode.OK, response);
-        }
-        [HttpGet, Route("users")]
-        public HttpResponseMessage ReadAll()
-        {
-            var lyrics = _usersProvider.ReadAll();
-            return req.CreateResponse(HttpStatusCode.OK, lyrics);
-        }
-
-        [HttpGet, Route("users/{id:int}")]
-        public HttpResponseMessage ReadById(int id)
-        {
-            var lyric = _usersProvider.ReadById(id);
-            return req.CreateResponse(HttpStatusCode.OK, lyric);
-        }
-
-        [HttpGet, Route("userProfile/{id:int}")]
-        public HttpResponseMessage GetUserProfile(int id)
-        {
-            var lyric = _usersProvider.GetUserProfile(id);
-            return req.CreateResponse(HttpStatusCode.OK, lyric);
-        }
-
-        [HttpPut, Route("users/{id:int}")]
-        public HttpResponseMessage UpdateById(UsersUpdateRequest request, int id)
-        {
-            var retId = _usersProvider.UpdateUser(request, id);
-            return Request.CreateResponse(HttpStatusCode.OK, retId);
-        }
-
-        [HttpDelete, Route("users/{id:int}")]
-        public HttpResponseMessage Delete(int id)
-        {
-            var retId = _usersProvider.Delete(id);
-            //_lyricService.Delete(id);
-            _usersProvider.Delete(id);
-
-            var message = "deleted Id: " + retId;
-            return Request.CreateResponse(HttpStatusCode.OK, message);
-        }
-
-        [HttpPut, Route("users/passwordResetRequest")]
-        public async Task<HttpResponseMessage> SendPasswordResetEmail(User request)
-        {
-            var result = await _sendGridProvider.SendPasswordReset(request);
-
-            return Request.CreateResponse(HttpStatusCode.OK, result);
-        }
-
-        [HttpPut, Route("users/updatePassword")]
-        public HttpResponseMessage UpdatePassword(UsersUpdateRequest request)
-        {
-            var result = _usersProvider.UpdatePassword(request);
-            if (!result)
-            {
-                return Request.CreateResponse(HttpStatusCode.BadRequest, "User or Password does not match current data.");
-            }
-            return Request.CreateResponse(HttpStatusCode.OK, result);
-        }
-
-        [HttpPut, Route("users/passwordReset")]
+        [HttpPut, Route("passwordReset")]
         public HttpResponseMessage PasswordReset(UsersUpdateRequest request)
         {
             var result = _usersProvider.PasswordReset(request);
@@ -159,18 +124,52 @@ namespace LyricalOG.Controllers
             return Request.CreateResponse(HttpStatusCode.OK, result);
         }
 
-        [HttpGet, Route("expire-check/{key}")]
-        public HttpResponseMessage CheckExpireDate(string key)
+        [HttpGet]
+        public HttpResponseMessage ReadAll()
         {
-            UserKeyExpireCheck result = _sendGridProvider.CheckExpireDate(key);
+            var lyrics = _usersProvider.ReadAll();
+            return req.CreateResponse(HttpStatusCode.OK, lyrics);
+        }
 
-            if (result.ExpireBoolean == false)
+        [HttpGet, Route("{id:int}")]
+        public HttpResponseMessage ReadById(int id)
+        {
+            var lyric = _usersProvider.ReadById(id);
+            return req.CreateResponse(HttpStatusCode.OK, lyric);
+        }
+
+
+        [HttpPut, Route("passwordResetRequest")]
+        public async Task<HttpResponseMessage> SendPasswordResetEmail(User request)
+        {
+            var result = await _sendGridProvider.SendPasswordReset(request);
+
+            return Request.CreateResponse(HttpStatusCode.OK, result);
+        }
+
+        [HttpPost, Route("sendValidation")]
+        public async Task<HttpResponseMessage> SendVerificationEmail(User user)
+        {
+            var response =await _sendGridProvider.SendVerification(user);
+            return req.CreateResponse(HttpStatusCode.OK, response);
+        }
+
+        [HttpPut, Route("{id:int}")]
+        public HttpResponseMessage UpdateById(UsersUpdateRequest request, int id)
+        {
+            var retId = _usersProvider.UpdateUser(request, id);
+            return Request.CreateResponse(HttpStatusCode.OK, retId);
+        }
+
+        [HttpPut, Route("updatePassword")]
+        public HttpResponseMessage UpdatePassword(UsersUpdateRequest request)
+        {
+            var result = _usersProvider.UpdatePassword(request);
+            if (!result)
             {
-                return Request.CreateResponse(HttpStatusCode.BadRequest, result);
+                return Request.CreateResponse(HttpStatusCode.BadRequest, "User or Password does not match current data.");
             }
-            else
-
-                return Request.CreateResponse(HttpStatusCode.OK, result);
+            return Request.CreateResponse(HttpStatusCode.OK, result);
         }
     }
 }
