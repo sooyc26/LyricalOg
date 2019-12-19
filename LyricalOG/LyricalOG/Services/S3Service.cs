@@ -15,16 +15,16 @@ using LyricalOG.Interfaces;
 
 namespace LyricalOG.Services
 {
-    public class RecordService : IS3RecordProvider
+    public class S3Service : IS3Provider
     {
         readonly string connString = ConfigurationManager.ConnectionStrings["Default"].ConnectionString;
         readonly string accessKey = ConfigurationManager.AppSettings["S3_AccessKeyId"];                     //get S3 Access Key Id from web.config
         readonly string secretKey = ConfigurationManager.AppSettings["S3_SecretAccessKey"];                 //get S3 secret Key from web.config
+        readonly string amazonS3Url = ConfigurationManager.AppSettings["AmazonS3West1"];          //get S3 secret Key from web.config
 
         private const string bucketName = "lyricalog";
         private static readonly RegionEndpoint bucketRegion = RegionEndpoint.USWest1;                       //s3 region N California
         private static IAmazonS3 s3Client;
-
 
         public LyricsCreateResponse Create(RecordCreateRequest request)
         {
@@ -69,17 +69,16 @@ namespace LyricalOG.Services
                 Key = fileName,
                 ContentType = contentType,
                 Verb = HttpVerb.PUT,
-                Expires = DateTime.Now.AddYears(1)
+                Expires = DateTime.Now.AddDays(1)
 
             };
-
             string url = s3Client.GetPreSignedURL(request);
             return url;
         }
 
         public string SignedUrlWithNoExpire( string fileName)
         {
-            return "https://lyricalog.s3.us-west-1.amazonaws.com/" + fileName + "?AWSAccessKeyId=AKIAJBHBICKUWGGTVSZQ";
+            return amazonS3Url + fileName + "?AWSAccessKeyId=" + accessKey;
         }
 
         public int Delete( int id)

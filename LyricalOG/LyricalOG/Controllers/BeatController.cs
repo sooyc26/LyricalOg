@@ -14,19 +14,19 @@ namespace LyricalOG.Controllers
     public class BeatController : ApiController
     {
         private readonly IBeatProvider _beatProvider;
-        private readonly IS3RecordProvider _recordProvider;
+        private readonly IS3Provider _recordProvider;
 
         HttpRequestMessage req = new HttpRequestMessage();
         HttpConfiguration configuration = new HttpConfiguration();
 
-        public BeatController(IBeatProvider l, IS3RecordProvider s)
+        public BeatController(IBeatProvider l, IS3Provider s)
         {
             _beatProvider = l;
             _recordProvider = s;
             req.Properties[System.Web.Http.Hosting.HttpPropertyKeys.HttpConfigurationKey] = configuration;
         }
 
-        [HttpPost]
+        [HttpPost, Route("")]
         public HttpResponseMessage Create(Beat request)
         {
             if (request == null)
@@ -49,7 +49,7 @@ namespace LyricalOG.Controllers
             return Request.CreateResponse(HttpStatusCode.OK, message);
         }
 
-        [HttpGet,Route("")]
+        [HttpGet, Route("")]
         public HttpResponseMessage ReadAll()
         {
             var lyrics = _beatProvider.ReadAll();

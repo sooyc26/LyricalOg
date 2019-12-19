@@ -6,7 +6,6 @@ function create(data) {
     const config={
         method:'POST',
         data:data,
-        //withCredentials: true
 
     }
     return axios(url, config)

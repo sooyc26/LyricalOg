@@ -21,6 +21,7 @@ namespace LyricalOG.Services
         readonly string connString = ConfigurationManager.ConnectionStrings["Default"].ConnectionString;
         readonly string accessKey = ConfigurationManager.AppSettings["S3_AccessKeyId"];              //get S3 Access Key Id from web.config
         readonly string secretKey = ConfigurationManager.AppSettings["S3_SecretAccessKey"];          //get S3 secret Key from web.config
+        readonly string amazonS3Url = ConfigurationManager.AppSettings["AmazonS3West1"];          //get S3 secret Key from web.config
 
         private const string bucketName = "lyricalog";
         private static readonly RegionEndpoint bucketRegion = RegionEndpoint.USWest1;                       //s3 region N California
@@ -95,7 +96,7 @@ namespace LyricalOG.Services
 
         private string SignedUrlWithNoExpire(string producerName)
         {
-            return "https://lyricalog.s3.us-west-1.amazonaws.com/" + producerName + "?AWSAccessKeyId=" + accessKey;
+            return amazonS3Url + producerName + "?AWSAccessKeyId=" + accessKey;
         }
 
         private string GeneratePreSignedURL(string fileName, string contentType)
@@ -109,7 +110,7 @@ namespace LyricalOG.Services
                 Key = fileName,
                 ContentType = contentType,
                 Verb = HttpVerb.PUT,
-                Expires = DateTime.Now.AddDays(15)
+                Expires = DateTime.Now.AddDays(1)
             };
 
             string url = s3Client.GetPreSignedURL(request);

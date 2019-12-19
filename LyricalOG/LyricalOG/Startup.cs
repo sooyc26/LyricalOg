@@ -49,7 +49,7 @@ namespace LyricalOG
                 };
             });
             services.AddScoped<ILyricsProvider,LyricService>();
-            services.AddScoped<IS3RecordProvider, RecordService>();
+            services.AddScoped<IS3Provider, S3Service>();
             services.AddScoped<IUsersProvider, UserService>();
 
 

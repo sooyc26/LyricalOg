@@ -15,6 +15,7 @@ namespace myCrudApp.Models.Users
         public DateTime DateCreated { get; set; }
         public DateTime DateModified { get; set; }
         public bool EmailVerified { get; set; }
+        public string ImageUrl { get; set; }
         public bool IsAdmin { get; set; }
         //user's lyrics list
         public List<UserLyrics> UserLyricsList { get; set; }

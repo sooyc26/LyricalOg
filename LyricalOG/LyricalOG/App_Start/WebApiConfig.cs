@@ -39,8 +39,8 @@ namespace LyricalOG
             container.RegisterType<IUsersProvider>(
                 new InjectionFactory(c => new UserService()));
 
-            container.RegisterType<IS3RecordProvider>(
-                new InjectionFactory(c => new RecordService()));
+            container.RegisterType<IS3Provider>(
+                new InjectionFactory(c => new S3Service()));
 
             container.RegisterType<ILyricsProvider>(
                  new InjectionFactory(c => new LyricService()));

@@ -157,8 +157,8 @@ namespace LyricalOG.Controllers
         [HttpPut, Route("{id:int}")]
         public HttpResponseMessage UpdateById(UsersUpdateRequest request, int id)
         {
-            var retId = _usersProvider.UpdateUser(request, id);
-            return Request.CreateResponse(HttpStatusCode.OK, retId);
+            var resp = _usersProvider.UpdateUser(request, id);
+            return Request.CreateResponse(HttpStatusCode.OK, resp);
         }
 
         [HttpPut, Route("updatePassword")]

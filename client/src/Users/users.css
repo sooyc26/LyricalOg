@@ -1,0 +1,11 @@
+.profileImage {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: #512DA8;
+    font-size: 90px;
+    color: #fff;
+    text-align: center;
+    line-height: 90px;
+    margin: 20px 0;
+  }

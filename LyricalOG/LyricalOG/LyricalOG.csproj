@@ -515,7 +515,7 @@
     </Compile>
     <Compile Include="Interfaces\IBeatProvider.cs" />
     <Compile Include="Interfaces\ILyricsProvider.cs" />
-    <Compile Include="Interfaces\IS3RecordProvider.cs" />
+    <Compile Include="Interfaces\IS3Provider.cs" />
     <Compile Include="Interfaces\ISendGridProvider.cs" />
     <Compile Include="Interfaces\IUsersProvider.cs" />
     <Compile Include="Models\Beats\Beat.cs" />
@@ -535,10 +535,11 @@
     <Compile Include="Models\Users\UserProfileDB.cs" />
     <Compile Include="Models\Users\UserProfile.cs" />
     <Compile Include="Models\Lyrics\VoteRequest.cs" />
+    <Compile Include="Models\Users\UserUpdateResponse.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Models\Beats\BeatCreateResponse.cs" />
     <Compile Include="Services\BeatService.cs" />
-    <Compile Include="Services\RecordService.cs" />
+    <Compile Include="Services\S3Service.cs" />
     <Compile Include="Services\SqlService.cs" />
     <Compile Include="UnityResolver.cs" />
     <Compile Include="Services\LyricService.cs" />

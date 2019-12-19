@@ -16,7 +16,7 @@ namespace LyricalOG.Interfaces
         User Create(UsersCreateRequest request);
         List<User> ReadAll();
         User ReadById(int id);
-        int UpdateUser(UsersUpdateRequest request, int id);
+        UserUpdateResponse UpdateUser(UsersUpdateRequest request, int id);
         int Delete(int id);
         bool ValidateToken(string token, out string username);
         Task<IPrincipal> AuthenticateJwtToken(string token);

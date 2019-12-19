@@ -18,11 +18,11 @@ namespace LyricalOG.Controllers
     public class LyricsController : ApiController
     {
         private readonly ILyricsProvider _lyricsProvider;
-        private readonly IS3RecordProvider _recordProvider;
+        private readonly IS3Provider _recordProvider;
 
         HttpRequestMessage req = new HttpRequestMessage();
         HttpConfiguration configuration = new HttpConfiguration();
-        public LyricsController(ILyricsProvider l,IS3RecordProvider r)
+        public LyricsController(ILyricsProvider l,IS3Provider r)
         {
             _lyricsProvider = l;
             _recordProvider = r;

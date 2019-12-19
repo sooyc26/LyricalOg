@@ -21,6 +21,7 @@ namespace myCrudApp.Models.Users
         public int LyricsBeatId { get; set; }
         public string LyricsTitle { get; set; }
         public string LyricsProducer { get; set; }
+        public string ImageUrl { get; set; }
         public DateTime LyricsDateCreated { get; set; }
 
         public int BeatId { get; set; }

@@ -15,6 +15,7 @@ namespace LyricalOG.Models.Users
         public string SessionToken { get; set; }
         public bool IsAdmin { get; set; }
         public bool IsVerified { get; set; }
+        public string ImageUrl { get; set; }
         public UserIdentity Identity { get; set; }
         public DateTime DateCreated { get; set; }
     }

@@ -5,6 +5,8 @@ import { withRouter } from 'react-router';
 import { connect } from 'react-redux'
 import ImageUpload from '../Users/ImageUpload'
 import Dropzone from 'react-dropzone'
+import './users.css'
+import * as recordService from '../services/recordService'
 
 class UserProfile extends React.Component{
 
@@ -21,6 +23,7 @@ class UserProfile extends React.Component{
             isAdmin:'',
             lyricsList:[],
             beatList:[],
+            imageUrl:"",
 
             emailEdit:'',
             nameEdit:'',
@@ -65,7 +68,8 @@ class UserProfile extends React.Component{
                 emailVerified:r.EmailVerified,
                 isAdmin:r.IsAdmin,
                 lyricsList:r.UserLyricsList,
-                beatList:r.UserBeatsList               
+                beatList:r.UserBeatsList,
+                imageUrl : r.ImageUrl           
             })
         })
 
@@ -117,6 +121,10 @@ class UserProfile extends React.Component{
         else this.setState({ isEdit: true })
     }
 
+    createInitialImage = () =>{
+
+    }
+
     changePasswordVerify = () => {
         if (this.state.currentPassword == null || this.state.newPassword == null || this.state.confirmPassword == null) {
             this.setState({ passwordAlert: "Please type current and new password" })
@@ -138,22 +146,31 @@ class UserProfile extends React.Component{
     }
 
     submit =()=>{
+        let img = this.imgInput.files[0];
+        
         //reset password
         const data = {
             Name:this.state.nameEdit,
-            Email:this.state.email
-        }
-        let img = this.imgInput.files[0];
+            Email:this.state.email,
+            ImageUrl:this.state.imageUrl,
+            ImgFileType: img ? img.type : null
 
-        userService.update(this.state.id,data)
-        .then(resp=>{
-            if(resp){
-                this.setState({isEdit:false})
-                this.getUserProfile()
-            }else{
-                window.alert("email already exists, try different email")
-            }
-        })
+        }
+
+    //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ @@@@@@@@@@@@@@ @@@@@@@@@@@@@@@ @@@@@@@@@@@@@  @@@ @ @ @ @ @@ @ @ 
+
+        userService.update(this.state.id, data)
+            .then(resp => {
+                if (resp) {
+                    recordService.uploadFile(resp.ImageSignedUrl, img)
+                        .then(() => {
+                            this.setState({ isEdit: false })
+                            this.getUserProfile()
+                        })
+                } else {
+                    window.alert("email already exists, try different email")
+                }
+            })
 
     }
 
@@ -195,9 +212,22 @@ class UserProfile extends React.Component{
         const displayMode =   
             <div className="jumbotron" style={{ width: '85%' }}>
                 <h1 className="display-6">Name: {this.state.name}</h1>
+                <hr className="my-4" />
+                <div className="row">
+                    <div className="col-6">
                 <p className="lead">Email: {this.state.email}</p>
                 <div>Uploaded Lyrics Count: {(this.state.lyricsList).length}</div>
                 <div>Uploaded Beats Count: {(this.state.beatList).length}</div>
+
+                    </div>
+                    <div className="col-6">
+                        {this.state.imageUrl?
+                        <img src={this.state.imageUrl} width="100" height="100" alt=""></img>
+                        : <div className="profileImage" >{this.state.name[0]}</div>
+                        
+                    }
+                    </div>
+                </div>
 
                 <hr className="my-4" />
                 <p>Member Since: {moment(this.state.dateCreated).format('MM/DD/YYYY')}</p>

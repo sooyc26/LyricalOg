@@ -28,6 +28,7 @@ namespace LyricalOG.Services
 
         readonly string connString = ConfigurationManager.ConnectionStrings["Default"].ConnectionString;
         readonly string jwtStr = ConfigurationManager.AppSettings["Jwt"];
+
         public string Login(UserLogin request)
         {
             using (var con = new SqlConnection(connString))
@@ -50,6 +51,7 @@ namespace LyricalOG.Services
                         request.DateCreated = (DateTime)reader["DateCreated"];
                         request.IsAdmin = (bool)reader["IsAdmin"];
                         request.IsVerified = (bool)reader["EmailVerified"];
+                        request.ImageUrl = (string)reader["ImageUrl"];
                     }
                     reader.Close();
                 }
@@ -357,6 +359,7 @@ namespace LyricalOG.Services
                                 DateModified = (DateTime)reader["DateModified"],
                                 EmailVerified = (bool)reader["EmailVerified"],
                                 IsAdmin = (bool)reader["IsAdmin"],
+                                ImageUrl = reader["ImageUrl"]== DBNull.Value ? "" : (string)reader["ImageUrl"],
 
                                 LyricsId = reader["LyricsId"] == DBNull.Value ? 0 : (int)reader["LyricsId"],
                                 LyricsBeatId = reader["LyricsBeatId"] == DBNull.Value ? 0 :  (int)reader["LyricsBeatId"],
@@ -376,6 +379,7 @@ namespace LyricalOG.Services
                     conn.Close();
                 }
                 //group by user
+                //possible refectoring required because data points to single user; no grouping required
                 var groupUser = profileList.GroupBy(x => new
                 {
                     x.Id,
@@ -385,7 +389,8 @@ namespace LyricalOG.Services
                     x.DateCreated,
                     x.DateModified,
                     x.EmailVerified,
-                    x.IsAdmin
+                    x.IsAdmin,
+                    x.ImageUrl
                 }).Select(y => new UserProfile
                 {
                     Id = y.Key.Id,
@@ -395,7 +400,8 @@ namespace LyricalOG.Services
                     DateCreated = y.Key.DateCreated,
                     DateModified = y.Key.DateModified,
                     EmailVerified = y.Key.EmailVerified,
-                    IsAdmin = y.Key.IsAdmin
+                    IsAdmin = y.Key.IsAdmin,
+                    ImageUrl = y.Key.ImageUrl
                 }).ToList();
 
                 retModel = groupUser.First();
@@ -445,17 +451,27 @@ namespace LyricalOG.Services
             return retModel;
         }
 
-        public int UpdateUser(UsersUpdateRequest request, int id)
+        public UserUpdateResponse UpdateUser(UsersUpdateRequest request, int id)
         {
             var sqlProvider = new SqlService();
+            var s3Ser = new S3Service();
+
+            var sliceImgUrl = "";
+            if (request.ImgFileType != null) sliceImgUrl = s3Ser.SignedUrlWithNoExpire(null);
 
             sqlProvider.AddParameter("@UserId", id);
             sqlProvider.AddParameter("@Name", request.Name);
             sqlProvider.AddParameter("@Email", request.Email);
+            sqlProvider.AddParameter("@ImageUrl", sliceImgUrl);
 
             sqlProvider.ExecuteNonQuery("Users_Update");
 
-            return id;
+            var user = new UserUpdateResponse
+            {
+                Id = id,
+                ImageSignedUrl = s3Ser.GeneratePreSignedURL("UI" + id.ToString(), request.ImgFileType)
+            };
+            return user;
         }
 
         public bool UpdatePassword(UsersUpdateRequest request)
