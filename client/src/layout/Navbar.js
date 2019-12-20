@@ -10,14 +10,18 @@ class Navbar extends React.Component {
     super(props);
 
     this.state={
-      id:''
+      id:'',
+      dropdown:false
     }
   }
 
   userProfile=()=>{
     var userData = JSON.parse(jwt_decode(localStorage.getItem('loginToken')).currUser)
     this.setState({id:userData.UserId})
-    // this.props.history.push('/userProfile/'+userData.UserId)
+  }
+
+  toggleDropdown = () => {
+      this.setState({ dropdown: !this.state.dropdown })
   }
 
   signOut=()=> {
@@ -28,7 +32,6 @@ class Navbar extends React.Component {
 
   render() {
     const profImgStyle={
-      //.profileImage {
         width: '100%',
         height: '100%',
         radius: "50%",
@@ -38,8 +41,8 @@ class Navbar extends React.Component {
         textAlign: 'center',
         lineHeight: '90px',
         margin: '20px 0',
-      //}
     }
+    const menuClass = `dropdown-menu${this.state.dropdown ? " show" : ""}`;
 
     return (
 
@@ -58,42 +61,29 @@ class Navbar extends React.Component {
               <li className="nav-item">
                 <a className="nav-link text-primary" href="https://bootswatch.com/minty/" >bootstrap</a>
               </li>
+              {store.getState().authed ?
+                <li className="nav-item dropdown">
+                  <div onClick={this.toggleDropdown}>
+                    <a className="nav-link dropdown dropdown-toggle text-warning" data-toggle="dropdown" href="#" role="button" aria-haspopup="true">
+                      {this.props.user.ImageUrl ?
+                        <img className="img-responsive" height='auto' width="34" src={this.props.user.ImageUrl} ></img>
+                        : ''} <span>&nbsp;&nbsp;</span>
+                      {this.props.user.Name}</a>
+                    <div className={menuClass}
+                      style={{ position: 'absolute', transform: 'translate3d(0px, 40px, 0px)', top: '0px', left: '0px', willChange: 'transform' }}
+                      xPlacement="bottom-start">
+                      <a className="dropdown-item" href={"/userProfile/" + this.props.user.UserId} onClick={this.userProfile}>Profile</a>
+                      <div class="dropdown-divider"></div>
+                      <a className="dropdown-item text-danger" href="/" onClick={this.signOut}>Signout</a>
 
-              <li className="nav-item dropdown">
-                <a className="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Dropdown</a>
-                <div className="dropdown-menu" >
-                  <a className="dropdown-item" href="#">Action</a>
-                  <a className="dropdown-item" href="#">Another action</a>
-                  <a className="dropdown-item" href="#">Something else here</a>
-                  <div className="dropdown-divider"></div>
-                  <a className="dropdown-item" href="#">Separated link</a>
-                </div>
-              </li>
-              {store.getState().authed ? 
-                <li className="nav-item" >
-                  <a className="nav-link" href={"/userProfile/"+this.props.user.UserId} onClick={this.userProfile}>
-                    {this.props.user.ImageUrl? 
-                    <img className="img-responsive" height='auto' width="34" src={this.props.user.ImageUrl} ></img>:
-                    "User Profile"
-                    }</a>
-                </li>:''
-              }
-              {store.getState().authed ? 
-                <li className="nav-item">
-                  <a className="nav-link text-danger" href="/" onClick={this.signOut}>Signout</a>
-                </li>:''
-              }
+                    </div>
+                  </div>
+                </li> : ''}
 
             </ul>
           </div> 
         </div>
-        {/* </div> */}
-        {/* <BrowserRouter>
-            <Switch>
-                <Route path="/Login" render={props => <Login {...props} />} />
-                <Route exact path="/"render={props => <Header {...props}  />}/> 
-            </Switch>
-        </BrowserRouter> */}
+
       </React.Fragment>
     )
   }

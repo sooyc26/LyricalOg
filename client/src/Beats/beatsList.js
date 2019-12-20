@@ -166,7 +166,7 @@ class BeatsList extends React.Component {
             if (this.state.isAdmin || b.Visible) {
                 return (
 
-                    <tr key={b.Id} className={b.Visible ? "text-primary" : "text-grey"} >
+                    <tr key={b.Id} className={b.Visible ? "text-primary" : "text-grey"} onClick={()=>window.location='/lyricsForm/'+ b.Id}>
                         <td>{b.Producer}</td>
                         <td > {b.Visible ? <a href={"/lyricsForm/" + b.Id}>{b.Title}</a> : b.Title}</td>
                         <td>{b.Vibe}</td>
