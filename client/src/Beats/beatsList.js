@@ -24,6 +24,7 @@ class BeatsList extends React.Component {
             , edit: false
             , isAdmin: false
             , currUserId: 0
+            ,modalTitle:"Upload"
 
         }
         this.getAll = this.getAll.bind(this)
@@ -166,7 +167,8 @@ class BeatsList extends React.Component {
             if (this.state.isAdmin || b.Visible) {
                 return (
 
-                    <tr key={b.Id} className={b.Visible ? "text-primary" : "text-grey"} onClick={()=>window.location='/lyricsForm/'+ b.Id}>
+                    <tr key={b.Id} className={b.Visible ? "text-primary" : "text-grey"}>
+                        <td><img src={b.ImgUrl} className="img-responsive" height='auto' width="34" ></img></td>
                         <td>{b.Producer}</td>
                         <td > {b.Visible ? <a href={"/lyricsForm/" + b.Id}>{b.Title}</a> : b.Title}</td>
                         <td>{b.Vibe}</td>
@@ -178,7 +180,7 @@ class BeatsList extends React.Component {
                                 <span onClick={() => this.delete(b.Id)} className="fas fa-trash-alt"></span>
 
                             </td> : ''
-                        }
+                        }                        
                         
                         {this.state.isAdmin || this.state.currUserId === b.UploaderId ?
                             <td>
@@ -206,6 +208,7 @@ class BeatsList extends React.Component {
                     <table className="table table-hover" style={{ textAlign: 'center' }}>
                         <thead>
                             <tr >
+                                <th scope="col"></th>
                                 <th scope="col">Producer</th>
                                 <th scope="col">Title</th>
                                 <th scope="col">Vibe</th>
@@ -224,7 +227,7 @@ class BeatsList extends React.Component {
                 </div>
                 <Modal animation={false} backdropStyle={{ opacity: 0.5 }} style={{ position: "fixed", backgroundColor: (0, 0, 0, 0.2), top: "10%" }} show={this.state.show} onHide={this.handleClose} >
                     <Modal.Header >
-                        <Modal.Title id='ModalHeader'>Beat Upload </Modal.Title>
+                        <Modal.Title id='ModalHeader'>Beat {this.state.edit ? "Update" : "Upload"} </Modal.Title>
 
                     </Modal.Header>
                     <Modal.Body>
@@ -247,9 +250,12 @@ class BeatsList extends React.Component {
               <input type="file" name="image" className="form-control" ref={(ref) => { this.imgInput = ref; }} onChange={this.handleChange}></input>
 
                                     </div>
-                                    <div>Beat Upload:
+                                    {this.state.edit ?
+                                       '': <div>Beat Upload:
                   <input type="file" name="audio" className="form-control" ref={(ref) => { this.beatInput = ref; }} onChange={this.handleChange}></input>
-                                    </div>
+                                        </div> 
+
+                                    }
                                 </div>
                                 <div style={{ margin: 'auto' }}>
                                 </div>

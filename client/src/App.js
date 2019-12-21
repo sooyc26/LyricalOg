@@ -30,7 +30,7 @@ class App extends Component {
 
   }
   componentDidMount() {
-    
+
     if(this.props.authed !=null){
       
      this.setState({

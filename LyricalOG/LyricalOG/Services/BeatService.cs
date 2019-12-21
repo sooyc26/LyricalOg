@@ -142,6 +142,7 @@ namespace LyricalOG.Services
                             BeatUrl = (string)reader["BeatUrl"],
                             Description = reader["Description"]==DBNull.Value ? "":(string)reader["Description"],
                             Vibe = (string)reader["Vibe"],
+                            ImgUrl = reader["ImageUrl"] == DBNull.Value ? "" : (string)reader["ImageUrl"],
                             LyricsCount = (int)reader["LyricsCount"],
                             DateCreated = (DateTime)reader["DateCreated"],
                             Visible = (bool)reader["Visible"]

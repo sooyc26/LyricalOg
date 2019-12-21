@@ -71,9 +71,9 @@ class Navbar extends React.Component {
                       {this.props.user.Name}</a>
                     <div className={menuClass}
                       style={{ position: 'absolute', transform: 'translate3d(0px, 40px, 0px)', top: '0px', left: '0px', willChange: 'transform' }}
-                      xPlacement="bottom-start">
+                      xplacement="bottom-start">
                       <a className="dropdown-item" href={"/userProfile/" + this.props.user.UserId} onClick={this.userProfile}>Profile</a>
-                      <div class="dropdown-divider"></div>
+                      <div className="dropdown-divider"></div>
                       <a className="dropdown-item text-danger" href="/" onClick={this.signOut}>Signout</a>
 
                     </div>
