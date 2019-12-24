@@ -21,31 +21,18 @@ class App extends Component {
     this.state = {     
       authed: false
     }
-    this.authenticate = this.authenticate.bind(this)
-    this.updateUser= this.updateUser.bind(this)
   }
 
-  updateUser(){
-    this.props.updateUser('Sammy')
+  // componentDidMount() {
 
-  }
-  componentDidMount() {
-
-    if(this.props.authed !=null){
+  //   if(this.props.authed !=null){
       
-     this.setState({
-       authed:true
-     }) 
-    }
+  //    this.setState({
+  //      authed:true
+  //    }) 
+  //   }
 
-  }
-  authenticate(){
-    // this.setState({
-    //   authed: true
-    // })
-    // this.props.history.push("/beatsList");
-
-  }
+  // }
 
   render() {
     
@@ -69,15 +56,18 @@ class App extends Component {
 
               <Route exact path="/" render={props => <Header {...props} />} />
               <PrivateRoute path="/beatsList" authed={this.props.authed} component={BeatsList} />
+              <PrivateRoute path="/lyricsForm/:id?" authed={this.props.authed} component={LyricsForm} />
+              <PrivateRoute path="/userProfile/:id?" authed={this.props.authed} component={UserProfile} />
+              
               <Route path="/Login" render={props => <Login {...props} />} />
               <Route path="/Register" render={props => <Register {...props} />} />
               <Route path="/passwordResetRequest" render={props => <PasswordResetRequest {...props} />} />
-              <Route path="/userProfile/:id" render={props => <UserProfile {...props} />} />
               <Route path="/password-reset/:key" render={props => <ResetPassword {...props} />} />
               <Route path="/account-verification/:key" render={props => <ValidateAccount {...props} />} />
 
-              <Route exact path="/beatsList" render={props => <BeatsList {...props} />} />
-              <Route exact path="/lyricsForm/:id"render={props => <LyricsForm {...props} />}  />
+              {/* <Route path="/userProfile/:id?" render={props => <UserProfile {...props} />} /> */}
+              {/* <Route exact path="/beatsList" render={props => <BeatsList {...props} />} /> */}
+              {/* <Route exact path="/lyricsForm/:id"render={props => <LyricsForm {...props} />}  /> */}
 
             </Switch>
           </div>

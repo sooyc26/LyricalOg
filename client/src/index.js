@@ -20,10 +20,13 @@ class Index extends React.Component {
     
     render() {   
       return (
-        <div>I'm the app</div>
+        <div>
+          {/* I'm the app */}
+          </div>
       ); 
     }
   }
+  setTimeout(() => 
 
 ReactDOM.render(
     <Provider store={store}>
@@ -32,7 +35,8 @@ ReactDOM.render(
               showLoader={showLoader} 
         />
         <App />
-    </Provider>, document.getElementById('root'));
+    </Provider>, document.getElementById('root'))
+, 400);
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.

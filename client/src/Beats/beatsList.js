@@ -30,6 +30,7 @@ class BeatsList extends React.Component {
         this.getAll = this.getAll.bind(this)
         this.edit = this.edit.bind(this)
     }
+
     componentDidMount() {
         var userData = this.props.user
 
@@ -43,7 +44,7 @@ class BeatsList extends React.Component {
         this.getAll();
     }
 
-    getAll() {
+     getAll() {
 
         beatService.getAll()
             .then(response => {

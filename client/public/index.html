@@ -13,16 +13,16 @@
     <link rel="shortcut icon" href="/images/cloudLightning.png">
 
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json">
-    <link rel="stylesheet" type="text/css" href="/themes/css/bootstrap.css">
+    <!-- <link rel="stylesheet" type="text/css" href="/themes/css/bootstrap.css"> -->
     <link rel="stylesheet" type="text/css" href="/themes/css/bootstrap.min.css">
     <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.4.1.min.js"></script>
 
-    <link rel="stylesheet" type="text/css" href="/themes/scss/_bootswatch.scss">
-    <link rel="stylesheet" type="text/css" href="/themes/scss/_variables.scss">
+    <!-- <link rel="stylesheet" type="text/css" href="/themes/scss/_bootswatch.scss">
+    <link rel="stylesheet" type="text/css" href="/themes/scss/_variables.scss"> -->
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
     <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"> -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.4.1/react.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.4.1/react-dom.js"></script>
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.4.1/react.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.4.1/react-dom.js"></script> -->
   <style>
     body {
       background-image: url("/images/cloudLightning.png");
@@ -56,23 +56,23 @@
   left: calc(50% - 4em);
   width: 6em;
   height: 6em;
-  border: 1.1em solid rgba(0, 0, 0, 0.2);
-  border-left: 1.1em solid #000000;
+  /* border: 1.1em solid rgba(0, 0, 0, 0.2); */
+  /* border-left: 1.1em solid #000000; */
   border-radius: 50%;
-  animation: load8 1.1s infinite linear;
+  /* animation: load8 1.1s infinite linear; */
   transition: opacity 0.3s;
 }
 
 .loader--hide {
   opacity: 0;
 }
-@keyframes load8 {
+/* @keyframes load8 {
   0% {
     transform: rotate(0deg);
   }
   100% {
     transform: rotate(360deg);
-  }
+  } */
 }
   </style>
   <!--
@@ -105,17 +105,18 @@
     -->
 </body>
 <script>
-  // $(document).ready(function(){
+  $(document).ready(function(){
 
-  //   var $loading = $('.loader').hide();
-  //   $(document)
-  //     .ajaxStart(function () {
-  //       $loading.show();
-  //     })
-  //     .ajaxStop(function () {
-  //       $loading.hide();
-  //     });
-  // })
+    var $loading = $('.loader');
+    $(document)
+      .ajaxStart(function () {
+        console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@####################################3")
+        $loading.removeClass('.loader--hide');
+      })
+      .ajaxStop(function () {
+        $loading.addClass('.loader--hide');
+      });
+  })
 
 </script>
 </html>

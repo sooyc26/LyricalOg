@@ -14,7 +14,7 @@ function create(data) {
 }
 
 
-function getAll() {
+ function getAll() {
     const url= 'http://localhost:49694/beats'
     
     const config={

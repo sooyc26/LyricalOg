@@ -21,14 +21,16 @@ namespace LyricalOG.Controllers
     {
         private readonly IUsersProvider _usersProvider;
         private readonly ISendGridProvider _sendGridProvider;
+        private readonly IS3Provider _s3Provider;
 
         HttpRequestMessage req = new HttpRequestMessage();
         HttpConfiguration configuration = new HttpConfiguration();
 
-        public UserController(IUsersProvider u, ISendGridProvider sg)
+        public UserController(IUsersProvider u, ISendGridProvider sg, IS3Provider s3)
         {
             _usersProvider = u;
             _sendGridProvider = sg;
+            _s3Provider = s3;
 
             req.Properties[System.Web.Http.Hosting.HttpPropertyKeys.HttpConfigurationKey] = configuration;
         }
@@ -83,7 +85,7 @@ namespace LyricalOG.Controllers
             var retId = _usersProvider.Delete(id);
             //_lyricService.Delete(id);
             _usersProvider.Delete(id);
-
+            _s3Provider.DeleteObjectNonVersionedBucketAsync("UI" + id.ToString());
             var message = "deleted Id: " + retId;
             return Request.CreateResponse(HttpStatusCode.OK, message);
         }
