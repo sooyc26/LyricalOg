@@ -1,8 +1,6 @@
 import React from 'react'
 import {connect} from 'react-redux'
 import {store} from '../store'
-//import Header from '../layout/Header'
-//import Login from '../login/Login'
 import * as jwt_decode from "jwt-decode";
 
 class Navbar extends React.Component {

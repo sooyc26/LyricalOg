@@ -1,9 +1,9 @@
 import React,{userCallBack} from 'react'
 import * as userService from '../services/userService'
-import moment from '../../node_modules/moment'
+import moment from 'moment/moment'
 import { withRouter } from 'react-router';
 import { connect } from 'react-redux'
-import ImageUpload from '../Users/ImageUpload'
+import ImageUpload from './ImageUpload'
 import Dropzone from 'react-dropzone'
 import './users.css'
 import * as recordService from '../services/recordService'

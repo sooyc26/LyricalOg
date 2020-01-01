@@ -123,10 +123,6 @@ class LyricsForm extends Component {
       .then(() => this.getAll())
   }
 
-  // setUrl = () => {
-  //   this.setState({ url: this.state.inputUrl })
-  // }
-
   startRecording = () => {
     this.refs['s3Player'].currentTime = 0;
     this.refs['s3Player'].play()
@@ -158,26 +154,18 @@ class LyricsForm extends Component {
 
   onStop = (recordedBlob) => {
 
-    console.log('recordedBlob is: ', recordedBlob);
+    //console.log('recordedBlob is: ', recordedBlob);
 
     window.blobURL = recordedBlob.blobURL
-    // window.blob = recordedBlob
     this.convertBlobToMp3(recordedBlob)
   }
 
   playBack = id => {
-    //this.refs['s3Player'].currentTime = 0;
     if (id) {
       this.refs[id].currentTime = this.refs['s3Player'].currentTime
       this.refs['s3Player'].play()
         .then(this.refs[id].play())
     }
-
-    // if (!id && window.blobURL) {
-    //   this.refs['s3Player'].currentTime = 0;
-    //   this.refs['s3Player'].play()
-    //     .then(this.audio.play())
-    // }
   }
 
   togglePlay = e => {
@@ -234,32 +222,16 @@ class LyricsForm extends Component {
     }
   }
 
-  // pauseAudio = () =>{
-
-  //   if (window.blobURL) {
-  //     this.audio.pause();
-  //   }    
-  // }
-
   _onReady = event => {
     event.target.currentTime = 0;
 
     this.setState({ mediaEvent: event })
-    //event.target.pauseVideo();
-    // event.target.play()
-    //console.log(this.refs['s3Player'].currentTime)
-  }
-  handleClose = e => {
-    this.setState({ show: false, passwordModal: '' });
-  }
-
-  handleShow = e => {
-    this.setState({ show: true });
   }
 
   render() {
 
-    let beatPlayer =
+    //windows player loaded byBeatId
+    const beatPlayer =
     <div style={{verticalAlign:"middle"}}>
     <h2 className="text-primary" >{this.state.title} <span className="text-white">(prod.{this.state.producer})</span></h2>
         <div className="row" style={{margin:'auto'}}>
@@ -277,11 +249,8 @@ class LyricsForm extends Component {
           </video>
         </div>
       </div>
-    // </iframe>
 
-
-    //const { record } = this.state;
-
+      //lyrics list by beatId
     const displayLyrics = this.state.displayLyrics.map((lyric, index) => {
 
       //if ranked 1st
@@ -395,7 +364,6 @@ class LyricsForm extends Component {
 
     return (
       <React.Fragment>
-        {/* <h1 style={{ textAlign: 'center', fontSize: '55px', color: 'white' }}>LYRICAL OG</h1> */}
         <div style={{ paddingTop: '5%' }}>
           <h1 className="text-white" style={{ textAlign: 'center' }}>Lyrics</h1>
           <div className="row" >
@@ -427,8 +395,6 @@ class LyricsForm extends Component {
                     </button>
 
                     <audio ref={"recorded"}
-                      //id={lyric.Id} 
-                      // onPlay={() => this.playBack(lyric.Id)} 
                       src={window.blobURL}
                       type="audio/webm"></audio>
 

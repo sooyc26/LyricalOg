@@ -70,8 +70,7 @@ class Register extends React.Component {
             }
             userService.create(data)
             .then(response=>{
-                //localStorage.setItem('loginToken', JSON.stringify(response))
-                debugger
+                
                 if (window.confirm('Verification email sent! Please check your email.')) {
                     this.props.history.push('/')
                 }

@@ -1,7 +1,4 @@
 import React, { Component } from "react";
-//import { Route, NavLink } from "react-router-dom";
-// import logo from './logo.svg';
-// import LyricsForm from "../forms/lyricsForm";
 
 class Header extends Component {
   constructor(props) {
