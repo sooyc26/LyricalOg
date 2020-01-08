@@ -51,7 +51,7 @@ namespace LyricalOG.Services
                         request.DateCreated = (DateTime)reader["DateCreated"];
                         request.IsAdmin = (bool)reader["IsAdmin"];
                         request.IsVerified = (bool)reader["EmailVerified"];
-                        request.ImageUrl = (string)reader["ImageUrl"];
+                        request.ImageUrl = ConvertFromDBVal<string>(reader["ImageUrl"])?? "";
                     }
                     reader.Close();
                 }
@@ -380,68 +380,72 @@ namespace LyricalOG.Services
                 }
                 //group by user
                 //possible refectoring required because data points to single user; no grouping required
-                var groupUser = profileList.GroupBy(x => new
+                if (profileList.Count != 0)
                 {
-                    x.Id,
-                    x.Password,
-                    x.Name,
-                    x.Email,
-                    x.DateCreated,
-                    x.DateModified,
-                    x.EmailVerified,
-                    x.IsAdmin,
-                    x.ImageUrl
-                }).Select(y => new UserProfile
-                {
-                    Id = y.Key.Id,
-                    Password = y.Key.Password,
-                    Name = y.Key.Name,
-                    Email = y.Key.Email,
-                    DateCreated = y.Key.DateCreated,
-                    DateModified = y.Key.DateModified,
-                    EmailVerified = y.Key.EmailVerified,
-                    IsAdmin = y.Key.IsAdmin,
-                    ImageUrl = y.Key.ImageUrl
-                }).ToList();
-
-                retModel = groupUser.First();
-
-                //group by beats
-                retModel.UserBeatsList = profileList.Exists(x => x.BeatId==0) ? new List<UserBeats>() :
-                    profileList.GroupBy(x => new
-                {
-                    x.BeatId,
-                    x.BeatTitle,
-                    x.BeatProducer,
-                    x.BeatUploadDate,
-
-                })
-                   .Select(y => new UserBeats
-                   {
-                       Id = y.Key.BeatId,
-                       Title = y.Key.BeatTitle,
-                       Producer = y.Key.BeatProducer,
-                       UploadDate = y.Key.BeatUploadDate
-                   }).ToList();
-
-                //group by lyrics
-                retModel.UserLyricsList = profileList.Exists(x => x.LyricsId==0) ? new List<UserLyrics>() :                    
-                    profileList.GroupBy(x => new
-                {
-                    x.LyricsId,
-                    x.LyricsBeatId,
-                    x.LyricsTitle,
-                    x.LyricsProducer,
-                    x.LyricsDateCreated
-                })
-                    .Select(y => new UserLyrics
+                    var groupUser = profileList.GroupBy(x => new
                     {
-                        Id = y.Key.LyricsId,
-                        BeatId = y.Key.LyricsBeatId,
-                        Title = y.Key.LyricsTitle,
-                        Producer = y.Key.LyricsProducer,
-                        UploadDate = y.Key.LyricsDateCreated
+                        x.Id,
+                        x.Password,
+                        x.Name,
+                        x.Email,
+                        x.DateCreated,
+                        x.DateModified,
+                        x.EmailVerified,
+                        x.IsAdmin,
+                        x.ImageUrl
+                    }).Select(y => new UserProfile
+                    {
+                        Id = y.Key.Id,
+                        Password = y.Key.Password,
+                        Name = y.Key.Name,
+                        Email = y.Key.Email,
+                        DateCreated = y.Key.DateCreated,
+                        DateModified = y.Key.DateModified,
+                        EmailVerified = y.Key.EmailVerified,
+                        IsAdmin = y.Key.IsAdmin,
+                        ImageUrl = y.Key.ImageUrl
                     }).ToList();
+
+                    retModel = groupUser.First();
+
+                    //group by beats
+                    retModel.UserBeatsList = profileList.Exists(x => x.BeatId == 0) ? new List<UserBeats>() :
+                        profileList.GroupBy(x => new
+                        {
+                            x.BeatId,
+                            x.BeatTitle,
+                            x.BeatProducer,
+                            x.BeatUploadDate,
+
+                        })
+                       .Select(y => new UserBeats
+                       {
+                           Id = y.Key.BeatId,
+                           Title = y.Key.BeatTitle,
+                           Producer = y.Key.BeatProducer,
+                           UploadDate = y.Key.BeatUploadDate
+                       }).ToList();
+
+
+                    //group by lyrics if list exists
+                    retModel.UserLyricsList = profileList.Exists(x => x.LyricsId == 0) ? new List<UserLyrics>() :
+                        profileList.GroupBy(x => new
+                        {
+                            x.LyricsId,
+                            x.LyricsBeatId,
+                            x.LyricsTitle,
+                            x.LyricsProducer,
+                            x.LyricsDateCreated
+                        })
+                        .Select(y => new UserLyrics
+                        {
+                            Id = y.Key.LyricsId,
+                            BeatId = y.Key.LyricsBeatId,
+                            Title = y.Key.LyricsTitle,
+                            Producer = y.Key.LyricsProducer,
+                            UploadDate = y.Key.LyricsDateCreated
+                        }).ToList();
+                }
             }
             catch (Exception e)
             {

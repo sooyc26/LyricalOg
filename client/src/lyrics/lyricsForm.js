@@ -6,7 +6,7 @@ import { ReactMic } from 'react-mic';
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import './lyrics.css'
-
+import {Loader} from '../loader'
 class LyricsForm extends Component {
 
   constructor(props) {
@@ -32,6 +32,7 @@ class LyricsForm extends Component {
 
       , description: ''
       , beatImg: null
+      ,showSpinner:false
     }
     this.submit = this.submit.bind(this)
   }
@@ -79,6 +80,8 @@ class LyricsForm extends Component {
         ContentType: window.uploadFile.type,
       }
 
+      this.setState({showSpinner:true})
+
       lyricService.create(lyricData)
         .then(response => {
           recordService.uploadFile(response.SignedUrl, window.uploadFile)
@@ -88,7 +91,8 @@ class LyricsForm extends Component {
         .then(() => {
           this.setState({
             lyrics: '',
-            editMode: false
+            editMode: false,
+            showSpinner:false
           })
         })
     } else window.alert('no recording')
@@ -432,6 +436,7 @@ class LyricsForm extends Component {
             </div>
           </div>
         </div>
+        
       </React.Fragment>
     );
   }

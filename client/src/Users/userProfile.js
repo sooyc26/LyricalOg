@@ -77,8 +77,8 @@ class UserProfile extends React.Component{
 
     sendVerificationEmail=()=>{
         const data = {
-            Name :this.state.Name,
-            Email:this.state.Email
+            Name :this.state.name,
+            Email:this.state.email
         }
         userService.validationRequest(data)
         .then(res=>{

@@ -48,7 +48,7 @@ class Navbar extends React.Component {
 
         <div className="navbar fixed-top" style={{ backgroundColor: "#282c34", opacity: 0.8 }}>
           <div>
-            <a href="../" className="navbar-brand text-primary" style={{ float: 'left', }}>LYRICAL OG</a>
+            <a href="/beatsList" className="navbar-brand text-primary" style={{ float: 'left', }}>LYRICAL OG</a>
           </div>
 
           <div className="" style={{ float: 'right' }}>
