@@ -1,10 +1,10 @@
-import React, { Component } from 'react';
+import React, { Component } from './node_modules/react';
 import * as lyricService from '../services/lyricService'
 import * as beatService from '../services/beatService'
 import * as recordService from '../services/recordService'
-import { ReactMic } from 'react-mic';
-import { connect } from 'react-redux'
-import { withRouter } from 'react-router-dom'
+import { ReactMic } from './node_modules/react-mic';
+import { connect } from './node_modules/react-redux'
+import { withRouter } from './node_modules/react-router-dom'
 import './lyrics.css'
 import {Loader} from '../loader'
 class LyricsForm extends Component {

@@ -1,7 +1,7 @@
 import React from 'react'
 import * as beatService from '../services/beatService'
 import * as recordService from '../services/recordService'
-import moment from '../../node_modules/moment/moment'
+import moment from 'moment'
 import { Modal } from 'react-bootstrap'
 import {connect } from 'react-redux'
 

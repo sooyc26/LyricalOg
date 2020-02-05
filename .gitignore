@@ -34,3 +34,4 @@ msbuild.wrn
 .vs/
 .config
 Web.config
+node_modules
