@@ -3,16 +3,16 @@ import React, { Component } from 'react';
 import { Route, BrowserRouter,Redirect,Switch } from 'react-router-dom';
 import {connect} from 'react-redux'
 
-import BeatsList from './Beats/BeatsList'
-import Navbar from './Layout/Navbar';
-import Login from './Login/Login';
-import Register from './Login/Register';
-import Header from './Layout/Header'
-import LyricsForm from './Lyrics/lyricsForm'
-import UserProfile from './Users/UserProfile';
-import PasswordResetRequest from './Users/PasswordResetRequest';
-import ResetPassword from './Users/ResetPassword'
-import ValidateAccount from './Login/ValidateAccount'
+import BeatsList from './beats/BeatsList'
+import Navbar from './layout/Navbar';
+import Login from './account/Login';
+import Register from './account/Register';
+import Header from './layout/Header'
+import LyricsForm from './lyrics/LyricsForm'
+import UserProfile from './users/UserProfile';
+import PasswordResetRequest from './users/PasswordResetRequest';
+import ResetPassword from './users/ResetPassword'
+import ValidateAccount from './account/ValidateAccount'
 
 class App extends Component {
   constructor(props) {
